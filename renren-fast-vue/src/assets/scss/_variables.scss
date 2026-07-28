@@ -1,0 +1,79 @@
+// tips: 要达到整站主题修改效果, 请确保[$--color-primary]站点主色与[/src/element-ui-theme/index.js]文件中[import './element-[#17B3A3]/index.css']当前主题色一致
+
+// 品牌主色（须与 Element 主题 CSS 保持一致）
+$--color-primary: #17B3A3;
+$--color-primary-deep: #0E9486;   // 用于渐变深色的同色系延伸
+$--color-success: #67C23A;
+$--color-warning: #E6A23C;
+$--color-danger: #F56C6C;
+
+// Element UI 文本 / 边框色（覆盖默认，统一灰度观感）
+$--color-text-primary: #2B3340;
+$--color-text-regular: #4A5462;
+$--color-text-secondary: #8A93A2;
+$--color-text-placeholder: #B7BECB;
+$--border-color-base: #E2E7EF;
+$--border-color-light: #ECEFF4;
+$--border-color-lighter: #EFF2F6;
+
+// 顶栏（提升高度以容纳搜索 / 用户胶囊）
+$navbar--height: 56px;
+$navbar--background-color: $--color-primary;
+
+// 侧边栏
+$sidebar--width: 240px;
+$sidebar--width-fold: 64px;
+$sidebar--background-color: #0b0e18;          // Obsidian 墨色基底
+$sidebar--background-color-sub: #11151f;      // 子菜单底色
+$sidebar--color: rgba(255, 255, 255, .82);
+$sidebar--color-hover: #FFFFFF;
+$sidebar--color-active: #FFFFFF;
+
+// 内容区（保持浅色，保障 Element 组件可用性）
+$content--background-color: #F4F6F9;
+$content--color-text: #2B3340;
+
+// 标签页
+$tabs--background-color: #F4F6F9;
+$tabs--color: #646E7D;
+$tabs--color-active: $--color-primary;        // 与品牌主色统一（原蓝 #2d8cf0 已弃用）
+$tabs--background-color-active: #FFFFFF;
+$tabs--border-color: #E2E7EF;
+$tagsview--tag--margin-right: 8px;
+$tagsview--close--color: #B4BCCC;
+$tagsview--close--font-size: 16px;
+$tagsview--close--margin-right: 5px;
+$tagsview--dropdown--background-color: #FFFFFF;
+$tagsview--dropdown--color-text: #2B3340;
+
+/* ============ Obsidian 主题令牌（侧栏 / 顶栏专用）============ */
+// 暗黑墨色层级
+$obs--bg-void: #07090f;
+$obs--bg-base: #0b0e18;
+$obs--bg-surface: #11151f;
+$obs--bg-elevated: #161b28;
+$obs--bg-raised: #1c2231;
+// 铜金强调
+$obs--brass: #d4a574;
+$obs--brass-bright: #e8c08c;
+$obs--brass-deep: #a87d4e;
+$obs--brass-glow: rgba(212, 165, 116, .35);
+// 墨色文字层级
+$obs--ink-1: #f4f5f8;
+$obs--ink-2: #c2c6d4;
+$obs--ink-3: #888fa3;
+$obs--ink-4: #555c70;
+// 辅助色
+$obs--teal: #5eead4;
+$obs--rose: #fb7185;
+$obs--emerald: #4ade80;
+$obs--amber: #fbbf24;
+$obs--violet: #c084fc;
+// 边框
+$obs--border-faint: rgba(255, 255, 255, .05);
+$obs--border-soft: rgba(255, 255, 255, .08);
+$obs--border-strong: rgba(255, 255, 255, .14);
+// 缓动
+$obs--ease: cubic-bezier(.4, 0, .2, 1);
+$obs--ease-out: cubic-bezier(.22, 1, .36, 1);
+$obs--ease-spring: cubic-bezier(.34, 1.56, .64, 1);
