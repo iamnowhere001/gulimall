@@ -22,10 +22,10 @@ spring:
     host: localhost
     port: 6379
 
-#开启feign对sentinel的支持
+# 关闭feign对sentinel的支持（避免ContextUtil初始化失败）
 feign:
   sentinel:
-    enabled: true
+    enabled: false
 
 
   thymeleaf:

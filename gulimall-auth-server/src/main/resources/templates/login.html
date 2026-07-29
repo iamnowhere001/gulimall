@@ -2,24 +2,64 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="/static/login/JD_sass/JD1.css"/>
-    <script src="/static/login/JD_js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="/static/auth/css/auth.css"/>
     <title>gulimall</title>
+    <style>
+        header { background: #fff; border-bottom: 2px solid #e1251b; }
+        .top-1 { overflow: hidden; padding: 10px 0; }
+        .top-1 img { vertical-align: middle; margin-right: 10px; }
+        .top-1 p { display: inline-block; margin: 0; font-size: 16px; color: #333; }
+        .top-2 { background: #fff9e8; padding: 10px 20px; border-bottom: 1px solid #ffe58f; }
+        .top-2a { max-width: 1200px; margin: 0 auto; overflow: hidden; }
+        .top-2a img { float: left; margin-right: 10px; }
+        .top-2a p { margin: 0; line-height: 1.8; }
+        .top-2a span { color: #e1251b; }
+        .top-3 { max-width: 1200px; margin: 20px auto; overflow: hidden; }
+        .img_1 { float: left; margin-right: 40px; }
+        #sign { overflow: hidden; }
+        #sign .si_top { padding: 20px; text-align: center; }
+        #sign .si_top span { color: #e1251b; font-size: 14px; }
+        #sign .si_top span.red { color: #e1251b; }
+        #sign .si_cen { text-align: center; margin-bottom: 20px; }
+        #sign .si_cen h2 { display: inline-block; margin: 0 10px; cursor: pointer; font-size: 18px; }
+        #sign .si_cen h2.act { color: #e1251b; border-bottom: 2px solid #e1251b; }
+        #sign .si_bom, #sign .si_bom1 { text-align: center; padding: 30px; }
+        #sign .si_bom1 form { max-width: 350px; margin: 0 auto; }
+        #sign .si_bom1 ul { list-style: none; padding: 0; }
+        #sign .si_bom1 ul li { margin-bottom: 15px; position: relative; }
+        #sign .si_bom1 ul li img.err_img1, #sign .si_bom1 ul li img.err_img2 { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; }
+        #sign .si_bom1 ul li input { width: 100%; height: 40px; padding: 0 10px 0 35px; border: 1px solid #ddd; box-sizing: border-box; }
+        #sign .si_bom1 ul li input:focus { outline: none; border-color: #e1251b; }
+        #sign .si_bom1 ul li.password input { padding-right: 40px; }
+        #sign .si_bom1 ul li .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; cursor: pointer; }
+        #sign .si_bom1 ul li.bri a { color: #999; text-decoration: none; font-size: 12px; }
+        #sign .si_bom1 ul li.ent button { width: 100%; height: 44px; background: #e1251b; color: #fff; border: none; font-size: 16px; cursor: pointer; }
+        #sign .si_bom1 .error { color: #e1251b; text-align: center; margin-bottom: 10px; display: none; }
+        #sign .si_out { text-align: center; margin-top: 20px; }
+        #sign .si_out ul { list-style: none; padding: 0; display: flex; justify-content: center; align-items: center; }
+        #sign .si_out ul li { margin: 0 5px; }
+        #sign .si_out ul li.f4 { color: #ccc; }
+        #sign .si_out h5 { margin-top: 20px; }
+        #sign .si_out h5 img { vertical-align: middle; margin-right: 5px; }
+        #sign .si_out h5 a { color: #e1251b; text-decoration: none; }
+        footer { background: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eee; }
+        footer ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; }
+        footer ul li { margin: 0 5px; }
+        footer ul li a { color: #666; text-decoration: none; font-size: 12px; }
+        footer ul li.little { color: #ccc; }
+        footer span { display: block; margin-top: 10px; color: #999; font-size: 12px; }
+    </style>
 </head>
 <body>
 <!--顶部logo-->
 <header>
     <a href="http://gulimall.com/"><img src="/static/login/JD_img/logo.jpg"/></a>
-    <p>欢迎登录</p>
-    <div class="top-1">
-        <img src="/static/login/JD_img/4de5019d2404d347897dee637895d02b_06.png"/><span>登录页面,调查问卷</span>
-    </div>
 </header>
 
 <div class="top-2">
     <div class="top-2a">
         <img src="/static/login/JD_img/4de5019d2404d347897dee637895d02b_11.png"/>
-        <p>依据《网络安全法》，为保障您的账户安全和正常使用，请尽快完成手机号验证！新版《<span>谷粒商城隐私政策</span>》已上线，将更有利于保护您的个人隐私。</p>
+        <p>新版《<span>谷粒商城隐私政策</span>》已上线，将更有利于保护您的个人隐私。</p>
     </div>
 </div>
 
@@ -29,13 +69,6 @@
         <img src="/static/login/JD_img/5731485aN1134b4f0.png"/>
     </div>
     <div id="sign">
-        <div class="si_top">
-            <p>
-                <span>谷粒商城不会以任何理由要求您转账汇款，谨防诈骗。</span>
-                <span style="color: red" th:if="session.msg!=null"><br/>[[${session.msg}]]</span>
-            </p>
-
-        </div>
         <div class="si_cen">
             <h2 class="act btn1">扫码登录</h2>
             <span>|</span>
@@ -43,9 +76,7 @@
         </div>
         <div class="si_bom tab">
             <img src="/static/login/JD_img/show.png" class="bom_1"/>
-            <a href="/static/login/#"><img src="/static/login/JD_img/phone-orange.png" class="bom_2"/></a>
-            <h6>打开<span class="red">手机谷粒商城</span> 扫描二维码</h6>
-
+            <h5>打开<span class="red">手机谷粒商城</span> 扫描二维码</h5>
         </div>
         <div class="si_bom1 tab" style="display: none;">
             <div class="error">
@@ -56,11 +87,9 @@
                 <div style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'msg') ? errors.msg : '') : ''}"></div>
                 <ul>
                     <li class="top_1">
-                        <img src="/static/login/JD_img/user_03.png" class="err_img1"/>
                         <input type="text" name="loginacct" placeholder=" 邮箱/用户名/已验证手机" class="user"/>
                     </li>
                     <li>
-                        <img src="/static/login/JD_img/user_06.png" class="err_img2"/>
                         <input type="password" name="password" placeholder=" 密码" class="password" id="passwordInput"/>
                         <img src="/static/login/JD_img/show.png" class="bom_1 toggle-password" style="cursor:pointer;"/>
                     </li>
@@ -142,12 +171,9 @@
     }
 
     var loginForm = document.getElementById('loginForm');
-    var btn2 = document.getElementsByClassName('btn2')[0];
     var user = document.getElementsByClassName('user')[0];
     var pass = document.getElementsByClassName('password')[0];
     var err = document.getElementsByClassName('error')[0];
-    var err_img1 = document.getElementsByClassName('err_img1')[0];
-    var err_img2 = document.getElementsByClassName('err_img2')[0];
 
     // 表单提交前校验
     loginForm.onsubmit = function () {
@@ -155,8 +181,6 @@
             err.style.display = 'block';
             user.style.border = '1px solid red';
             pass.style.border = '1px solid red';
-            err_img1.src = 'JD_img/img11.png';
-            err_img2.src = 'JD_img/img22.png';
             return false;
         }
         return true;
@@ -164,19 +188,15 @@
 
     // 输入框聚焦时恢复正常样式
     user.onfocus = function () {
-        err_img1.src = 'JD_img/grow1.png';
         user.style.border = '1px solid #999';
     }
     pass.onfocus = function () {
-        err_img2.src = 'JD_img/grow2.png';
         pass.style.border = '1px solid #999';
     }
     user.onblur = function () {
-        err_img1.src = 'JD_img/user_03.png';
         user.style.border = '1px solid #999';
     }
     pass.onblur = function () {
-        err_img2.src = 'JD_img/user_06.png';
         pass.style.border = '1px solid #999';
     }
 

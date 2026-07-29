@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Configuration
+// @Configuration // Disabled: Sentinel removed
 public class SentinelGatewayConfig {
 
     public SentinelGatewayConfig() {

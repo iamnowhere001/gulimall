@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RestController
+@Controller
 public class IndexController {
 
     @Resource
@@ -33,7 +33,7 @@ public class IndexController {
     private StringRedisTemplate stringRedisTemplate;
 
     @GetMapping(value = {"/","index.html"})
-    private String indexPage(Model model) {
+    public String indexPage(Model model) {
 
         //1、查出所有的一级分类
         List<CategoryEntity> categoryEntities = categoryService.getLevel1Categorys();
@@ -44,6 +44,7 @@ public class IndexController {
 
 
     //index/json/catalog.json
+    @ResponseBody
     @GetMapping(value = "/index/catalog.json")
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
 

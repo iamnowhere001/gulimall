@@ -3,6 +3,9 @@ spring:
     name: gulimall-seckill
 
   cloud:
+    sentinel:
+      filter:
+        enabled: false
     nacos:
       config:
         server-addr: localhost:8848

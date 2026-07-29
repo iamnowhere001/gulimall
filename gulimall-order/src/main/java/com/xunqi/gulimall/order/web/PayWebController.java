@@ -21,7 +21,6 @@ import static com.lly835.bestpay.enums.BestPayTypeEnum.WXPAY_NATIVE;
 
 @Slf4j
 @Controller
-@RestController
 public class PayWebController {
 
     @Autowired
@@ -44,6 +43,7 @@ public class PayWebController {
      * @return
      * @throws AlipayApiException
      */
+    @ResponseBody
     @GetMapping(value = "/aliPayOrder",produces = "text/html")
     public String aliPayOrder(@RequestParam("orderSn") String orderSn) throws AlipayApiException {
 
@@ -87,6 +87,7 @@ public class PayWebController {
 
 
     //根据订单号查询订单状态的API
+    @ResponseBody
     @GetMapping(value = "/queryByOrderId")
     public OrderEntity queryByOrderId(@RequestParam("orderId") String orderId) {
         log.info("查询支付记录...");

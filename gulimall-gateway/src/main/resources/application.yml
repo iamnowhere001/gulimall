@@ -1,10 +1,11 @@
 spring:
   cloud:
-
     sentinel:
       transport:
         #配置sentinel dashboard地址
         dashboard: localhost:8080
+      filter:
+        enabled: false
 
     gateway:
       routes:
@@ -70,46 +71,39 @@ spring:
         - id: gulimall_host_route
           uri: lb://gulimall-product
           predicates:
-            - Host=gulimall.com,item.gulimall.com
+            - Host=gulimall.com,gulimall.com:88,item.gulimall.com,item.gulimall.com:88
 
         - id: gulimall_search_route
           uri: lb://gulimall-search
           predicates:
-            - Host=search.gulimall.com
+            - Host=search.gulimall.com,search.gulimall.com:88
 
         - id: gulimall_auth_route
           uri: lb://gulimall-auth-server
           predicates:
-            - Host=auth.gulimall.com
+            - Host=auth.gulimall.com,auth.gulimall.com:88
 
         - id: gulimall_cart_route
           uri: lb://gulimall-cart
           predicates:
-            - Host=cart.gulimall.com
+            - Host=cart.gulimall.com,cart.gulimall.com:88
 
         - id: gulimall_order_route
           uri: lb://gulimall-order
           predicates:
-            - Host=order.gulimall.com
+            - Host=order.gulimall.com,order.gulimall.com:88
 
         - id: gulimall_member_route
           uri: lb://gulimall-member
           predicates:
-            - Host=member.gulimall.com
+            - Host=member.gulimall.com,member.gulimall.com:88
 
         - id: gulimall_seckill_route
           uri: lb://gulimall-seckill
           predicates:
-            - Host=seckill.gulimall.com
+            - Host=seckill.gulimall.com,seckill.gulimall.com:88
 
 
-
-#暴露所有端点
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
 
   ## 前端项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg

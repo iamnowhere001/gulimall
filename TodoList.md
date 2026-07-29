@@ -251,3 +251,301 @@
 | 可观测/运维 | 基础日志、容器化中间件 | Sentinel 控制台限流实战 | Zipkin 全链路追踪、Docker 全量镜像、Compose 一键部署 |
 
 > 按照 v1.1 → v1.2 的顺序推进，每完成一个迭代即可输出一个独立的可演示 Demo（对应一个求职项目作品版本），简历中按版本线描述会比「功能清单罗列」更有说服力。
+
+---
+
+## 六、工程概述：当前代码组织深度审视（2026-07-28）
+
+> **本节目的**：客观记录 v1.0.0 当前工程与代码的真实组织状况，识别"粗糙、不易理解"的根因，作为 v1.1.0 起工程治理的依据。所有结论均基于实际代码（非推测），关键证据以代码路径形式给出。
+>
+> **总体判断**：项目**业务功能完成度高，但工程规范度低**。这是一个典型的"教程式"代码库——为了讲清楚某个知识点（Feign、Seata、Redisson、RabbitMQ）而写，而不是按生产工程标准构建。这导致新人接手时需要大量上下文才能理解"为什么这样写"。
+
+### 6.1 仓库整体结构问题
+
+#### 6.1.1 顶层目录混乱，职责边界不清
+
+仓库根目录同时混有：业务模块、配置、数据库脚本、Nginx、前端打包产物、启动脚本。
+
+| 顶层目录 | 作用 | 问题 |
+| :--- | :--- | :--- |
+| `config/application-dev.yml` | 单一 dev 配置文件 | 顶层只放一份 dev 配置，与各模块 `src/main/resources/application*.yml` 重复，且无说明这份配置给谁用 |
+| `db/*.sql` | 6 个库的建表脚本 | 与 `renren-generator` 的产物重叠；缺少 seed 数据与版本化迁移（Flyway/Liquibase） |
+| `nginx/html/2607241922/` | renren-fast-vue 编译产物 | 前端打包产物不应进入后端仓库，应通过 CI 输出到部署目录 |
+| `mysql/my.cnf` | MySQL 配置 | 单文件，缺少与其他中间件配置（redis.conf、rabbitmq.conf）的对称组织 |
+| `gulimall-start.sh` | 启动脚本 | 单一脚本启动所有 Java 进程，无参数说明、无服务依赖编排（应交给 docker-compose） |
+| `renren-generator/` | 代码生成器 | 是开发期工具，不应与运行时业务模块平级放在父 pom 的 `<modules>` 中 |
+
+**根因**：仓库没有按"开发期工具 / 业务源码 / 部署产物"分层组织。
+
+#### 6.1.2 父 pom 缺失依赖版本治理
+
+[pom.xml](file:///Users/yongxu/Documents/learn/gulimall/pom.xml) 父 pom **仅声明 `<modules>` 与三个 java 版本属性**，未做任何依赖版本统一管理：
+
+```xml
+<properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <java.version>1.8</java.version>
+</properties>
+```
+
+后果：
+- `gulimall-common` 的 pom 中 `spring-cloud.version=Greenwich.SR3`，而项目技术文档声明的是 `Hoxton.SR3` —— **版本声明与文档不一致，且无人察觉**。
+- 各模块各自管理依赖版本，例如 `gulimall-common/pom.xml` 中 `spring-cloud-alibaba-dependencies=2.1.0.RELEASE`，但 `gulimall-product` 等业务模块并未显式继承该 BOM，依赖版本由 Spring Boot 父 pom 间接解析，**同一份依赖在不同模块可能解析到不同版本**。
+- `mybatis-plus` 在 common 中声明为 `3.2.0`，但项目技术文档写的是 `3.4.2` —— 文档与代码版本再次出现偏差。
+
+### 6.2 模块内部包结构问题
+
+#### 6.2.1 包命名不统一（最严重的"粗糙"证据）
+
+同样是 Controller 层，不同模块用了**三种不同的包名**：
+
+| 模块 | Controller 包名 | 入口类型 |
+| :--- | :--- | :--- |
+| [gulimall-product](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/java/com/xunqi/gulimall/product/app) | `app` | 后台 CRUD + 前台 |
+| [gulimall-order](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/controller) | `controller` | 后台 CRUD |
+| [gulimall-order/web](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/web) | `web` | 前台页面 Controller |
+| [gulimall-member](file:///Users/yongxu/Documents/learn/gulimall/gulimall-member/src/main/java/com/xunqi/gulimall/member/controller) | `controller` | 后台 CRUD |
+| [gulimall-member/web](file:///Users/yongxu/Documents/learn/gulimall/gulimall-member/src/main/java/com/xunqi/gulimall/member/web) | `web` | 前台页面 |
+| [gulimall-auth-server](file:///Users/yongxu/Documents/learn/gulimall/gulimall-auth-server/src/main/java/com/xunqi/gulimall/auth/controller) | `controller` | 前后台混合 |
+
+**product 模块用 `app`、order/member 用 `controller` + `web` 双包拆分、auth-server 又只有 `controller`** —— 同一工程三种分层约定。这直接导致 IDE 中按包名查找 Controller 失效，新人无法形成稳定心智模型。
+
+#### 6.2.2 配置类重复且散落
+
+每个业务模块都有 `config/` 包，且**几乎所有模块都重复定义以下 3 个配置类**：
+
+| 配置类 | 作用 | 出现的模块 |
+| :--- | :--- | :--- |
+| `GulimallSessionConfig` | Spring Session Cookie 序列化 + Redis JSON 序列化 | product, order, member, cart, auth-server（5 份完全相同代码） |
+| `Gulimall{Module}SentinelConfig` | Sentinel 限流降级返回 JSON | product, order, member, cart, auth-server, coupon（6 份几乎相同代码） |
+| `MyThreadConfig` + `ThreadPoolConfigProperties` | 自定义线程池 | product, order, cart（3 份相同代码） |
+| `MySeataConfig` | Seata 配置（实际未启用 Seata） | product, order, ware（3 份空壳配置） |
+
+**根因**：这些配置应抽到 `gulimall-common` 作为 `@Configuration` 自动装配（`spring.factories` 或 `AutoConfiguration.imports`），各模块引入 common 即可复用，避免每次复制粘贴。
+
+#### 6.2.3 `app` 包内 Controller 职责混杂
+
+[gulimall-product/.../app/](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/java/com/xunqi/gulimall/product/app) 下 15 个 Controller 全平铺在一起，既有：
+- 后台 CRUD（`SpuInfoController`、`BrandController`、`CategoryController`）
+- 内部 Feign 接口（`SkuInfoController` 暴露 `/skuinfo/info/{skuId}` 给 cart 调用）
+- 前台展示（但前台 Controller 又被拆到 `web/IndexController`、`web/ItemController`）
+
+**一个包里混了 3 种角色的 Controller**，且 `web/` 与 `app/` 的拆分逻辑没有文档说明。新人看 `SkuInfoController` 时无法判断它是给后台 renren-vue 用、给 cart 做 Feign 调用、还是给前台用——实际上三者都有。
+
+### 6.3 公共模块（gulimall-common）设计问题
+
+#### 6.3.1 common 沦为"杂物间"
+
+[gulimall-common/src/main/java/com/xunqi/common/](file:///Users/yongxu/Documents/learn/gulimall/gulimall-common/src/main/java/com/xunqi/common) 下混合了：
+
+| 子包 | 内容 | 问题 |
+| :--- | :--- | :--- |
+| `es/SkuEsModel` | ES 索引模型 | 应属于 search 模块，放在 common 让 product 也能用，但破坏了 search 对 ES 模型的封装 |
+| `to/` | 跨服务 DTO（OrderTo、SpuBoundTo、SkuReductionTo 等） | 命名混乱：有 `to/OrderTo.java`，也有 `to/mq/StockLockedTo.java`，MQ 专用 TO 单独建子包但非 MQ 的 TO 又平铺 |
+| `to/MemberPrice.java` | 会员价 DTO | 应属于 member 模块，却出现在 common |
+| `utils/R.java` | 统一响应 | R 继承自 `HashMap<String,Object>` —— **类型不安全**，`getData(key, typeReference)` 通过 fastjson 二次序列化反推类型，是反模式 |
+| `valid/` | JSR-303 自定义校验注解 | 与 `xss/`（XSS 过滤工具）混在一起，两者完全无关 |
+| `constant/` | 常量类 | 4 个模块常量类（AuthServerConstant、CartConstant、ProductConstant、WareConstant）平铺，未按模块分子包 |
+| `exception/BizCodeEnum` | 错误码枚举 | 错误码注释声明"前两位表示业务场景"，但 `TO_MANY_REQUEST=10002` 与 `SMS_CODE_EXCEPTION=10002` **错误码冲突**，无人发现 |
+
+#### 6.3.2 common 携带了不应有的运行时依赖
+
+[gulimall-common/pom.xml](file:///Users/yongxu/Documents/learn/gulimall/gulimall-common/pom.xml) 把以下依赖**强加给所有引用方**：
+
+- `spring-cloud-starter-alibaba-nacos-discovery` —— 网关、第三方服务都被迫注册到 Nacos
+- `spring-cloud-starter-alibaba-sentinel` —— 所有模块都被迫接入 Sentinel
+- `spring-cloud-starter-zipkin` —— **声明了但配置文件中 base-url 指向 `192.168.77.130:9411`（一台不存在的机器）**，且与 TodoList §3.1.1 记录的"Sleuth/Zipkin 未实际集成"矛盾。实际是 common 引入依赖、product 的 application.properties 配了地址，但其他模块没配，导致**部分模块带 zipkin 依赖但无配置，部分模块带配置但依赖未生效**。
+- `mysql-connector-java` —— 网关、auth-server、cart、search 不连 MySQL，却被强加了驱动
+- `mybatis-plus-boot-starter` —— 同上，不连 DB 的模块也被强加
+- `servlet-api 2.5`（provided）—— 与 Spring Boot 内嵌 Tomcat 的 servlet-api 版本冲突风险
+
+**根因**：common 没有按"是否需要 DB / 是否需要服务治理 / 是否需要 Web"拆分。生产级做法是 common 拆为 `common-core`（纯工具+R）、`common-web`（Session、异常处理、Sentinel）、`common-db`（MyBatis-Plus、MySQL）、`common-cloud`（Nacos、Feign 配置），各模块按需引入。
+
+### 6.4 配置文件组织问题
+
+#### 6.4.1 每个模块三个配置文件并存且职责不清
+
+每个业务模块 `src/main/resources/` 下都有：
+- `application.yml` —— 本地配置（端口、数据源、Redis）
+- `application.properties` —— **又一份本地配置**（线程池参数、zipkin 地址、缓存配置）
+- `bootstrap.yml` —— Nacos 配置中心连接
+
+**问题**：`application.yml` 和 `application.properties` 同时存在是 Spring Boot 反模式。两者都会被加载，优先级为 `properties > yml`，但人类阅读时很难在脑中合并两份配置。例如 [gulimall-product](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/resources/application.properties) 的 zipkin 配置写在 `.properties` 里，而 [application.yml](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/resources/application.yml) 里完全没提 zipkin —— 读 yml 时会误以为没接 zipkin。
+
+#### 6.4.2 Nacos 命名空间 ID 硬编码且无说明
+
+[bootstrap.yml](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/resources/bootstrap.yml) 中：
+
+```yaml
+namespace: 67ee5d01-6af9-4aa6-a2e8-936d5f6fa67f
+```
+
+每个模块一个不同的 UUID 命名空间，但：
+- 仓库中没有任何文档记录这些命名空间 ID 的对应关系（技术文档 §6.1 列了 4 个，但与实际代码不一致）
+- 切换环境（dev→prod）需要改 bootstrap.yml，无法通过 profile 覆盖（因为 Nacos 配置在 bootstrap 阶段加载，早于 application profile）
+
+#### 6.4.3 Sentinel 控制台地址全模块写死 `localhost:8080`
+
+所有模块的 `application.yml` 都有：
+
+```yaml
+sentinel:
+  transport:
+    dashboard: localhost:8080
+```
+
+但 `localhost:8080` 实际是 renren-fast 后台的端口，**Sentinel 控制台默认端口是 8858**。这是复制粘贴遗留 bug，无人验证过 Sentinel 是否真的接上。
+
+#### 6.4.4 Seata 配置文件残留
+
+`gulimall-product`、`gulimall-order`、`gulimall-ware` 的 `src/main/resources/` 下都有 `file.conf` 和 `registry.conf`（Seata 客户端配置文件），但：
+- 项目从未真正集成 Seata（TodoList §3 已确认）
+- pom 中 `MySeataConfig` 是空壳
+- 这些文件是早期教程跟做时留下的，**未被清理**
+
+### 6.5 代码层面的"粗糙"细节
+
+#### 6.5.1 ThreadLocal 未清理，存在内存泄漏风险
+
+[OrderServiceImpl.java:62](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/service/impl/OrderServiceImpl.java#L62)：
+
+```java
+private ThreadLocal<OrderSubmitVo> confirmVoThreadLocal = new ThreadLocal<>();
+```
+
+`submitOrder()` 中 `confirmVoThreadLocal.set(vo)`，但**整个方法没有 `finally { confirmVoThreadLocal.remove(); }`**。在线程池复用场景下，上次请求的 `OrderSubmitVo` 会残留在线程中，导致：
+1. 内存泄漏（大对象不释放）
+2. 下次请求若读到脏数据，可能产生业务 bug
+
+同样问题见 [LoginUserInterceptor.java](file:///Users/yongxu/Documents/learn/gulimall/gulimall-member/src/main/java/com/xunqi/gulimall/member/interceptor/LoginUserInterceptor.java) 的 `public static ThreadLocal<MemberResponseVo> loginUser` —— `afterCompletion` 是空的，没有 `loginUser.remove()`。
+
+#### 6.5.2 异步任务异常被吞，链路追踪断裂
+
+[OrderServiceImpl.java:120-157](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/service/impl/OrderServiceImpl.java#L120-157) 的 `confirmOrder()`：
+
+```java
+CompletableFuture<Void> addressFuture = CompletableFuture.runAsync(() -> {
+    RequestContextHolder.setRequestAttributes(requestAttributes);
+    List<MemberAddressVo> address = memberFeignService.getAddress(memberResponseVo.getId());
+    confirmVo.setMemberAddressVos(address);
+}, threadPoolExecutor);
+// ...
+CompletableFuture.allOf(addressFuture, cartInfoFuture).get();
+```
+
+**问题**：
+1. `runAsync` 内部 Feign 调用若抛异常，`CompletableFuture` 会记录异常但 `get()` 不抛（因为用的是 `allOf().get()` 而非 `future.get()`），**异常被静默吞掉**，confirmVo 中对应字段为 null，前端显示空但不报错。
+2. `RequestContextHolder.setRequestAttributes(requestAttributes)` 在异步线程中设置后**从未清理**，同样是 ThreadLocal 泄漏。
+3. Feign 调用丢失请求头的修复方式是手动透传 RequestAttributes，但**没有用 TransmittableThreadLocal**，在线程池复用场景下不可靠。
+
+#### 6.5.3 `R` 类的类型不安全设计
+
+[R.java](file:///Users/yongxu/Documents/learn/gulimall/gulimall-common/src/main/java/com/xunqi/common/utils/R.java) 继承 `HashMap<String, Object>`：
+
+```java
+public class R extends HashMap<String, Object> {
+    public <T> T getData(TypeReference<T> typeReference) {
+        Object data = get("data");  // 默认是 map
+        String jsonString = JSON.toJSONString(data);
+        T t = JSON.parseObject(jsonString, typeReference);
+        return t;
+    }
+}
+```
+
+**问题**：
+1. `R` 是个 Map，调用方可以 `r.put("任意key", 任意value)`，无任何约束。代码中随处可见 `r.get("msg")` 强转 String，类型完全靠约定。
+2. `getData` 通过 **JSON 序列化再反序列化** 来转换类型，性能差且容易丢失精度（如 BigDecimal、Date）。
+3. `getCode()` 返回 `Integer` 但调用方经常用 `r.getCode() == 0` 比较 —— 若 code 为 null 会 NPE。
+
+正确做法是用泛型 `R<T>` + 明确的字段（code、msg、data），而不是继承 HashMap。
+
+#### 6.5.4 Feign 接口命名与拼写错误
+
+- [ThridFeignService.java](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/feign/ThridFeignService.java) —— `Thrid` 应为 `Third`
+- [SeckillFeignService.java:18](file:///Users/yongxu/Documents/learn/gulimall/gulimall-product/src/main/java/com/xunqi/gulimall/product/feign/SeckillFeignService.java#L18) —— 方法名 `getSkuSeckilInfo` 少了一个 `l`，应为 `getSkuSeckillInfo`
+- Feign 客户端命名不统一：`WmsFeignService`（缩写）、`CartFeignService`（全称）、`ThridFeignService`（拼写错误+缩写）
+
+#### 6.5.5 硬编码的魔法值散落业务代码
+
+[OrderServiceImpl.java:196](file:///Users/yongxu/Documents/learn/gulimall/gulimall-order/src/main/java/com/xunqi/gulimall/order/service/impl/OrderServiceImpl.java#L196)：
+
+```java
+String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+```
+
+Lua 脚本硬编码在方法体内，应抽到常量或资源文件。同方法中：
+- `redisTemplate.opsForValue().set(USER_ORDER_TOKEN_PREFIX+..., token, 30, TimeUnit.MINUTES)` —— 30 分钟硬编码
+- `rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", ...)` —— exchange 名和 routing key 硬编码字符串
+- `Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01` —— 0.01 元的精度容差硬编码
+
+#### 6.5.6 注释与代码不一致（已部分修复）
+
+虽然上一轮已清理 auth-server 和 member 模块的模板注释，但其他模块仍存在：
+- `OrderServiceImpl` 中 `// int i = 10/0;`（调试代码残留）
+- `// responseVo.setCode(3); return responseVo;`（被注释掉的旧逻辑）
+- `//TODO 3、保存订单`（TODO 但代码已实现）
+- `//TODO 调用远程锁定库存的方法`（TODO 但下一行就是 `wmsFeignService.orderLockStock(lockVo)`）
+
+这些过时注释会误导读者以为功能未实现。
+
+### 6.6 前端资源组织问题
+
+#### 6.6.1 静态资源路径不统一
+
+| 模块 | 静态资源根路径 | 说明 |
+| :--- | :--- | :--- |
+| product | `static/index/`、`static/item/` | 按页面分目录 |
+| search | `static/list/` | 按页面分目录 |
+| cart | `static/cart/` | 按页面分目录 |
+| auth-server | `static/JD_img/`、`static/auth/` | **图片直接平铺在 static 根下**，且目录名 `JD_img` 暗示是从京东扒的图 |
+| member | 无 static | 模板 `orderList.html` 引用的静态资源靠其他模块提供 |
+
+**问题**：静态资源路径无统一规范，导致 Nginx 缓存规则、网关静态资源路由都难以统一配置。`JD_img` 这种命名不应出现在生产代码中。
+
+#### 6.6.2 Thymeleaf 模板与后端强耦合
+
+每个有前台页面的模块都在 `src/main/resources/templates/` 下放 HTML，导致：
+- 前端改动需要重新编译部署后端模块
+- 无法独立部署前端
+- 页面散落在 7 个模块中，无法统揽"商城到底有多少页面"
+
+这是教程式项目的典型特征——为了讲 Thymeleaf + Spring MVC，牺牲了前后端分离。
+
+### 6.7 测试与质量保障完全缺失
+
+- **全仓库无任何单元测试或集成测试**（除 `gulimall-test-sso-client` 的 `ApplicationTests` 空壳）
+- 无 CI 配置（`.github/workflows/` 不存在）
+- 无代码质量检查（无 checkstyle/spotbugs/pmd 配置）
+- 无 Swagger/OpenAPI 文档（接口全靠读代码）
+
+这意味着每次改动的正确性完全依赖手动验证，回归风险极高。
+
+### 6.8 工程治理改进建议（纳入 v1.1.0 起的迭代）
+
+| 优先级 | 改进项 | 目标 | 建议版本 |
+| :--- | :--- | :--- | :--- |
+| 🔴 P0 | 父 pom 统一依赖版本管理（Spring Boot BOM + Spring Cloud BOM + 自定义 properties） | 消除版本漂移 | v1.1.0 起步 |
+| 🔴 P0 | 拆分 common 为 common-core / common-web / common-db / common-cloud | 消除强制依赖 | v1.1.0 |
+| 🔴 P0 | 统一 Controller 包名为 `controller`（后台）+ `web`（前台），废弃 `app` | 统一分层心智 | v1.1.0 |
+| 🟠 P1 | 配置类抽取到 common-web 自动装配（Session/Sentinel/线程池） | 消除 6 份重复代码 | v1.1.0 |
+| 🟠 P1 | 合并 application.yml + application.properties 为单文件 | 消除配置分裂 | v1.1.0 |
+| 🟠 P1 | 修复 ThreadLocal 泄漏（finally remove + afterCompletion remove） | 消除内存泄漏 | v1.1.0 |
+| 🟠 P1 | 清理 Seata file.conf/registry.conf 残留 + zipkin 无效配置 | 消除误导 | v1.1.0 |
+| 🟡 P2 | `R` 类重构为泛型 `R<T>` | 类型安全 | v1.2.0（影响面大） |
+| 🟡 P2 | 静态资源统一到 `static/{module}/` 规范 + 重命名 `JD_img` | 路径统一 | v1.2.0 |
+| 🟡 P2 | 引入 Flyway 管理数据库版本 | 可追溯迁移 | v1.2.0 |
+| 🟡 P2 | renren-generator 移出父 pom modules，作为独立工具项目 | 职责清晰 | v1.2.0 |
+| 🟢 P3 | 补充核心 Service 的单元测试（OrderService.submitOrder、StockReleaseListener 等） | 回归保障 | v1.2.0 |
+| 🟢 P3 | 引入 checkstyle + spotbugs + CI | 自动质量门禁 | v1.2.0 |
+
+### 6.9 工程概述小结
+
+当前项目的代码组织问题可以归纳为**"三个不统一"**：
+
+1. **命名不统一**：包名（app/controller/web）、Feign 命名（Wms/Cart/Thrid）、错误码（冲突的 10002）、静态资源路径（JD_img/index/list/cart）。
+2. **配置不统一**：yml 与 properties 并存、Nacos 命名空间硬编码、Sentinel 地址写死且错误、Seata 残留文件未清理。
+3. **职责不统一**：common 携带所有依赖、product 的 app 包混三种 Controller、模板散落在 7 个模块。
+
+这些问题的根因是**项目按"知识点跟练"方式构建，而非按"工程产品"标准构建**。作为学习项目，这并不影响功能验证；但若要作为求职作品或团队协作基线，建议在 v1.1.0 迭代中优先处理标红的 P0 项（父 pom 版本管理 + common 拆分 + Controller 包统一），这三项改动成本低但收益最大，能显著提升项目的"第一印象专业度"。

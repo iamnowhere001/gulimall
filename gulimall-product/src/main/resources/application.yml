@@ -22,6 +22,8 @@ spring:
       transport:
         #配置sentinel dashboard地址
         dashboard: localhost:8080
+      filter:
+        enabled: false
 
   redis:
     host: localhost
