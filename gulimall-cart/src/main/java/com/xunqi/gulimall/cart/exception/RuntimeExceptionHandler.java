@@ -21,6 +21,7 @@ public class RuntimeExceptionHandler {
 
 
     @ExceptionHandler(CartExceptionHandler.class)
+    @ResponseBody
     public R userHandler(CartExceptionHandler exception) {
         return R.error("购物车无此商品");
     }

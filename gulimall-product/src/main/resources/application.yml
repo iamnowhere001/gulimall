@@ -19,6 +19,7 @@ spring:
         server-addr: localhost:8848
 
     sentinel:
+      enabled: false
       transport:
         #配置sentinel dashboard地址
         dashboard: localhost:8080
@@ -32,7 +33,7 @@ spring:
 #开启feign对sentinel的支持
 feign:
   sentinel:
-    enabled: true
+    enabled: false
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

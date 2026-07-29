@@ -44,6 +44,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -140,19 +141,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //feign在远程调用之前要构造请求，调用很多的拦截器
         }, threadPoolExecutor).thenRunAsync(() -> {
             List<OrderItemVo> items = confirmVo.getItems();
+            if (items == null || items.isEmpty()) {
+                return;
+            }
             //获取全部商品的id
             List<Long> skuIds = items.stream()
-                    .map((itemVo -> itemVo.getSkuId()))
+                    .map(OrderItemVo::getSkuId)
                     .collect(Collectors.toList());
 
-            //远程查询商品库存信息
-            R skuHasStock = wmsFeignService.getSkuHasStock(skuIds);
-            List<SkuStockVo> skuStockVos = skuHasStock.getData("data", new TypeReference<List<SkuStockVo>>() {});
+            try {
+                //远程查询商品库存信息
+                R skuHasStock = wmsFeignService.getSkuHasStock(skuIds);
+                List<SkuStockVo> skuStockVos = skuHasStock.getData("data", new TypeReference<List<SkuStockVo>>() {});
 
-            if (skuStockVos != null && skuStockVos.size() > 0) {
-                //将skuStockVos集合转换为map
-                Map<Long, Boolean> skuHasStockMap = skuStockVos.stream().collect(Collectors.toMap(SkuStockVo::getSkuId, SkuStockVo::getHasStock));
-                confirmVo.setStocks(skuHasStockMap);
+                if (skuStockVos != null && skuStockVos.size() > 0) {
+                    //将skuStockVos集合转换为map
+                    Map<Long, Boolean> skuHasStockMap = skuStockVos.stream().collect(Collectors.toMap(SkuStockVo::getSkuId, SkuStockVo::getHasStock));
+                    confirmVo.setStocks(skuHasStockMap);
+                }
+            } catch (Exception e) {
+                log.error("远程查询库存信息失败", e);
             }
         },threadPoolExecutor);
 
@@ -188,6 +196,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
         //去创建、下订单、验令牌、验价格、锁定库存...
 
+        try {
         //获取当前用户登录的信息
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
         responseVo.setCode(0);
@@ -214,7 +223,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             BigDecimal payAmount = order.getOrder().getPayAmount();
             BigDecimal payPrice = vo.getPayPrice();
 
-            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
+            if (payAmount.subtract(payPrice).abs().compareTo(new BigDecimal("0.01")) < 0) {
                 //金额对比
                 //TODO 3、保存订单
                 saveOrder(order);
@@ -241,26 +250,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if (r.getCode() == 0) {
                     //锁定成功
                     responseVo.setOrder(order.getOrder());
-                    // int i = 10/0;
 
                     //TODO 订单创建成功，发送消息给MQ
                     rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrder());
 
-                    //删除购物车里的数据
-                    redisTemplate.delete(CART_PREFIX+memberResponseVo.getId());
+                    //只删除已选中的购物车商品，保留未选中的
+                    List<OrderItemVo> checkedCartItems = cartFeignService.getCurrentCartItems();
+                    if (checkedCartItems != null && checkedCartItems.size() > 0) {
+                        String cartKey = CART_PREFIX + memberResponseVo.getId();
+                        Object[] skuIds = checkedCartItems.stream()
+                                .map(item -> item.getSkuId().toString())
+                                .toArray();
+                        redisTemplate.opsForHash().delete(cartKey, skuIds);
+                    }
                     return responseVo;
                 } else {
                     //锁定失败
                     String msg = (String) r.get("msg");
                     throw new NoStockException(msg);
-                    // responseVo.setCode(3);
-                    // return responseVo;
                 }
 
             } else {
                 responseVo.setCode(2);
                 return responseVo;
             }
+        }
+        } finally {
+            // 清理 ThreadLocal，防止线程池复用导致数据串号
+            confirmVoThreadLocal.remove();
         }
     }
 
@@ -442,7 +459,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //1、订单价格相关的
         orderEntity.setTotalAmount(total);
         //设置应付总额(总额+运费)
-        orderEntity.setPayAmount(total.add(orderEntity.getFreightAmount()));
+        BigDecimal freight = orderEntity.getFreightAmount();
+        if (freight == null) {
+            freight = new BigDecimal("0");
+        }
+        orderEntity.setPayAmount(total.add(freight));
         orderEntity.setCouponAmount(coupon);
         orderEntity.setPromotionAmount(promotion);
         orderEntity.setIntegrationAmount(intergration);
@@ -538,10 +559,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         R spuInfo = productFeignService.getSpuInfoBySkuId(skuId);
         SpuInfoVo spuInfoData = spuInfo.getData("data", new TypeReference<SpuInfoVo>() {
         });
-        orderItemEntity.setSpuId(spuInfoData.getId());
-        orderItemEntity.setSpuName(spuInfoData.getSpuName());
-        orderItemEntity.setSpuBrand(spuInfoData.getBrandName());
-        orderItemEntity.setCategoryId(spuInfoData.getCatalogId());
+        if (spuInfoData != null) {
+            orderItemEntity.setSpuId(spuInfoData.getId());
+            orderItemEntity.setSpuName(spuInfoData.getSpuName());
+            orderItemEntity.setSpuBrand(spuInfoData.getBrandName());
+            orderItemEntity.setCategoryId(spuInfoData.getCatalogId());
+        }
 
         //2、商品的sku信息
         orderItemEntity.setSkuId(skuId);
@@ -557,8 +580,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //3、商品的优惠信息
 
         //4、商品的积分信息
-        orderItemEntity.setGiftGrowth(items.getPrice().multiply(new BigDecimal(items.getCount())).intValue());
-        orderItemEntity.setGiftIntegration(items.getPrice().multiply(new BigDecimal(items.getCount())).intValue());
+        BigDecimal totalAmount = items.getPrice().multiply(new BigDecimal(items.getCount()));
+        orderItemEntity.setGiftGrowth(totalAmount.setScale(0, RoundingMode.HALF_UP).intValue());
+        orderItemEntity.setGiftIntegration(totalAmount.setScale(0, RoundingMode.HALF_UP).intValue());
 
         //5、订单项的价格信息
         orderItemEntity.setPromotionAmount(BigDecimal.ZERO);
@@ -591,7 +615,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         PaymentInfoEntity paymentInfo = new PaymentInfoEntity();
         paymentInfo.setOrderSn(asyncVo.getOut_trade_no());
         paymentInfo.setAlipayTradeNo(asyncVo.getTrade_no());
-        paymentInfo.setTotalAmount(new BigDecimal(asyncVo.getBuyer_pay_amount()));
+        String buyerPayAmount = asyncVo.getBuyer_pay_amount();
+        if (buyerPayAmount != null && !buyerPayAmount.isEmpty()) {
+            paymentInfo.setTotalAmount(new BigDecimal(buyerPayAmount));
+        }
         paymentInfo.setSubject(asyncVo.getBody());
         paymentInfo.setPaymentStatus(asyncVo.getTrade_status());
         paymentInfo.setCreateTime(new Date());
@@ -603,7 +630,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //获取当前状态
         String tradeStatus = asyncVo.getTrade_status();
 
-        if (tradeStatus.equals("TRADE_SUCCESS") || tradeStatus.equals("TRADE_FINISHED")) {
+        if ("TRADE_SUCCESS".equals(tradeStatus) || "TRADE_FINISHED".equals(tradeStatus)) {
             //支付成功状态
             String orderSn = asyncVo.getOut_trade_no(); //获取订单号
             this.updateOrderStatus(orderSn,OrderStatusEnum.PAYED.getCode(),PayConstant.ALIPAY);
@@ -648,14 +675,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //判断订单状态状态是否为已支付或者是已取消,如果不是订单状态不是已支付状态
         Integer status = orderEntity.getStatus();
         if (status.equals(OrderStatusEnum.PAYED.getCode()) || status.equals(OrderStatusEnum.CANCLED.getCode())) {
-            throw new RuntimeException("该订单已失效,orderNo=" + payResponse.getOrderId());
+            log.warn("该订单已失效,orderNo=" + payResponse.getOrderId());
+            // 返回XML格式的SUCCESS让微信停止重试
+            return "<xml>\n" +
+                    "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                    "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                    "</xml>";
         }
 
-        /*//判断金额是否一致,Double类型比较大小，精度问题不好控制
+        //判断金额是否一致
         if (orderEntity.getPayAmount().compareTo(BigDecimal.valueOf(payResponse.getOrderAmount())) != 0) {
-            //TODO 告警
+            log.error("异步通知中的金额和数据库里的不一致,orderNo=" + payResponse.getOrderId());
             throw new RuntimeException("异步通知中的金额和数据库里的不一致,orderNo=" + payResponse.getOrderId());
-        }*/
+        }
 
         //3.修改订单支付状态
         //支付成功状态
@@ -700,10 +732,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         R spuInfo = productFeignService.getSpuInfoBySkuId(orderTo.getSkuId());
         SpuInfoVo spuInfoData = spuInfo.getData("data", new TypeReference<SpuInfoVo>() {
         });
-        orderItem.setSpuId(spuInfoData.getId());
-        orderItem.setSpuName(spuInfoData.getSpuName());
-        orderItem.setSpuBrand(spuInfoData.getBrandName());
-        orderItem.setCategoryId(spuInfoData.getCatalogId());
+        if (spuInfoData != null) {
+            orderItem.setSpuId(spuInfoData.getId());
+            orderItem.setSpuName(spuInfoData.getSpuName());
+            orderItem.setSpuBrand(spuInfoData.getBrandName());
+            orderItem.setCategoryId(spuInfoData.getCatalogId());
+        }
 
         //保存订单项数据
         orderItemService.save(orderItem);

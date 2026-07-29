@@ -20,10 +20,17 @@ spring:
     port: 6379
     host: localhost
 
+  # 禁用 Sleuth 异步包装，防止 ThreadPoolExecutor 被包装为 TraceableExecutorService
+  sleuth:
+    async:
+      enabled: false
+    sampler:
+      probability: 0
+
 #开启feign对sentinel的支持
 feign:
   sentinel:
-    enabled: true
+    enabled: false
 
 
   session:

@@ -72,20 +72,4 @@ $(function() {
             }
         });
     });
-
-    $(".header_form input").keydown(function(event) {
-        if (event.keyCode === 13) {
-            var keyword = $(this).val();
-            if (keyword) {
-                window.location.href = "http://search.gulimall.com/list.html?keyword=" + encodeURIComponent(keyword);
-            }
-        }
-    });
-
-    $(".header_form a").click(function() {
-        var keyword = $(".header_form input").val();
-        if (keyword) {
-            window.location.href = "http://search.gulimall.com/list.html?keyword=" + encodeURIComponent(keyword);
-        }
-    });
 });

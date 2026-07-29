@@ -26,6 +26,14 @@
 set -euo pipefail
 
 # ===================== 基础配置 =====================
+# 强制使用 JDK 8（项目基于 Spring Boot 2.x + Redisson 3.12，不兼容 JDK 9+）
+export JAVA_HOME="$(/usr/libexec/java_home -v 1.8 2>/dev/null || echo "$JAVA_HOME")"
+if [[ -z "$JAVA_HOME" || ! -x "$JAVA_HOME/bin/java" ]]; then
+  echo "ERROR: 未找到 JDK 8，请先安装" >&2
+  exit 1
+fi
+export PATH="$JAVA_HOME/bin:$PATH"
+
 # 脚本所在目录即项目根目录
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_DIR"

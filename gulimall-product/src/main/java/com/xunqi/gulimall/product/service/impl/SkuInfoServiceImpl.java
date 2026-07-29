@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xunqi.common.to.SkuHasStockVo;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.Query;
 import com.xunqi.common.utils.R;
@@ -12,17 +13,20 @@ import com.xunqi.gulimall.product.entity.SkuImagesEntity;
 import com.xunqi.gulimall.product.entity.SkuInfoEntity;
 import com.xunqi.gulimall.product.entity.SpuInfoDescEntity;
 import com.xunqi.gulimall.product.feign.SeckillFeignService;
+import com.xunqi.gulimall.product.feign.WareFeignService;
 import com.xunqi.gulimall.product.service.*;
 import com.xunqi.gulimall.product.vo.SeckillSkuVo;
 import com.xunqi.gulimall.product.vo.SkuItemSaleAttrVo;
 import com.xunqi.gulimall.product.vo.SkuItemVo;
 import com.xunqi.gulimall.product.vo.SpuItemAttrGroupVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
+@Slf4j
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
 
@@ -47,6 +52,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     private SeckillFeignService seckillFeignService;
+
+    @Autowired
+    private WareFeignService wareFeignService;
 
     @Resource
     private ThreadPoolExecutor executor;
@@ -137,35 +145,63 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         CompletableFuture<SkuInfoEntity> infoFuture = CompletableFuture.supplyAsync(() -> {
             //1、sku基本信息的获取  pms_sku_info
             SkuInfoEntity info = this.getById(skuId);
-            skuItemVo.setInfo(info);
+            if (info != null) {
+                skuItemVo.setInfo(info);
+            }
             return info;
         }, executor);
 
 
         CompletableFuture<Void> saleAttrFuture = infoFuture.thenAcceptAsync((res) -> {
             //3、获取spu的销售属性组合
-            List<SkuItemSaleAttrVo> saleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(res.getSpuId());
-            skuItemVo.setSaleAttr(saleAttrVos);
+            if (res != null) {
+                List<SkuItemSaleAttrVo> saleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(res.getSpuId());
+                skuItemVo.setSaleAttr(saleAttrVos);
+            }
         }, executor);
 
 
         CompletableFuture<Void> descFuture = infoFuture.thenAcceptAsync((res) -> {
             //4、获取spu的介绍    pms_spu_info_desc
-            SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(res.getSpuId());
-            skuItemVo.setDesc(spuInfoDescEntity);
+            if (res != null) {
+                SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(res.getSpuId());
+                skuItemVo.setDesc(spuInfoDescEntity);
+            }
         }, executor);
 
 
         CompletableFuture<Void> baseAttrFuture = infoFuture.thenAcceptAsync((res) -> {
             //5、获取spu的规格参数信息
-            List<SpuItemAttrGroupVo> attrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(), res.getCatalogId());
-            skuItemVo.setGroupAttrs(attrGroupVos);
+            if (res != null) {
+                List<SpuItemAttrGroupVo> attrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(), res.getCatalogId());
+                skuItemVo.setGroupAttrs(attrGroupVos);
+            }
         }, executor);
 
         //2、sku的图片信息    pms_sku_images
         CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
             List<SkuImagesEntity> imagesEntities = skuImagesService.getImagesBySkuId(skuId);
             skuItemVo.setImages(imagesEntities);
+        }, executor);
+
+        //查询库存
+        CompletableFuture<Void> stockFuture = infoFuture.thenAcceptAsync(res -> {
+            if (res != null) {
+                try {
+                    R hasStockR = wareFeignService.getSkuHasStock(Collections.singletonList(res.getSkuId()));
+                    if (hasStockR.getCode() == 0) {
+                        List<SkuHasStockVo> stockVos = hasStockR.getData(new TypeReference<List<SkuHasStockVo>>() {});
+                        if (stockVos != null && !stockVos.isEmpty()) {
+                            Boolean hasStock = stockVos.get(0).getHasStock();
+                            if (hasStock != null) {
+                                skuItemVo.setHasStock(hasStock);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("库存服务查询异常：原因{}", e);
+                }
+            }
         }, executor);
 
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
@@ -188,7 +224,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
 
         //等到所有任务都完成
-        CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imageFuture,seckillFuture).get();
+        CompletableFuture.allOf(infoFuture, saleAttrFuture, descFuture, baseAttrFuture, imageFuture, stockFuture, seckillFuture).get();
 
         return skuItemVo;
     }

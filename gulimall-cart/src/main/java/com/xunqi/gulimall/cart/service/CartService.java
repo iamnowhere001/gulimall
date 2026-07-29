@@ -54,7 +54,7 @@ public interface CartService {
      * 删除购物项
      * @param skuId
      */
-    void deleteIdCartInfo(Integer skuId);
+    void deleteIdCartInfo(Long skuId);
 
     List<CartItemVo> getUserCartItems();
 

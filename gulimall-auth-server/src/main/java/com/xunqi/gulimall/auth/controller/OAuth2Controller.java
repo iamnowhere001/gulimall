@@ -42,37 +42,44 @@ public class OAuth2Controller {
      * @return 登录成功跳转首页，失败重定向回登录页
      */
     @GetMapping(value = "/oauth2.0/weibo/success")
-    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session,
+                        @RequestParam(value = "return_url", required = false) String returnUrl) {
 
-        // 1、构建换取 access_token 的请求参数
-        Map<String, String> map = new HashMap<>();
-        map.put("client_id", "2077705774");
-        map.put("client_secret", "40af02bd1c7e435ba6a6e9cd3bf799fd");
-        map.put("grant_type", "authorization_code");
-        map.put("redirect_uri", "http://auth.gulimall.com/oauth2.0/weibo/success");
-        map.put("code", code);
+        try {
+            // 1、构建换取 access_token 的请求参数
+            Map<String, String> map = new HashMap<>();
+            map.put("client_id", "2077705774");
+            map.put("client_secret", "40af02bd1c7e435ba6a6e9cd3bf799fd");
+            map.put("grant_type", "authorization_code");
+            map.put("redirect_uri", "http://auth.gulimall.com/oauth2.0/weibo/success");
+            map.put("code", code);
 
-        // 2、使用 code 换取 access_token
-        HttpResponse response = HttpUtils.doPost("https://api.weibo.com", "/oauth2/access_token", "post", new HashMap<>(), map, new HashMap<>());
+            // 2、使用 code 换取 access_token
+            HttpResponse response = HttpUtils.doPost("https://api.weibo.com", "/oauth2/access_token", "post", new HashMap<>(), map, new HashMap<>());
 
-        if (response.getStatusLine().getStatusCode() == 200) {
-            // 3、解析 access_token，转为通用社交用户对象
-            String json = EntityUtils.toString(response.getEntity());
-            SocialUser socialUser = JSON.parseObject(json, SocialUser.class);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                // 3、解析 access_token，转为通用社交用户对象
+                String json = EntityUtils.toString(response.getEntity());
+                SocialUser socialUser = JSON.parseObject(json, SocialUser.class);
 
-            // 4、调用会员服务：已注册则登录，未注册则自动注册后登录
-            R oauthLogin = memberFeignService.oauthLogin(socialUser);
-            if (oauthLogin.getCode() == 0) {
-                MemberResponseVo data = oauthLogin.getData("data", new TypeReference<MemberResponseVo>() {});
-                log.info("微博登录成功：用户信息：{}", data.toString());
+                // 4、调用会员服务：已注册则登录，未注册则自动注册后登录
+                R oauthLogin = memberFeignService.oauthLogin(socialUser);
+                if (oauthLogin.getCode() == 0) {
+                    MemberResponseVo data = oauthLogin.getData("data", new TypeReference<MemberResponseVo>() {});
+                    log.info("微博登录成功：用户信息：{}", data.toString());
 
-                // 5、用户信息存入 Session（Spring Session 会同步至 Redis，实现子域共享）
-                session.setAttribute(LOGIN_USER, data);
-                return "redirect:http://gulimall.com";
+                    // 5、用户信息存入 Session（Spring Session 会同步至 Redis，实现子域共享）
+                    session.setAttribute(LOGIN_USER, data);
+                    String redirect = (returnUrl != null && returnUrl.startsWith("http")) ? returnUrl : "http://gulimall.com";
+                    return "redirect:" + redirect;
+                } else {
+                    return "redirect:http://auth.gulimall.com/login.html";
+                }
             } else {
                 return "redirect:http://auth.gulimall.com/login.html";
             }
-        } else {
+        } catch (Exception e) {
+            log.error("微博登录失败", e);
             return "redirect:http://auth.gulimall.com/login.html";
         }
 

@@ -62,9 +62,12 @@ public class LoginController {
         String redisCode = stringRedisTemplate.opsForValue().get(AuthServerConstant.SMS_CODE_CACHE_PREFIX + phone);
         if (!StringUtils.isEmpty(redisCode)) {
             // redis 中存储格式为 code_timestamp，取出时间戳判断是否在 60s 内
-            long currentTime = Long.parseLong(redisCode.split("_")[1]);
-            if (System.currentTimeMillis() - currentTime < 60000) {
-                return R.error(BizCodeEnum.SMS_CODE_EXCEPTION.getCode(), BizCodeEnum.SMS_CODE_EXCEPTION.getMessage());
+            String[] parts = redisCode.split("_");
+            if (parts.length == 2) {
+                long lastSendTime = Long.parseLong(parts[1]);
+                if (System.currentTimeMillis() - lastSendTime < 60000) {
+                    return R.error(BizCodeEnum.SMS_CODE_EXCEPTION.getCode(), BizCodeEnum.SMS_CODE_EXCEPTION.getMessage());
+                }
             }
         }
 
@@ -111,11 +114,11 @@ public class LoginController {
 
         if (!StringUtils.isEmpty(redisCode)) {
             if (code.equals(redisCode.split("_")[0])) {
-                // 验证码校验通过，删除令牌避免重复使用
-                stringRedisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vos.getPhone());
                 // 2、调用远程服务完成注册
                 R register = memberFeignService.register(vos);
                 if (register.getCode() == 0) {
+                    // 注册成功后删除验证码，避免重复使用
+                    stringRedisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vos.getPhone());
                     return "redirect:http://auth.gulimall.com/login.html";
                 } else {
                     Map<String, String> errors = new HashMap<>();
@@ -142,13 +145,15 @@ public class LoginController {
      * @return 未登录返回登录页，已登录重定向到首页
      */
     @GetMapping(value = "/login.html")
-    public String loginPage(HttpSession session) {
+    public String loginPage(HttpSession session,
+                            @RequestParam(value = "return_url", required = false) String returnUrl) {
 
         Object attribute = session.getAttribute(LOGIN_USER);
         if (attribute == null) {
             return "login";
         } else {
-            return "redirect:http://gulimall.com";
+            String redirect = (returnUrl != null && returnUrl.startsWith("http")) ? returnUrl : "http://gulimall.com";
+            return "redirect:" + redirect;
         }
     }
 
@@ -163,19 +168,26 @@ public class LoginController {
      * @return 登录成功跳转首页，失败重定向回登录页
      */
     @PostMapping(value = "/login")
-    public String login(UserLoginVo vo, RedirectAttributes attributes, HttpSession session) {
+    public String login(UserLoginVo vo, RedirectAttributes attributes, HttpSession session,
+                        @RequestParam(value = "return_url", required = false) String returnUrl) {
 
         R login = memberFeignService.login(vo);
 
         if (login.getCode() == 0) {
             MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
             session.setAttribute(LOGIN_USER, data);
-            return "redirect:http://gulimall.com";
+            String redirect = (returnUrl != null && returnUrl.startsWith("http")) ? returnUrl : "http://gulimall.com";
+            return "redirect:" + redirect;
         } else {
             Map<String, String> errors = new HashMap<>();
             errors.put("msg", login.getData("msg", new TypeReference<String>() {}));
             attributes.addFlashAttribute("errors", errors);
-            return "redirect:http://auth.gulimall.com/login.html";
+            // 登录失败时携带 return_url 回登录页，以便二次登录成功后能回跳
+            String redirectUrl = "http://auth.gulimall.com/login.html";
+            if (returnUrl != null && returnUrl.startsWith("http")) {
+                redirectUrl += "?return_url=" + returnUrl;
+            }
+            return "redirect:" + redirectUrl;
         }
     }
 

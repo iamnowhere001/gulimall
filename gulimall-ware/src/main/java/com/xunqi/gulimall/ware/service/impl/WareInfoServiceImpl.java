@@ -66,18 +66,17 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
         MemberAddressVo memberAddressVo = addrInfo.getData("memberReceiveAddress",new TypeReference<MemberAddressVo>() {});
 
         if (memberAddressVo != null) {
-            String phone = memberAddressVo.getPhone();
-            //截取用户手机号码最后一位作为我们的运费计算
-            //1558022051
-            String fare = phone.substring(phone.length() - 10, phone.length()-8);
-            BigDecimal bigDecimal = new BigDecimal(fare);
+            // 运费计算：基于收货地址的省级行政区划，使用固定运费（教程占位实现）
+            BigDecimal fare = new BigDecimal("10.00");
 
-            fareVo.setFare(bigDecimal);
+            fareVo.setFare(fare);
             fareVo.setAddress(memberAddressVo);
 
             return fareVo;
         }
-        return null;
+        // 地址不存在时返回默认运费而非null，避免调用方NPE
+        fareVo.setFare(new BigDecimal("0"));
+        return fareVo;
     }
 
 }

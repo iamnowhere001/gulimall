@@ -59,7 +59,7 @@ public class MallSearchServiceImpl implements MallSearchService {
     public SearchResult search(SearchParam param) {
 
         //1、动态构建出查询需要的DSL语句
-        SearchResult result = null;
+        SearchResult result = new SearchResult();
 
         //1、准备检索请求
         SearchRequest searchRequest = buildSearchRequest(param);
@@ -71,7 +71,8 @@ public class MallSearchServiceImpl implements MallSearchService {
             //3、分析响应数据，封装成我们需要的格式
             result = buildSearchResult(response,param);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("ES搜索异常", e);
+            // 返回空的 SearchResult 而非 null，避免页面渲染 NPE
         }
 
         return result;
@@ -101,8 +102,10 @@ public class MallSearchServiceImpl implements MallSearchService {
                 if (!StringUtils.isEmpty(param.getKeyword())) {
                     //拿到高亮信息显示标题
                     HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
-                    String skuTitleValue = skuTitle.getFragments()[0].string();
-                    esModel.setSkuTitle(skuTitleValue);
+                    if (skuTitle != null && skuTitle.getFragments() != null && skuTitle.getFragments().length > 0) {
+                        String skuTitleValue = skuTitle.getFragments()[0].string();
+                        esModel.setSkuTitle(skuTitleValue);
+                    }
                 }
                 esModels.add(esModel);
             }
@@ -218,11 +221,11 @@ public class MallSearchServiceImpl implements MallSearchService {
                 String encode = null;
                 try {
                     encode = URLEncoder.encode(attr,"UTF-8");
-                    encode.replace("+","%20");  //浏览器对空格的编码和Java不一样，差异化处理
+                    encode = encode.replace("+","%20");  //浏览器对空格的编码和Java不一样，差异化处理
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                String replace = param.get_queryString().replace("&attrs=" + attr, "");
+                String replace = param.get_queryString().replace("&attrs=" + encode, "");
                 navVo.setLink("http://search.gulimall.com/list.html?" + replace);
 
                 return navVo;
@@ -300,12 +303,14 @@ public class MallSearchServiceImpl implements MallSearchService {
             RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("skuPrice");
             String[] price = param.getSkuPrice().split("_");
             if(price.length==2){
-                rangeQueryBuilder.gte(price[0]).lte(price[1]);
-            }else if(price.length == 1){
-                if(param.getSkuPrice().startsWith("_")){
+                if(!price[0].isEmpty()){
+                    rangeQueryBuilder.gte(price[0]);
+                }
+                if(!price[1].isEmpty()){
                     rangeQueryBuilder.lte(price[1]);
                 }
-                if(param.getSkuPrice().endsWith("_")){
+            }else if(price.length == 1){
+                if(!price[0].isEmpty()){
                     rangeQueryBuilder.gte(price[0]);
                 }
             }

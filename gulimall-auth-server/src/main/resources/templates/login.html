@@ -1,215 +1,194 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" type="text/css" href="/static/auth/css/auth.css"/>
-    <title>gulimall</title>
-    <style>
-        header { background: #fff; border-bottom: 2px solid #e1251b; }
-        .top-1 { overflow: hidden; padding: 10px 0; }
-        .top-1 img { vertical-align: middle; margin-right: 10px; }
-        .top-1 p { display: inline-block; margin: 0; font-size: 16px; color: #333; }
-        .top-2 { background: #fff9e8; padding: 10px 20px; border-bottom: 1px solid #ffe58f; }
-        .top-2a { max-width: 1200px; margin: 0 auto; overflow: hidden; }
-        .top-2a img { float: left; margin-right: 10px; }
-        .top-2a p { margin: 0; line-height: 1.8; }
-        .top-2a span { color: #e1251b; }
-        .top-3 { max-width: 1200px; margin: 20px auto; overflow: hidden; }
-        .img_1 { float: left; margin-right: 40px; }
-        #sign { overflow: hidden; }
-        #sign .si_top { padding: 20px; text-align: center; }
-        #sign .si_top span { color: #e1251b; font-size: 14px; }
-        #sign .si_top span.red { color: #e1251b; }
-        #sign .si_cen { text-align: center; margin-bottom: 20px; }
-        #sign .si_cen h2 { display: inline-block; margin: 0 10px; cursor: pointer; font-size: 18px; }
-        #sign .si_cen h2.act { color: #e1251b; border-bottom: 2px solid #e1251b; }
-        #sign .si_bom, #sign .si_bom1 { text-align: center; padding: 30px; }
-        #sign .si_bom1 form { max-width: 350px; margin: 0 auto; }
-        #sign .si_bom1 ul { list-style: none; padding: 0; }
-        #sign .si_bom1 ul li { margin-bottom: 15px; position: relative; }
-        #sign .si_bom1 ul li img.err_img1, #sign .si_bom1 ul li img.err_img2 { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; }
-        #sign .si_bom1 ul li input { width: 100%; height: 40px; padding: 0 10px 0 35px; border: 1px solid #ddd; box-sizing: border-box; }
-        #sign .si_bom1 ul li input:focus { outline: none; border-color: #e1251b; }
-        #sign .si_bom1 ul li.password input { padding-right: 40px; }
-        #sign .si_bom1 ul li .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; cursor: pointer; }
-        #sign .si_bom1 ul li.bri a { color: #999; text-decoration: none; font-size: 12px; }
-        #sign .si_bom1 ul li.ent button { width: 100%; height: 44px; background: #e1251b; color: #fff; border: none; font-size: 16px; cursor: pointer; }
-        #sign .si_bom1 .error { color: #e1251b; text-align: center; margin-bottom: 10px; display: none; }
-        #sign .si_out { text-align: center; margin-top: 20px; }
-        #sign .si_out ul { list-style: none; padding: 0; display: flex; justify-content: center; align-items: center; }
-        #sign .si_out ul li { margin: 0 5px; }
-        #sign .si_out ul li.f4 { color: #ccc; }
-        #sign .si_out h5 { margin-top: 20px; }
-        #sign .si_out h5 img { vertical-align: middle; margin-right: 5px; }
-        #sign .si_out h5 a { color: #e1251b; text-decoration: none; }
-        footer { background: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eee; }
-        footer ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; }
-        footer ul li { margin: 0 5px; }
-        footer ul li a { color: #666; text-decoration: none; font-size: 12px; }
-        footer ul li.little { color: #ccc; }
-        footer span { display: block; margin-top: 10px; color: #999; font-size: 12px; }
-    </style>
+    <title>谷粒商城 - 登录</title>
 </head>
 <body>
-<!--顶部logo-->
-<header>
-    <a href="http://gulimall.com/"><img src="/static/login/JD_img/logo.jpg"/></a>
+
+<header class="auth-header">
+    <div class="auth-header-inner">
+        <div class="auth-logo">
+            <a href="http://gulimall.com/"><img src="/static/JD_img/logo.jpg" alt="谷粒商城"/></a>
+            <span class="auth-logo-text">谷粒商城</span>
+            <span class="auth-logo-divider"></span>
+            <span class="auth-header-desc">欢迎登录</span>
+        </div>
+        <div class="auth-header-link">
+            还没有账号？<a href="http://auth.gulimall.com/reg.html">立即注册</a>
+        </div>
+    </div>
 </header>
 
-<div class="top-2">
-    <div class="top-2a">
-        <img src="/static/login/JD_img/4de5019d2404d347897dee637895d02b_11.png"/>
-        <p>新版《<span>谷粒商城隐私政策</span>》已上线，将更有利于保护您的个人隐私。</p>
-    </div>
-</div>
-
-<!--大图-->
-<div class="top-3">
-    <div class="img_1">
-        <img src="/static/login/JD_img/5731485aN1134b4f0.png"/>
-    </div>
-    <div id="sign">
-        <div class="si_cen">
-            <h2 class="act btn1">扫码登录</h2>
-            <span>|</span>
-            <h2 class="btn1">账户登录</h2>
-        </div>
-        <div class="si_bom tab">
-            <img src="/static/login/JD_img/show.png" class="bom_1"/>
-            <h5>打开<span class="red">手机谷粒商城</span> 扫描二维码</h5>
-        </div>
-        <div class="si_bom1 tab" style="display: none;">
-            <div class="error">
-                <div></div>
-                请输入账户名和密码
-            </div>
-            <form action="/login" method="post" id="loginForm">
-                <div style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'msg') ? errors.msg : '') : ''}"></div>
-                <ul>
-                    <li class="top_1">
-                        <input type="text" name="loginacct" placeholder=" 邮箱/用户名/已验证手机" class="user"/>
-                    </li>
-                    <li>
-                        <input type="password" name="password" placeholder=" 密码" class="password" id="passwordInput"/>
-                        <img src="/static/login/JD_img/show.png" class="bom_1 toggle-password" style="cursor:pointer;"/>
-                    </li>
-                    <li class="bri">
-                        <a href="/static/login/">忘记密码</a>
-                    </li>
-                    <li class="ent">
-                        <button class="btn2" type="submit">登录</button>
-                    </li>
+<main class="auth-main">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <div class="auth-brand-content">
+                <h2>欢迎来到谷粒商城</h2>
+                <p>品质生活，从这里开始</p>
+                <ul class="auth-brand-features">
+                    <li>正品保障，假一赔十</li>
+                    <li>极速配送，售后无忧</li>
+                    <li>海量优惠，每日精选</li>
+                    <li>安全支付，放心购物</li>
                 </ul>
-            </form>
+            </div>
         </div>
-        <div class="si_out">
-            <ul>
-                <li>
-                    <a href="https://api.weibo.com/oauth2/authorize?client_id=2077705774&response_type=code&redirect_uri=http://auth.gulimall.com/oauth2.0/weibo/success">
-                        <img style="width: 50px;height: 18px;" src="/static/login/JD_img/weibo.png"/>
-                    </a>
-                </li>
-                <li class="f4"> |</li>
-                <li>
-                    <a href="http://localhost:8150/api/ucenter/wx/login">
-                        <img src="/static/login/JD_img/weixin.png"/>
-                        <span>微信</span>
-                    </a>
-                </li>
-            </ul>
 
-            <h5 class="rig">
-                <img src="/static/login/JD_img/4de5019d2404d347897dee637895d02b_25.png"/>
-                <span><a href="http://auth.gulimall.com/reg.html">立即注册</a></span>
-            </h5>
+        <div class="auth-form-panel">
+            <h1 class="auth-form-title">账号登录</h1>
+            <p class="auth-form-subtitle">登录谷粒商城，开启你的购物之旅</p>
+
+            <div class="auth-tabs" id="authTabs">
+                <div class="auth-tab active" data-tab="qr">扫码登录</div>
+                <div class="auth-tab" data-tab="account">账户登录</div>
+            </div>
+
+            <div class="tab-content active" id="tab-qr">
+                <div class="auth-qr">
+                    <img src="/static/JD_img/show.png" alt="扫码登录"/>
+                    <p>打开<span class="highlight">手机谷粒商城</span> 扫描二维码</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-account">
+                <div class="form-error" id="formError">
+                    请输入账户名和密码
+                </div>
+
+                <div style="color: #e4393c; font-size: 13px; margin-bottom: 12px; padding: 8px 12px; background: #fef2f2; border-radius: 4px;" th:if="${errors != null and #maps.containsKey(errors, 'msg')}" th:text="${errors.msg}"></div>
+
+                <form action="/login" method="post" id="loginForm" class="auth-form">
+                    <input type="hidden" name="return_url" th:value="${param.return_url != null ? param.return_url[0] : ''}"/>
+
+                    <div class="form-item">
+                        <div class="input-with-icon">
+                            <input type="text" name="loginacct" placeholder="邮箱 / 用户名 / 已验证手机" class="user"/>
+                        </div>
+                    </div>
+
+                    <div class="form-item">
+                        <div class="input-with-icon">
+                            <input type="password" name="password" placeholder="密码" class="password" id="passwordInput"/>
+                            <img src="/static/JD_img/show.png" class="toggle-password" alt="toggle" style="cursor:pointer;"/>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <a href="#">忘记密码？</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">登 录</button>
+                </form>
+            </div>
+
+            <div class="auth-divider"><span>其他登录方式</span></div>
+
+            <div class="auth-third">
+                <div class="auth-third-icons">
+                    <a href="https://api.weibo.com/oauth2/authorize?client_id=2077705774&response_type=code&redirect_uri=http://auth.gulimall.com/oauth2.0/weibo/success" class="icon-weibo" title="微博登录">
+                        <img src="/static/JD_img/weibo.png" alt="微博"/>
+                    </a>
+                    <a href="http://localhost:8150/api/ucenter/wx/login" class="icon-wechat" title="微信登录">
+                        <img src="/static/JD_img/weixin.png" alt="微信"/>
+                    </a>
+                </div>
+            </div>
+
+            <div class="auth-switch">
+                还没有账号？<a href="http://auth.gulimall.com/reg.html">立即注册</a>
+            </div>
         </div>
     </div>
-</div>
+</main>
 
-
-<!--底部-->
-<footer>
-    <ul>
-        <li><a href="/static/login/#">关于我们</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">联系我们</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">人才招聘</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">商家入驻</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">广告服务</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">手机谷粒商城</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">友情链接</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">销售联盟</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">谷粒商城社区</a></li>
-        <li class="little">|</li>
-        <li><a href="/static/login/#">谷粒商城公益</a></li>
+<footer class="auth-footer">
+    <ul class="auth-footer-links">
+        <li><a href="#">关于我们</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">联系我们</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">人才招聘</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">商家入驻</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">广告服务</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">手机谷粒商城</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">友情链接</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">销售联盟</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">谷粒商城社区</a></li>
+        <li class="separator">|</li>
+        <li><a href="#">谷粒商城公益</a></li>
     </ul>
-    <span>Copyright &copy; 2004-2017 谷粒商城gulimall.com 版权所有</span>
+    <p class="auth-footer-copy">Copyright &copy; 2004-2017 谷粒商城gulimall.com 版权所有</p>
 </footer>
 
-</body>
 <script type="text/javascript">
-    var alDiv = document.getElementsByClassName('tab');
-    var alBtn = document.getElementsByTagName('h2');
-    alDiv[0].style.display = 'block';
-    var act = alBtn[0]
-    for (var i = 0; i < alBtn.length; i++) {
-        alBtn[i].indent = i;
-        alBtn[i].onclick = function () {
-            act.className = '';
-            alDiv[act.indent].style.display = 'none';
-            this.className = 'act'
-            alDiv[this.indent].style.display = 'block'
-            act = this
-        }
-    }
+    (function () {
+        var tabs = document.querySelectorAll('.auth-tab');
+        var contents = {
+            'qr': document.getElementById('tab-qr'),
+            'account': document.getElementById('tab-account')
+        };
 
-    var loginForm = document.getElementById('loginForm');
-    var user = document.getElementsByClassName('user')[0];
-    var pass = document.getElementsByClassName('password')[0];
-    var err = document.getElementsByClassName('error')[0];
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var target = this.getAttribute('data-tab');
+                tabs.forEach(function (t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                Object.keys(contents).forEach(function (key) {
+                    contents[key].classList.remove('active');
+                });
+                contents[target].classList.add('active');
+            });
+        });
 
-    // 表单提交前校验
-    loginForm.onsubmit = function () {
-        if (user.value == '' || pass.value == '') {
-            err.style.display = 'block';
-            user.style.border = '1px solid red';
-            pass.style.border = '1px solid red';
-            return false;
-        }
-        return true;
-    }
+        var loginForm = document.getElementById('loginForm');
+        var user = document.getElementsByClassName('user')[0];
+        var pass = document.getElementsByClassName('password')[0];
+        var err = document.getElementById('formError');
 
-    // 输入框聚焦时恢复正常样式
-    user.onfocus = function () {
-        user.style.border = '1px solid #999';
-    }
-    pass.onfocus = function () {
-        pass.style.border = '1px solid #999';
-    }
-    user.onblur = function () {
-        user.style.border = '1px solid #999';
-    }
-    pass.onblur = function () {
-        pass.style.border = '1px solid #999';
-    }
-
-    // 密码显示/隐藏切换
-    var togglePassword = document.getElementsByClassName('toggle-password')[0];
-    if (togglePassword) {
-        togglePassword.onclick = function () {
-            if (pass.type === 'password') {
-                pass.type = 'text';
-            } else {
-                pass.type = 'password';
+        loginForm.onsubmit = function () {
+            if (user.value == '' || pass.value == '') {
+                err.classList.add('show');
+                user.style.border = '1px solid #e4393c';
+                pass.style.border = '1px solid #e4393c';
+                return false;
             }
+            return true;
+        };
+
+        user.onfocus = function () {
+            user.style.border = '';
+        };
+        pass.onfocus = function () {
+            pass.style.border = '';
+        };
+        user.onblur = function () {
+            user.style.border = '';
+        };
+        pass.onblur = function () {
+            pass.style.border = '';
+        };
+
+        var togglePassword = document.getElementsByClassName('toggle-password')[0];
+        if (togglePassword) {
+            togglePassword.onclick = function () {
+                if (pass.type === 'password') {
+                    pass.type = 'text';
+                } else {
+                    pass.type = 'password';
+                }
+            };
         }
-    }
+    })();
 </script>
+
+</body>
 </html>

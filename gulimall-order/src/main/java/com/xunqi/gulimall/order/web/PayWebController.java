@@ -70,7 +70,7 @@ public class PayWebController {
         PayRequest request = new PayRequest();
         request.setOrderName("4559066-最好的支付sdk");
         request.setOrderId(orderInfo.getOrderSn());
-        request.setOrderAmount(0.01);
+        request.setOrderAmount(orderInfo.getPayAmount().doubleValue());
         request.setPayTypeEnum(WXPAY_NATIVE);
 
         PayResponse payResponse = bestPayService.pay(request);

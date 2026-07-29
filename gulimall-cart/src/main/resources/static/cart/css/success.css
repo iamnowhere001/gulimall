@@ -1,0 +1,345 @@
+/* ============================================
+   谷粒商城 · 添加成功页样式
+   ============================================ */
+
+:root {
+  --color-primary: #e4393c;
+  --color-primary-dark: #c7251c;
+  --color-primary-light: #fef2f2;
+  --color-ink: #1a1a1a;
+  --color-text: #4a4a4a;
+  --color-mute: #999;
+  --color-line: #eee;
+  --color-bg: #f5f5f7;
+  --color-card: #ffffff;
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --transition: all 0.2s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition);
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  border: none;
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+/* ============================================
+   顶部导航
+   ============================================ */
+
+header {
+  background: #f7f7f7;
+}
+
+.header_head_box {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.header_head_p_a1 {
+  font-size: 12px;
+  color: var(--color-mute);
+}
+
+.header_head_p_a1:hover {
+  color: var(--color-primary);
+}
+
+.header_head_box ul {
+  display: flex;
+  align-items: center;
+}
+
+.header_head_box ul li {
+  font-size: 12px;
+  color: var(--color-mute);
+  padding: 0 8px;
+}
+
+.header_head_box ul li a {
+  color: var(--color-mute);
+}
+
+.header_head_box ul li a:hover {
+  color: var(--color-primary);
+}
+
+.header_head_box ul li .register-link {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.header_head_box ul span {
+  color: var(--color-line);
+}
+
+/* ============================================
+   搜索栏
+   ============================================ */
+
+.header_sous {
+  background: #fff;
+  border-bottom: 1px solid var(--color-line);
+  padding: 20px 0;
+}
+
+.header_form {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.logo img {
+  height: 48px;
+  margin-right: 40px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 520px;
+}
+
+.search-box input {
+  flex: 1;
+  height: 40px;
+  border: 2px solid var(--color-primary);
+  border-right: none;
+  padding: 0 16px;
+  font-size: 14px;
+  color: var(--color-ink);
+  outline: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.search-box input::placeholder {
+  color: var(--color-mute);
+}
+
+.search-box button {
+  width: 100px;
+  height: 40px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  border: none;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-box button:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ============================================
+   主体内容
+   ============================================ */
+
+.main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.success-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 48px 40px;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  margin-bottom: 20px;
+}
+
+.success-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 32px;
+}
+
+/* 商品信息 */
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: left;
+  margin-bottom: 32px;
+}
+
+.product-img {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-name {
+  display: block;
+  font-size: 14px;
+  color: var(--color-ink);
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-name:hover {
+  color: var(--color-primary);
+}
+
+.product-meta {
+  font-size: 13px;
+  color: var(--color-mute);
+}
+
+/* 操作按钮 */
+.action-btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.btn-back {
+  padding: 12px 32px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--color-text);
+  background: #fff;
+  transition: var(--transition);
+}
+
+.btn-back:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.btn-cart {
+  padding: 12px 32px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.btn-cart:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(228, 57, 60, 0.3);
+}
+
+/* 空状态 */
+.success-card.empty {
+  padding: 64px 40px;
+}
+
+.success-card.empty .success-title {
+  color: var(--color-mute);
+  margin-bottom: 24px;
+}
+
+/* ============================================
+   响应式
+   ============================================ */
+
+@media (max-width: 768px) {
+  .header_form {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .logo img {
+    margin-right: 0;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .success-card {
+    padding: 32px 20px;
+  }
+
+  .product-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .action-btns {
+    flex-direction: column;
+  }
+
+  .btn-back,
+  .btn-cart {
+    width: 100%;
+  }
+}
