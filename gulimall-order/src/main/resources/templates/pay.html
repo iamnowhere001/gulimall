@@ -1,81 +1,147 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<meta charset="UTF-8">
-		<title>订单支付页</title>
-    <link rel="stylesheet" href="/static/order/pay/css/style.css">
-    <script src="/static/order/pay/js/jquery-3.1.1.min.js" charset="utf-8"></script>
-	</head>
-	<body>
-    <div class="One_Jdbox">
-      <div class="Jdbox_head">
-        <img src="/static/order/pay/img/logo1.jpg" alt=""><span class="bank">收银台</span>
-        <ul>
-          <li><span>[[${session.loginUser.nickname}]]</span><span>退出</span></li>
-          <li><a href="http://order.gulimall.com/list.html">我的订单</a></li>
-        </ul>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>订单支付 - 谷粒商城</title>
+  <link rel="stylesheet" href="/static/order/pay/css/pay.css">
+  <script src="/static/order/confirm/js/jquery-3.1.1.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<header class="pay-header">
+  <div class="pay-header-inner">
+    <div class="pay-logo">
+      <a href="http://gulimall.com/"><img src="/static/order/confirm/img/logo1.jpg" alt="谷粒商城"></a>
+      <span class="pay-page-title">收银台</span>
+    </div>
+    <div class="pay-user">
+      <span class="user-name" th:text="${session.loginUser != null ? session.loginUser.nickname : ''}"></span>
+      <span class="divider">|</span>
+      <a href="http://order.gulimall.com/list.html">我的订单</a>
+      <span class="divider">|</span>
+      <a href="http://auth.gulimall.com/logout.html">退出</a>
+    </div>
+  </div>
+</header>
+
+<!-- 主体内容 -->
+<main class="pay-main">
+
+  <!-- 订单成功提示 -->
+  <div class="pay-success-card" th:if="${submitOrderResp != null and submitOrderResp.order != null}">
+    <div class="pay-success-header">
+      <div class="pay-success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#52c41a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
       </div>
-      <div class="Jdbox_BuySuc">
-        <dl>
-          <dt><img src="/static/order/pay/img/saoyisao.png" alt=""></dt>
-          <dd>
-            <span>订单提交成功，请尽快付款！订单号：[[${submitOrderResp.order.orderSn}]]</span>
-            <span>应付金额<font>[[${#numbers.formatDecimal(submitOrderResp.order.payAmount,1,2)}]]</font>元</span>
-          </dd>
-          <dd>
-            <span>推荐使用</span>
-            <span>扫码支付请您在<font>24小时</font>内完成支付，否则订单会被自动取消(库存紧订单请参见详情页时限)</span>
-          </dd>
-        </dl>
-      </div>
-      <div class="Jd_Con">
-        <p class="JdCon_title"><img src="/static/order/pay/img/title.png" alt=""></p>
-        <div class="Jd_main">
-          <ul>
-            <li>
-              <button>立即支付</button>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="Jd_footer">
-        <ul>
-          <li>
-            <img src="/static/order/pay/img/weixin.png" alt="">
-            <a th:href="'http://order.gulimall.com/weixinPayOrder?orderSn='+${submitOrderResp.order.orderSn}">微信支付</a>
-          </li>
-		  <li>
-            <img src="/static/order/pay/img/zhifubao.png" style="weight:auto;height:30px;" alt="">
-            <a th:href="'http://order.gulimall.com/aliPayOrder?orderSn='+${submitOrderResp.order.orderSn}">支付宝</a>
-          </li>
-        </ul>
-      </div>
-      <div class="Jd_foots">
-        <p>
-          <span>Copyright @2004-2017 谷粒学院gulimall.com 版权所有</span>
-          <span>
-            <img src="/static/order/pay/img/foots.png" alt="">
-          </span>
-        </p>
+      <div class="pay-success-info">
+        <div class="pay-success-title">订单提交成功，请尽快完成支付</div>
+        <div class="pay-order-sn">订单号：<b th:text="${submitOrderResp.order.orderSn}"></b></div>
+        <div class="pay-amount">应付金额：<b th:text="${#numbers.formatDecimal(submitOrderResp.order.payAmount, 1, 2)}"></b>元</div>
       </div>
     </div>
-	</body>
-  <script type="text/javascript">
-    $(".Jd_footer ul li").mouseover(function(){
-      $(this).css({"cursor":"pointer","color":"#E31613"})
-    }).mouseout(function(){
-      $(this).css("color","#5E5E5E")
-    })
+    <div class="pay-tip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>推荐使用扫码支付，请您在<span class="tip-time">24小时</span>内完成支付，否则订单会被自动取消。如遇库存紧张商品，请参见详情页时限说明。</span>
+    </div>
+  </div>
 
-    $(".Jdbox_head>ul li span").mouseover(function(){
-      $(this).css({"cursor":"pointer","color":"#E31613"})
-    }).mouseout(function(){
-      $(this).css("color","#666666")
-    })
-    $(".Jdbox_head>ul li:not(:first-child)").mouseover(function(){
-      $(this).css({"cursor":"pointer","color":"#E31613"})
-    }).mouseout(function(){
-      $(this).css("color","#666666")
-    })
-  </script>
+  <!-- 支付方式 -->
+  <div class="pay-method-section">
+    <div class="pay-method-header">
+      <span class="bar"></span>
+      <h3>选择支付方式</h3>
+      <span class="recommend">推荐使用扫码支付，安全便捷</span>
+    </div>
+
+    <div class="pay-methods">
+      <div class="pay-method-item selected" data-method="wechat">
+        <div class="pay-method-icon wechat">
+          <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.691 2C4.768 2 1.5 4.68 1.5 8.033c0 1.976 1.118 3.76 2.874 4.908-.125.418-.47 1.56-.538 1.817-.09.356-.18.596-.18.836 0 .24.09.48.27.48.18 0 .27-.12.36-.24.27-.36.897-1.317 1.167-1.7.897.24 1.875.36 2.938.36.18 0 .36 0 .54-.012a5.5 5.5 0 0 1-.195-1.492c0-3.116 2.964-5.636 6.618-5.636.18 0 .36.012.54.024C14.938 4.084 12.085 2 8.691 2zm-2.7 3.872c.515 0 .932.417.932.932s-.417.932-.932.932a.932.932 0 1 1 0-1.864zm5.4 0c.515 0 .932.417.932.932s-.417.932-.932.932a.932.932 0 1 1 0-1.864zm4.617 2.858c-3.173 0-5.738 2.315-5.738 5.168 0 2.853 2.565 5.168 5.738 5.168.663 0 1.3-.097 1.892-.28.208.296.72 1.067.944 1.398.117.175.234.281.42.281.16 0 .24-.117.24-.25 0-.07-.035-.2-.117-.42-.187-.513-.673-1.36-.877-1.754a5.2 5.2 0 0 0 2.493-4.143c0-2.853-2.565-5.168-5.738-5.168h-.27zm-2.087 3.21c.39 0 .708.318.708.708a.707.707 0 1 1-1.414 0c0-.39.318-.708.706-.708zm4.174 0c.39 0 .708.318.708.708a.707.707 0 1 1-1.414 0c0-.39.318-.708.706-.708z"/>
+          </svg>
+        </div>
+        <div class="pay-method-detail">
+          <div class="pay-method-name">微信支付</div>
+          <div class="pay-method-desc">亿万用户的选择，安全快速</div>
+        </div>
+      </div>
+
+      <div class="pay-method-item" data-method="alipay">
+        <div class="pay-method-icon alipay">
+          <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.864 16.524c-.48-.144-2.448-.744-4.104-1.512.672-1.224 1.224-2.568 1.656-3.984h-3.36v-1.104h4.128v-.672h-4.128V8.004h-1.608c-.264 0-.264.264-.264.264v.984H7.272v.672h3.912v1.104H7.752v.672h6.408c-.336.936-.744 1.824-1.224 2.64-1.344-.504-2.76-.84-4.2-.984-.408-.048-.528.336-.528.336l-.096.528s-.048.456.336.384c2.448-.48 4.68.336 6.048 1.488-1.56 1.464-3.912 2.448-6.864 2.448-1.92 0-3.384-.48-3.384-.48-.888-.168-.768-1.416-.768-1.416l-.048-2.568S.912 16.404.912 18.564c0 2.16 3.072 3.216 6.336 3.216 3.384 0 6.792-1.416 9.216-3.624.888.408 2.592 1.056 4.008 1.512.408.144.552-.024.552-.024l.504-.816s.192-.504-.36-.744zM12.288 0C6.84 0 2.448 4.176 2.448 9.312h19.872C22.32 4.176 17.736 0 12.288 0z"/>
+          </svg>
+        </div>
+        <div class="pay-method-detail">
+          <div class="pay-method-name">支付宝</div>
+          <div class="pay-method-desc">蚂蚁集团旗下，保障交易安全</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pay-actions">
+      <a class="pay-back" href="http://order.gulimall.com/list.html">← 返回订单列表</a>
+      <button class="btn-pay" id="payBtn" type="button">立 即 支 付</button>
+    </div>
+  </div>
+</main>
+
+<!-- 底部 -->
+<footer class="pay-footer">
+  <div class="pay-footer-links">
+    <a href="#">关于我们</a>
+    <span class="divider">|</span>
+    <a href="#">联系我们</a>
+    <span class="divider">|</span>
+    <a href="#">商家入驻</a>
+    <span class="divider">|</span>
+    <a href="#">营销中心</a>
+    <span class="divider">|</span>
+    <a href="#">手机谷粒商城</a>
+    <span class="divider">|</span>
+    <a href="#">友情链接</a>
+    <span class="divider">|</span>
+    <a href="#">销售联盟</a>
+  </div>
+  <p class="pay-footer-copy">Copyright &copy; 谷粒商城 gulimall.com 版权所有</p>
+</footer>
+
+<script th:inline="javascript" type="text/javascript">
+  $(function () {
+    var orderSn = [[${submitOrderResp != null && submitOrderResp.order != null ? submitOrderResp.order.orderSn : ''}]];
+
+    // 支付方式选择
+    $('.pay-method-item').on('click', function () {
+      $('.pay-method-item').removeClass('selected');
+      $(this).addClass('selected');
+    });
+
+    // 立即支付
+    $('#payBtn').on('click', function () {
+      var method = $('.pay-method-item.selected').attr('data-method');
+      if (!orderSn) {
+        alert('订单信息不存在');
+        return;
+      }
+      var url;
+      if (method === 'wechat') {
+        url = 'http://order.gulimall.com/weixinPayOrder?orderSn=' + orderSn;
+      } else {
+        url = 'http://order.gulimall.com/aliPayOrder?orderSn=' + orderSn;
+      }
+      window.location.href = url;
+    });
+  });
+</script>
+
+</body>
 </html>

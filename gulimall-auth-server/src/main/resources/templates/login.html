@@ -41,19 +41,7 @@
             <h1 class="auth-form-title">账号登录</h1>
             <p class="auth-form-subtitle">登录谷粒商城，开启你的购物之旅</p>
 
-            <div class="auth-tabs" id="authTabs">
-                <div class="auth-tab active" data-tab="qr">扫码登录</div>
-                <div class="auth-tab" data-tab="account">账户登录</div>
-            </div>
-
-            <div class="tab-content active" id="tab-qr">
-                <div class="auth-qr">
-                    <img src="/static/JD_img/show.png" alt="扫码登录"/>
-                    <p>打开<span class="highlight">手机谷粒商城</span> 扫描二维码</p>
-                </div>
-            </div>
-
-            <div class="tab-content" id="tab-account">
+            <div class="tab-content active">
                 <div class="form-error" id="formError">
                     请输入账户名和密码
                 </div>
@@ -72,7 +60,7 @@
                     <div class="form-item">
                         <div class="input-with-icon">
                             <input type="password" name="password" placeholder="密码" class="password" id="passwordInput"/>
-                            <img src="/static/JD_img/show.png" class="toggle-password" alt="toggle" style="cursor:pointer;"/>
+                            <img src="/static/JD_img/show.png" class="toggle-password" alt="切换密码可见" style="cursor:pointer;"/>
                         </div>
                     </div>
 
@@ -131,24 +119,6 @@
 
 <script type="text/javascript">
     (function () {
-        var tabs = document.querySelectorAll('.auth-tab');
-        var contents = {
-            'qr': document.getElementById('tab-qr'),
-            'account': document.getElementById('tab-account')
-        };
-
-        tabs.forEach(function (tab) {
-            tab.addEventListener('click', function () {
-                var target = this.getAttribute('data-tab');
-                tabs.forEach(function (t) { t.classList.remove('active'); });
-                this.classList.add('active');
-                Object.keys(contents).forEach(function (key) {
-                    contents[key].classList.remove('active');
-                });
-                contents[target].classList.add('active');
-            });
-        });
-
         var loginForm = document.getElementById('loginForm');
         var user = document.getElementsByClassName('user')[0];
         var pass = document.getElementsByClassName('password')[0];
@@ -166,9 +136,11 @@
 
         user.onfocus = function () {
             user.style.border = '';
+            err.classList.remove('show');
         };
         pass.onfocus = function () {
             pass.style.border = '';
+            err.classList.remove('show');
         };
         user.onblur = function () {
             user.style.border = '';

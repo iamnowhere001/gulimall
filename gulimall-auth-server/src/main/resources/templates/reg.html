@@ -4,11 +4,6 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>谷粒商城 - 注册</title>
-    <script src="/static/reg/libs/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/static/reg/js/jQuery/jquery-3.1.1.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/reg/bootStrap/bootstrap/css/bootstrap.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/reg/sass/index.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/reg/css/index.css">
     <link rel="stylesheet" type="text/css" href="/static/auth/css/auth.css"/>
 </head>
 
@@ -17,7 +12,7 @@
 <header class="auth-header">
     <div class="auth-header-inner">
         <div class="auth-logo">
-            <a href="https://www.jd.com/" class="logo"><img src="/static/reg/img/logo1.jpg" alt="谷粒商城"/></a>
+            <a href="http://gulimall.com/"><img src="/static/JD_img/logo.jpg" alt="谷粒商城"/></a>
             <span class="auth-logo-text">谷粒商城</span>
             <span class="auth-logo-divider"></span>
             <span class="auth-header-desc register-mode">欢迎注册</span>
@@ -47,65 +42,50 @@
             <h1 class="auth-form-title">用户注册</h1>
             <p class="auth-form-subtitle">填写以下信息完成注册</p>
 
-            <div class="register-section">
-                <div class="register-form-wrapper">
-                    <form action="/register" method="post" class="auth-form">
-                        <div class="form-item">
-                            <label>用户名</label>
-                            <input name="userName" maxlength="20" type="text" placeholder="您的用户名和登录名"/>
-                            <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'userName') ? errors.userName : '') : ''}"></div>
-                        </div>
-
-                        <div class="form-item">
-                            <label>设置密码</label>
-                            <input name="password" maxlength="20" type="password" placeholder="建议至少使用两种字符组合"/>
-                            <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'password') ? errors.password : '') : ''}"></div>
-                        </div>
-
-                        <div class="form-item">
-                            <label>确认密码</label>
-                            <input maxlength="20" type="password" placeholder="请再次输入密码"/>
-                            <div class="form-tips"></div>
-                        </div>
-
-                        <div class="form-item">
-                            <label>手机号</label>
-                            <div class="input-with-icon" style="display: flex; gap: 8px; align-items: center;">
-                                <span style="font-size: 14px; color: #666; white-space: nowrap; padding: 0 4px;">中国 0086</span>
-                                <input name="phone" class="phone" id="phoneNum" maxlength="20" type="text" placeholder="建议使用常用手机" style="flex: 1;"/>
-                            </div>
-                            <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'phone') ? errors.phone : '') : ''}"></div>
-                        </div>
-
-                        <div class="form-item">
-                            <label>验证码</label>
-                            <div class="captcha-box">
-                                <input name="code" maxlength="20" type="text" placeholder="请输入验证码" class="caa"/>
-                                <a id="sendCode" class="captcha-btn">发送验证码</a>
-                            </div>
-                            <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'code') ? errors.code : '') : ''}"></div>
-                        </div>
-
-                        <div class="agreement">
-                            <input type="checkbox" id="xieyi"/>
-                            <span>同意 <a href="#">《谷粒商城用户注册协议》</a> <a href="#">《隐私政策》</a></span>
-                        </div>
-
-                        <button type="submit" id="submit_btn" class="btn-primary" style="letter-spacing: 4px;">立 即 注 册</button>
-                    </form>
+            <form action="/register" method="post" class="auth-form" id="regForm">
+                <div class="form-item">
+                    <label>用户名</label>
+                    <input name="userName" id="userName" maxlength="20" type="text" placeholder="4-20位字符，支持中文、字母、数字"/>
+                    <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'userName') ? errors.userName : '') : ''}"></div>
                 </div>
 
-                <div class="register-side">
-                    <div class="register-side-item">
-                        <img src="/static/reg/img/a65a18e877a16246a92e1b755bd88a03_03.png" alt="企业注册"/>
-                        <span>企业用户注册</span>
-                    </div>
-                    <div class="register-side-item">
-                        <img src="/static/reg/img/a65a18e877a16246a92e1b755bd88a03_06.png" alt="国际客户"/>
-                        <span>INTERNATIONAL<br/>CUSTOMERS</span>
-                    </div>
+                <div class="form-item">
+                    <label>设置密码</label>
+                    <input name="password" id="password" maxlength="20" type="password" placeholder="6-20位字符，建议两种以上组合"/>
+                    <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'password') ? errors.password : '') : ''}"></div>
                 </div>
-            </div>
+
+                <div class="form-item">
+                    <label>确认密码</label>
+                    <input id="confirmPassword" maxlength="20" type="password" placeholder="请再次输入密码"/>
+                    <div class="form-tips"></div>
+                </div>
+
+                <div class="form-item">
+                    <label>手机号</label>
+                    <div class="input-with-icon" style="display: flex; gap: 8px; align-items: center;">
+                        <span style="font-size: 13px; color: #666; white-space: nowrap; padding: 0 4px; border: 1px solid #ddd; border-right: none; height: 42px; display: flex; align-items: center; background: #fafafa; border-radius: 4px 0 0 4px;">+86</span>
+                        <input name="phone" class="phone" id="phoneNum" maxlength="11" type="tel" placeholder="请输入11位手机号" style="flex: 1; padding-left: 12px;"/>
+                    </div>
+                    <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'phone') ? errors.phone : '') : ''}"></div>
+                </div>
+
+                <div class="form-item">
+                    <label>验证码</label>
+                    <div class="captcha-box">
+                        <input name="code" id="codeInput" maxlength="6" type="text" placeholder="请输入6位验证码" class="caa"/>
+                        <a id="sendCode" class="captcha-btn">发送验证码</a>
+                    </div>
+                    <div class="form-tips" th:text="${errors != null ? (#maps.containsKey(errors, 'code') ? errors.code : '') : ''}"></div>
+                </div>
+
+                <div class="agreement">
+                    <input type="checkbox" id="xieyi" checked/>
+                    <span>同意 <a href="#">《谷粒商城用户注册协议》</a> <a href="#">《隐私政策》</a></span>
+                </div>
+
+                <button type="submit" id="submit_btn" class="btn-primary" style="letter-spacing: 4px;">立 即 注 册</button>
+            </form>
 
             <div class="auth-switch">
                 已有账号？<a href="http://auth.gulimall.com/login.html">立即登录</a>
@@ -116,197 +96,138 @@
 
 <footer class="auth-footer">
     <ul class="auth-footer-links">
-        <li><a href="/static/reg/">关于我们</a></li>
+        <li><a href="#">关于我们</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">联系我们</a></li>
+        <li><a href="#">联系我们</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">人次招聘</a></li>
+        <li><a href="#">商家入驻</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">商家入驻</a></li>
+        <li><a href="#">营销中心</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">广告服务</a></li>
+        <li><a href="#">手机谷粒商城</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">手机谷粒商城</a></li>
+        <li><a href="#">友情链接</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">友情链接</a></li>
+        <li><a href="#">销售联盟</a></li>
         <li class="separator">|</li>
-        <li><a href="/static/reg/">销售联盟</a></li>
-        <li class="separator">|</li>
-        <li><a href="/static/reg/">谷粒商城社区</a></li>
-        <li class="separator">|</li>
-        <li><a href="/static/reg/">谷粒商城公益</a></li>
+        <li><a href="#">谷粒商城社区</a></li>
     </ul>
-    <p class="auth-footer-copy">Copyright &copy; 2004-2016 谷粒商城gulimall.com 版权所有</p>
+    <p class="auth-footer-copy">Copyright &copy; 谷粒商城 gulimall.com 版权所有</p>
 </footer>
 
 <script type="text/javascript" charset="utf-8">
-    $(function () {
-        var stuList = getStuList();
-
-        $('input').eq(0).focus(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("支持中文，字母，数字，'-'，'_'的多种组合");
-                $(this).parent().next("div").removeClass('error').addClass('');
-            }
-        });
-        $('input').eq(1).focus(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("建议使用字母、数字和符号两种以上的组合，6-20个字符");
-                $(this).parent().next("div").removeClass('error').addClass('');
-            }
-        });
-        $('input').eq(2).focus(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("请再次输入密码");
-                $(this).parent().next("div").removeClass('error').addClass('');
-            }
-        });
-        $('input').eq(3).focus(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("验证完后，你可以使用该手机登陆和找回密码");
-                $(this).parent().next("div").removeClass('error').addClass('');
-            }
-        });
-        $('input').eq(4).focus(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next().next("div").text("看不清？点击图片更换验证码");
-                $(this).parent().next().next("div").removeClass('error').addClass('');
-            }
-        });
-
-        $('input').eq(0).blur(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            } else if ($(this).val().length > 0 && $(this).val().length < 4) {
-                $(this).parent().next("div").text("长度只能在4-20个字符之间");
-                $(this).parent().next("div").removeClass('error').addClass('error');
-            } else if ($(this).val().length >= 4 && !isNaN($(this).val())) {
-                $(this).parent().next("div").text("用户名不能为纯数字");
-                $(this).parent().next("div").removeClass('error').addClass('error');
-            } else {
-                for (var m = 0; m < stuList.length; m++) {
-                    if ($(this).val() == stuList[m].name) {
-                        $(this).parent().next("div").text("该用户名已被注册");
-                        $(this).parent().next("div").removeClass('error').addClass('error');
-                        return;
-                    }
-                }
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            }
-        });
-
-        $('input').eq(1).blur(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            } else if ($(this).val().length > 0 && $(this).val().length < 6) {
-                $(this).parent().next("div").text("长度只能在6-20个字符之间");
-                $(this).parent().next("div").removeClass('error').addClass('error');
-            } else {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            }
-        });
-
-        $('input').eq(2).blur(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            } else if ($(this).val() != $('input').eq(1).val()) {
-                $(this).parent().next("div").text("两次密码不匹配");
-                $(this).parent().next("div").removeClass('error').addClass('error');
-            } else {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            }
-        });
-
-        $('input').eq(3).blur(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            } else if ($(this).val().substr(0, 3) != 138 && $(this).val().substr(0, 3) != 189 && $(this).val().substr(0, 3) != 139 && $(this).val().substr(0, 3) != 158 && $(this).val().substr(0, 3) != 188 && $(this).val().substr(0, 3) != 157 || $(this).val().length != 11) {
-                $(this).parent().next("div").text("手机号格式不正确");
-                $(this).parent().next("div").removeClass('error').addClass('error');
-            } else {
-                $(this).parent().next("div").text("");
-                $(this).parent().next("div").removeClass('error');
-            }
-        });
-
-        function code() {
-            var str = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPLKJHGFDSAZXCVBNM";
-            var str1 = 0;
-            for (var i = 0; i < 4; i++) {
-                str1 += str.charAt(Math.floor(Math.random() * 62))
-            }
-            str1 = str1.substring(1)
-            $("#code").text(str1);
-        }
-
-        code();
-        $("#code").click(code);
-
-        $('input').eq(4).blur(function () {
-            if ($(this).val().length == 0) {
-                $(this).parent().next().next("div").text("");
-                $(this).parent().next().next("div").removeClass('error');
-            } else if ($(this).val().toUpperCase() != $("#code").text().toUpperCase()) {
-                $(this).parent().next().next("div").text("验证码不正确");
-                $(this).parent().next().next("div").removeClass('error').addClass('error');
-            } else {
-                $(this).parent().next().next("div").text("");
-                $(this).parent().next().next("div").removeClass('error');
-            }
-        });
-
-        function Student(name, password, tel, id) {
-            this.name = name;
-            this.password = password;
-            this.tel = tel;
-            this.id = id;
-        }
-
-        function getStuList() {
-            var list = localStorage.getItem('stuList');
-            if (list != null) {
-                return JSON.parse(list);
-            } else {
-                return new Array();
+    (function () {
+        // 工具函数
+        function $(id) { return document.getElementById(id); }
+        function setTip(el, msg, isError) {
+            if (el) {
+                el.textContent = msg || '';
+                if (isError) { el.classList.add('error'); }
+                else { el.classList.remove('error'); }
             }
         }
-    });
-
-    $(function () {
-        $("#sendCode").click(function () {
-            if ($(this).hasClass("disabled")) {
-            } else {
-                $.get("/sms/sendCode?phone=" + $("#phoneNum").val(), function (data) {
-                    if (data.code != 0) {
-                        alert(data.msg);
-                    }
-                });
-                timeoutChangeStyle();
-            }
-        });
-    });
-
-    var num = 60;
-    function timeoutChangeStyle() {
-        $("#sendCode").attr("class", "disabled");
-        if (num == 0) {
-            $("#sendCode").text("发送验证码");
-            num = 60;
-            $("#sendCode").attr("class", "");
-        } else {
-            var str = num + "s 后再次发送";
-            $("#sendCode").text(str);
-            setTimeout("timeoutChangeStyle()", 1000);
+        function nextTipEl(input) {
+            var parent = input.parentNode;
+            // 查找同级或父级相邻的 form-tips
+            var tip = parent.querySelector(':scope > .form-tips') ||
+                      parent.parentNode.querySelector(':scope > .form-tips');
+            return tip;
         }
-        num--;
-    }
+
+        // 用户名验证
+        $('userName').addEventListener('blur', function () {
+            var val = this.value.trim();
+            var tip = nextTipEl(this);
+            if (!val) { setTip(tip, '', false); }
+            else if (val.length < 4) { setTip(tip, '用户名长度至少4个字符', true); }
+            else if (/^\d+$/.test(val)) { setTip(tip, '用户名不能为纯数字', true); }
+            else { setTip(tip, '', false); }
+        });
+
+        // 密码验证
+        $('password').addEventListener('blur', function () {
+            var val = this.value;
+            var tip = nextTipEl(this);
+            if (!val) { setTip(tip, '', false); }
+            else if (val.length < 6) { setTip(tip, '密码长度至少6个字符', true); }
+            else { setTip(tip, '', false); }
+        });
+
+        // 确认密码验证
+        $('confirmPassword').addEventListener('blur', function () {
+            var val = this.value;
+            var pwd = $('password').value;
+            var tip = nextTipEl(this);
+            if (!val) { setTip(tip, '', false); }
+            else if (val !== pwd) { setTip(tip, '两次输入的密码不一致', true); }
+            else { setTip(tip, '', false); }
+        });
+
+        // 手机号验证
+        $('phoneNum').addEventListener('blur', function () {
+            var val = this.value.trim();
+            var tip = nextTipEl(this);
+            if (!val) { setTip(tip, '', false); }
+            else if (!/^1[3-9]\d{9}$/.test(val)) { setTip(tip, '请输入正确的11位手机号', true); }
+            else { setTip(tip, '', false); }
+        });
+
+        // 发送验证码
+        var num = 60;
+        var sendBtn = $('sendCode');
+        function timeoutChangeStyle() {
+            sendBtn.classList.add('disabled');
+            if (num === 0) {
+                sendBtn.textContent = '发送验证码';
+                sendBtn.classList.remove('disabled');
+                num = 60;
+            } else {
+                sendBtn.textContent = num + 's 后重发';
+                setTimeout(timeoutChangeStyle, 1000);
+                num--;
+            }
+        }
+        sendBtn.addEventListener('click', function () {
+            if (sendBtn.classList.contains('disabled')) return;
+            var phone = $('phoneNum').value.trim();
+            var tip = nextTipEl($('phoneNum'));
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                setTip(tip, '请先输入正确的手机号', true);
+                return;
+            }
+            // 简单 GET 请求（无需 jquery）
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/sms/sendCode?phone=' + encodeURIComponent(phone), true);
+            xhr.onload = function () {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.code != 0) { alert(data.msg); }
+                } catch (e) {}
+            };
+            xhr.send();
+            timeoutChangeStyle();
+        });
+
+        // 表单提交验证
+        $('regForm').addEventListener('submit', function (e) {
+            var userName = $('userName').value.trim();
+            var password = $('password').value;
+            var confirmPwd = $('confirmPassword').value;
+            var phone = $('phoneNum').value.trim();
+            var code = $('codeInput').value.trim();
+            var agreed = $('xieyi').checked;
+
+            if (!userName) { alert('请输入用户名'); e.preventDefault(); return false; }
+            if (userName.length < 4) { alert('用户名至少4个字符'); e.preventDefault(); return false; }
+            if (!password) { alert('请输入密码'); e.preventDefault(); return false; }
+            if (password.length < 6) { alert('密码至少6个字符'); e.preventDefault(); return false; }
+            if (password !== confirmPwd) { alert('两次密码不一致'); e.preventDefault(); return false; }
+            if (!/^1[3-9]\d{9}$/.test(phone)) { alert('请输入正确的手机号'); e.preventDefault(); return false; }
+            if (!code) { alert('请输入验证码'); e.preventDefault(); return false; }
+            if (!agreed) { alert('请先同意用户协议和隐私政策'); e.preventDefault(); return false; }
+            return true;
+        });
+    })();
 </script>
 
 </body>
