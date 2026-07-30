@@ -108,10 +108,12 @@
           url: this.$http.adornUrl('/sys/menu/list'),
           method: 'get',
           params: this.$http.adornParams()
-        }).then(({data}) => {
-          this.dataList = treeDataTranslate(data, 'menuId')
-          this.dataListLoading = false
-        })
+          }).then(({data}) => {
+            // 兼容后端返回结构: 数组 或 { data:[...] } 或 { list:[...] }
+            const list = Array.isArray(data) ? data : (data.data || data.list || [])
+            this.dataList = treeDataTranslate(list, 'menuId')
+            this.dataListLoading = false
+          })
       },
       // 新增 / 修改
       addOrUpdateHandle (id) {

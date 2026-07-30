@@ -29,6 +29,7 @@
 
 <script>
 import { registerNetworkStatus } from '@/utils/error-handler'
+import { getUUID } from '@/utils'
 
 export default {
   name: 'NetworkStatus',
@@ -82,22 +83,25 @@ export default {
     /** 手动点击重连 */
     retryConnect () {
       this.reconnecting = true
-      // 探测一个轻量请求来判断网络是否恢复
-      this.$http({
-        url: this.$http.adornUrl('/captcha.jpg?t=' + Date.now()),
-        method: 'get',
-        timeout: 5000
-      }).then(() => {
-        this.onOnline()
-      }).catch(() => {
-        // 仍然断连
-        this.reconnecting = false
-        this.$message({
-          message: '网络仍未恢复，请检查连接后重试',
-          type: 'warning',
-          duration: 3000
+      // 使用 fetch 探测网络是否恢复(避免 axios 业务拦截器把图片响应误判为错误)
+      const url = this.$http.adornUrl(`/captcha.jpg?uuid=${getUUID()}`)
+      fetch(url, { credentials: 'include' })
+        .then(res => {
+          if (res.ok) {
+            this.onOnline()
+          } else {
+            throw new Error('unexpected status: ' + res.status)
+          }
         })
-      })
+        .catch(() => {
+          // 仍然断连
+          this.reconnecting = false
+          this.$message({
+            message: '网络仍未恢复，请检查连接后重试',
+            type: 'warning',
+            duration: 3000
+          })
+        })
     },
     /** 用户手动关闭 */
     dismiss () {

@@ -133,7 +133,9 @@
           method: 'get',
           params: this.$http.adornParams()
         }).then(({data}) => {
-          this.menuList = treeDataTranslate(data.menuList, 'menuId')
+          // 兼容后端返回结构: { menuList:[...] } 或 { data:[...] } 或直接数组
+          const list = Array.isArray(data) ? data : (data.menuList || data.data || [])
+          this.menuList = treeDataTranslate(list, 'menuId')
         }).then(() => {
           this.visible = true
           this.$nextTick(() => {

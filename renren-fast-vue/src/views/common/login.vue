@@ -65,11 +65,18 @@
           password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
           captcha: [{ required: true, message: '验证码不能为空', trigger: 'blur' }]
         },
-        captchaPath: ''
+        captchaPath: '',
+        // 当前验证码 blob 的 object URL, 用于释放避免内存泄漏
+        captchaObjectUrl: ''
       }
     },
     created () {
       this.getCaptcha()
+    },
+    beforeDestroy () {
+      if (this.captchaObjectUrl) {
+        URL.revokeObjectURL(this.captchaObjectUrl)
+      }
     },
     methods: {
       // 提交表单
@@ -114,9 +121,24 @@
         this.getCaptcha()
       },
       // 获取验证码
+      // 说明: 原先通过 <img :src> 直接加载验证码, 浏览器对跨域图片请求默认不携带 Cookie,
+      // 导致验证码请求与登录请求(axios 带 withCredentials)处于不同会话, 后端基于 HttpSession
+      // 存储验证码时会校验失败。这里改用 fetch 显式携带凭据并以 blob 渲染, 保证两者会话一致。
       getCaptcha () {
         this.dataForm.uuid = this.dataForm.uuid || getUUID()
-        this.captchaPath = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
+        const url = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
+        fetch(url, { credentials: 'include' })
+          .then(res => res.blob())
+          .then(blob => {
+            if (this.captchaObjectUrl) {
+              URL.revokeObjectURL(this.captchaObjectUrl)
+            }
+            this.captchaObjectUrl = URL.createObjectURL(blob)
+            this.captchaPath = this.captchaObjectUrl
+          })
+          .catch(() => {
+            // 网络异常时静默失败, 用户可点击图片重新获取
+          })
       }
     }
   }
