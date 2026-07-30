@@ -532,7 +532,7 @@ Lua 脚本硬编码在方法体内，应抽到常量或资源文件。同方法�
 
 ### 6.7 测试与质量保障完全缺失
 
-- **全仓库无任何单元测试或集成测试**（除 `gulimall-test-sso-client` 的 `ApplicationTests` 空壳）
+- **全仓库无任何单元测试或集成测试**（`gulimall-test-sso-client`/`gulimall-test-sso-server` 两个 SSO 学习模块已从父 pom 构建中移出，源码保留待手动清理）
 - 无 CI 配置（`.github/workflows/` 不存在）
 - 无代码质量检查（无 checkstyle/spotbugs/pmd 配置）
 - 无 Swagger/OpenAPI 文档（接口全靠读代码）
