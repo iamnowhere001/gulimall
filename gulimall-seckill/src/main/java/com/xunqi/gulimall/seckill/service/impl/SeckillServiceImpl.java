@@ -7,7 +7,7 @@ import com.xunqi.common.utils.R;
 import com.xunqi.common.vo.MemberResponseVo;
 import com.xunqi.gulimall.seckill.feign.CouponFeignService;
 import com.xunqi.gulimall.seckill.feign.ProductFeignService;
-import com.xunqi.gulimall.seckill.interceptor.LoginUserInterceptor;
+import com.xunqi.common.web.interceptor.LoginUserInterceptor;
 import com.xunqi.gulimall.seckill.service.SeckillService;
 import com.xunqi.gulimall.seckill.to.SeckillSkuRedisTo;
 import com.xunqi.gulimall.seckill.vo.SeckillSessionWithSkusVo;

@@ -19,8 +19,18 @@
 
         <dependency>
             <groupId>com.xunqi.gulimall</groupId>
-            <artifactId>gulimall-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>gulimall-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-cloud</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

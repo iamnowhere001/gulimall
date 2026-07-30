@@ -21,26 +21,38 @@
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
-            <version>3.5.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.jdom/jdom -->
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
-            <version>1.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.xunqi.gulimall</groupId>
-            <artifactId>gulimall-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>gulimall-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-cloud</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
         </dependency>
 
         <dependency>
@@ -92,7 +104,6 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.12.0</version>
         </dependency>
 
         <dependency>
@@ -126,20 +137,8 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>0.9.0</version>
         </dependency>
 
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        -->
-
-        <!--        <dependency>-->
-        <!--            <groupId>com.alibaba.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>-->
-        <!--        </dependency>-->
 
     </dependencies>
 

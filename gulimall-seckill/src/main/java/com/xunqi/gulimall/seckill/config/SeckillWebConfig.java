@@ -1,19 +1,18 @@
 package com.xunqi.gulimall.seckill.config;
 
-import com.xunqi.gulimall.seckill.interceptor.LoginUserInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xunqi.common.web.interceptor.LoginUserInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Collections;
+
 @Configuration
 public class SeckillWebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private LoginUserInterceptor loginUserInterceptor;
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginUserInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(new LoginUserInterceptor(null, Collections.singletonList("/kill")))
+                .addPathPatterns("/**");
     }
 }

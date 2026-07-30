@@ -19,8 +19,23 @@
 
         <dependency>
             <groupId>com.xunqi.gulimall</groupId>
-            <artifactId>gulimall-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>gulimall-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xunqi.gulimall</groupId>
+            <artifactId>gulimall-common-cloud</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -88,7 +103,6 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>0.9.0</version>
         </dependency>
 
         <!-- 支付宝sdk -->
@@ -96,13 +110,11 @@
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
-            <version>4.9.28.ALL</version>
         </dependency>
 
         <dependency>
             <groupId>cn.springboot</groupId>
             <artifactId>best-pay-sdk</artifactId>
-            <version>1.3.0</version>
         </dependency>
 
         <!--

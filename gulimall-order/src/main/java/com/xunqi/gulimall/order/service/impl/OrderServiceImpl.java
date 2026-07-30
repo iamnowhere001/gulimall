@@ -24,7 +24,7 @@ import com.xunqi.gulimall.order.feign.CartFeignService;
 import com.xunqi.gulimall.order.feign.MemberFeignService;
 import com.xunqi.gulimall.order.feign.ProductFeignService;
 import com.xunqi.gulimall.order.feign.WmsFeignService;
-import com.xunqi.gulimall.order.interceptor.LoginUserInterceptor;
+import com.xunqi.common.web.interceptor.LoginUserInterceptor;
 import com.xunqi.gulimall.order.service.OrderItemService;
 import com.xunqi.gulimall.order.service.OrderService;
 import com.xunqi.gulimall.order.service.PaymentInfoService;

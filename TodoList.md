@@ -566,3 +566,53 @@ Lua 脚本硬编码在方法体内，应抽到常量或资源文件。同方法�
 3. **职责不统一**：common 携带所有依赖、product 的 app 包混三种 Controller、模板散落在 7 个模块。
 
 这些问题的根因是**项目按"知识点跟练"方式构建，而非按"工程产品"标准构建**。作为学习项目，这并不影响功能验证；但若要作为求职作品或团队协作基线，建议在 v1.1.0 迭代中优先处理标红的 P0 项（父 pom 版本管理 + common 拆分 + Controller 包统一），这三项改动成本低但收益最大，能显著提升项目的"第一印象专业度"。
+
+## 七、项目工程及架构问题及优化迭代计划（2026-07-30）
+
+> 本轮在 §6（2026-07-28）审视结论基础上，已落地部分工程治理优化。本章先对照 §6 复核**已完成项**，再更新**仍待解决问题**，最后给出**分阶段迭代计划**。优先级沿用 🔴P0 / 🔵P1 / 🟡P2 / 🟢P3。
+
+### 7.1 本轮已完成的优化（对比 §6 复核）
+
+| §6 条目 | 优化内容 | 状态 | 落地证据 |
+|---|---|---|---|
+| §6.1.2 | 父 pom 引入 BOM 统一版本 | ✅ 已完成 | `pom.xml:54-71` 引入 `spring-cloud-dependencies` + `spring-cloud-alibaba-dependencies`，并新增 `spring-boot/cloud/alibaba/mybatis-plus/lombok` 版本属性 |
+| §6.3 / §6.8 P0 | common 模块拆分 | ✅ 已完成 | 拆分为 `gulimall-common-core / -web / -db / -cloud`；原 `gulimall-common` 降级为 `pom` 聚合模块（`gulimall-common/pom.xml:12-37`）；父 pom `modules` 已按依赖顺序声明（`pom.xml:32-52`） |
+| §6.4 | 公共配置类抽取下沉 | ✅ 已完成 | `GulimallSessionConfig`、`ThreadPoolConfigProperties`+`ThreadPoolAutoConfiguration`、`GulimallSentinelAutoConfiguration`/`GulimallSentinelConfig` 已下沉至 `gulimall-common-web/.../web/config/`，并通过 `META-INF/spring.factories` 自动装配，消除各业务模块重复定义 |
+| §6.6 | ThreadLocal 内存泄漏修复 | ✅ 已完成 | `member/order/seckill` 三个 `LoginUserInterceptor` 均在 `afterCompletion` 中调用 `loginUser.remove()`，防止线程池复用导致数据串号 |
+
+**架构现状快照**：父工程聚合 **18 个业务/工具模块 + 4 个 common 子模块 + 1 个 common 聚合模块**；common 层已形成 `core(基础/工具/异常/常量/VO) → web(Web 配置/拦截器/自动装配) → db(数据访问) → cloud(云原生)` 的分层结构。
+
+### 7.2 仍待解决问题（复核后更新）
+
+| 优先级 | 问题 | 影响模块 / 证据 | 建议动作 |
+|---|---|---|---|
+| 🔴 P0 | 部分第三方库版本未纳入 `dependencyManagement`，仍在业务模块硬编码 | `gulimall-member/pom.xml:24-37`（httpclient 4.5.1、commons-io 2.6、gson 2.8.2）；其余模块可能同样散落 | 将通用三方库版本提升到父 pom `dependencyManagement`，业务模块去除 `<version>` |
+| 🔵 P1 | §6.8 P1 Controller 包命名仅部分统一 | `product/order/member` 已采用 `controller`(后台)+`web`(前台) 双层；`seckill/cart/coupon/search/ware` 仍仅 `controller` 单层 | 补齐剩余模块包结构，统一「后台 controller / 前台 web」约定 |
+| 🔵 P1 | §6.7 Feign 命名拼写错误 | `gulimall-order/.../feign/ThridFeignService.java`（应为 `ThirdPartyFeignService`） | 重命名并同步所有引用，避免后续维护歧义 |
+| 🟡 P2 | common 拆分后仍走「聚合兜底」，未做到按需引用 | `gulimall-common` 聚合全部子模块（含 cloud），业务模块引用它会强制传递 cloud/openfeign 等依赖 | 业务模块改为按需依赖 `common-core / -web / -db / -cloud`，降低传递依赖体积 |
+| 🟡 P2 | 三个 `LoginUserInterceptor` 逻辑高度重复 | `member/order/seckill` 仅放行路径不同，主体一致 | 抽取为 `common-web` 通用登录拦截器 + 可配置放行路径（`List<String>` / 注解） |
+| 🟡 P2 | §6.5 静态资源映射 `/static` 路径问题 | `item.html` 已正确置于 `gulimall-product/.../templates/`，需确认是否仍有硬编码 `/static` 资源处理器 | 复核并统一静态资源存放与映射规则 |
+| 🟢 P3 | 工程化能力缺失 | 见 §3 / §6.8：Docker 镜像、Flyway、单元测试、checkstyle/spotbugs/CI 均未落地 | 纳入 v1.2.0 工程化阶段 |
+
+> 命名「三个不统一」进展：配置不统一（§6.4 公共配置已下沉）、职责不统一（§6.3 common 拆分完成）已取得实质进展；**命名不统一**（Feign 拼写、包命名、错误码、静态资源路径）仍为短板，是下阶段重点。
+
+### 7.3 优化迭代计划（Roadmap）
+
+**阶段 A — 立即可做（低成本 / 高收益，建议本周内）**
+1. 父 pom `dependencyManagement` 收口 httpclient / commons-io / gson 等三方库版本，清理业务模块硬编码 `<version>`。
+2. 修复 `ThridFeignService` → `ThirdPartyFeignService` 命名并同步引用。
+3. 补齐 `seckill/cart/coupon/search/ware` 的 `controller`/`web` 包结构统一。
+
+**阶段 B — v1.1.0 迭代（配合交易闭环）**
+4. 业务模块按需引用 common 子模块，移除对 `gulimall-common` 聚合的强依赖。
+5. 将登录拦截器抽象至 `common-web`，支持可配置放行路径。
+6. 清理 §6 其余配置问题：yml/properties 并存、Nacos 命名空间硬编码、Sentinel 错误地址、Seata 残留文件。
+
+**阶段 C — v1.2.0 工程化（可部署 / 可观测）**
+7. Docker 镜像 + Compose 一键部署（见 §3.3）。
+8. Flyway 管理数据库版本（见 §6.8 P2）。
+9. 核心 Service 单元测试（OrderService.submitOrder、StockReleaseListener）+ checkstyle/spotbugs/CI 质量门禁（见 §6.8 P3）。
+
+### 7.4 工程治理小结
+
+相较 §6（2026-07-28），本轮最大的两项收益是 **common 分层拆分** 与 **公共配置自动装配下沉**，直接消除了「common 携带全部依赖」「各模块重复定义 Session/线程池/Sentinel 配置」两类结构性问题，并修复了 ThreadLocal 泄漏隐患。下一步应将重心从「架构骨架」转向「命名规范与工程化基线」——优先消化阶段 A 的三项 P0/P1 改动（改动量小、对代码整洁度提升显著），再随版本迭代推进阶段 B/C。
