@@ -44,7 +44,7 @@ public class SeckillScheduled {
             lock.lock(10, TimeUnit.SECONDS);
             seckillService.uploadSeckillSkuLatest3Days();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("上架秒杀商品异常", e);
         } finally {
             lock.unlock();
         }

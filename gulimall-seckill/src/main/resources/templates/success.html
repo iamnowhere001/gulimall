@@ -1,85 +1,202 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
-    <title>商品已成功加入购物车</title>
-    <script type="text/javascript" src="http://cart.gulimall.com/static/cart/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="http://cart.gulimall.com/static/cart/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="http://cart.gulimall.com/static/cart/js/swiper.min.js"></script>
-    <script src="http://cart.gulimall.com/static/cart/js/swiper.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cart.gulimall.com/static/cart//css/swiper.min.css"/>
-    <link rel="stylesheet" type="text/css" href="http://cart.gulimall.com/static/cart//bootstrap/css/bootstrap.css"/>
-    <link rel="stylesheet" type="text/css" href="http://cart.gulimall.com/static/cart//css/success.css"/>
-
+    <meta charset="UTF-8"/>
+    <title>秒杀结果</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e60012;
+            text-decoration: none;
+        }
+        .header .user-info {
+            font-size: 14px;
+            color: #666;
+        }
+        .header .user-info a {
+            color: #666;
+            text-decoration: none;
+            margin-left: 16px;
+        }
+        .header .user-info a:hover {
+            color: #e60012;
+        }
+        .container {
+            max-width: 960px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        .result-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .result-icon.success {
+            background: #e8f8ef;
+            color: #07c160;
+        }
+        .result-icon.fail {
+            background: #fef2f2;
+            color: #e60012;
+        }
+        .result-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .result-title.success {
+            color: #07c160;
+        }
+        .result-title.fail {
+            color: #e60012;
+        }
+        .result-desc {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 28px;
+        }
+        .order-sn {
+            display: inline-block;
+            background: #fff8e1;
+            border: 1px solid #ffe58f;
+            color: #d48806;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+        .countdown {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 28px;
+        }
+        .countdown #count {
+            color: #e60012;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 32px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: #e60012;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #cc0011;
+        }
+        .btn-outline {
+            background: #fff;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        .btn-outline:hover {
+            color: #e60012;
+            border-color: #e60012;
+        }
+    </style>
 </head>
-
 <body>
-<!--头部-->
-<div class="alert-info">
-    <div class="hd_wrap_top">
-        <ul class="hd_wrap_left">
-            <li class="hd_home"><i class="glyphicon glyphicon-home"></i>
-                <a href="http://gulimall.com/">谷粒商城首页</a>
-            </li>
 
-        </ul>
-
-        <ul class="hd_wrap_right">
-            <li>
-                <a th:if="${session.loginUser == null}" href="http://cart.gulimall.comhttp://auth.gulimall.com/login.html" class="li_2">请登录</a>
-                <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
-            </li>
-            <li>
-                <a th:if="${session.loginUser == null}" href="http://cart.gulimall.comhttp://auth.gulimall.com/reg.html" style="color: red;">免费注册</a>
-            </li>
-
-            <li>
-                <a href="http://cart.gulimall.com/javascript:;">我的订单</a>
-            </li>
-
-
-        </ul>
-
+<div class="header">
+    <a href="http://gulimall.com/" class="logo">谷粒商城</a>
+    <div class="user-info">
+        <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/login.html">请登录</a>
+        <span th:if="${session.loginUser != null}">欢迎, <span th:text="${session.loginUser.nickname}"></span></span>
+        <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/reg.html" style="color:#e60012;">免费注册</a>
+        <a href="http://order.gulimall.com/">我的订单</a>
     </div>
 </div>
 
-<div class="nav-tabs-justified">
-    <div class="nav_wrap">
+<div class="container">
+    <div class="result-card">
 
-        <div class="nav_top">
-            <div class="nav_top_one">
-                <a href="http://cart.gulimall.comhttp://gulimall.com/"><img src="http://cart.gulimall.com/static/cart/img/logo1.jpg" style="height: 60px;width:180px;"/></a>
+        <!-- 秒杀成功 -->
+        <div th:if="${orderSn != null}">
+            <div class="result-icon success">✓</div>
+            <h1 class="result-title success">恭喜您，秒杀成功！</h1>
+            <p class="result-desc">订单已创建，请尽快完成支付</p>
+            <div class="order-sn">订单号：<span th:text="${orderSn}"></span></div>
+            <p class="countdown">
+                <span id="count">10</span>秒钟后自动跳转到支付页面
+            </p>
+            <div class="btn-group">
+                <a class="btn btn-primary" th:href="${'http://order.gulimall.com/aliPayOrder?orderSn=' + orderSn}">立即支付</a>
+                <a class="btn btn-outline" href="http://gulimall.com/">返回首页</a>
             </div>
-            <div class="nav_top_two"><input type="text"/>
-                <button>搜索</button>
+        </div>
+
+        <!-- 秒杀失败 -->
+        <div th:if="${orderSn == null}">
+            <div class="result-icon fail">✗</div>
+            <h1 class="result-title fail">手速慢了，秒杀失败</h1>
+            <p class="result-desc">商品已被抢购一空，下次早点来哦~</p>
+            <div class="btn-group">
+                <a class="btn btn-primary" href="http://gulimall.com/">返回首页逛逛</a>
+                <a class="btn btn-outline" href="http://search.gulimall.com/list.html">查看更多商品</a>
             </div>
-
-
         </div>
 
     </div>
 </div>
 
-<div class="main">
-
-    <div class="success-wrap">
-        <div class="w" id="result">
-            <div class="m succeed-box">
-                <div th:if="${orderSn != null}" class="mc success-cont">
-                    <h1>恭喜秒杀成功 订单号 [[${orderSn}]]</h1>
-                    <h2>正在准备订单数据 10秒钟后自动跳转支付
-                        <a style="color: red" th:href="${'http://order.gulimall.com/aliPayOrder?orderSn=' + orderSn}">点击支付</a>
-                    </h2>
-                </div>
-                <div th:if="${orderSn == null}">
-                    <h1>手气不好 秒杀失败 下次再来</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var orderSn = /*[[${orderSn}]]*/ null;
+    if (orderSn) {
+        var count = 10;
+        var timer = setInterval(function() {
+            count--;
+            var el = document.getElementById('count');
+            if (el) el.textContent = count;
+            if (count <= 0) {
+                clearInterval(timer);
+                window.location.href = 'http://order.gulimall.com/aliPayOrder?orderSn=' + orderSn;
+            }
+        }, 1000);
+    }
+    /*]]>*/
+</script>
 </body>
-<script type="text/javascript" src="http://cart.gulimall.com/static/cart/js/success.js"></script>
-
 </html>

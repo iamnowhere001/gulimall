@@ -708,39 +708,90 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      */
     @Override
     public void createSeckillOrder(SeckillOrderTo orderTo) {
+        log.info("准备创建秒杀订单...orderSn={}", orderTo.getOrderSn());
 
-        //TODO 保存订单信息
+        //1、保存订单信息
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderTo.getOrderSn());
         orderEntity.setMemberId(orderTo.getMemberId());
         orderEntity.setCreateTime(new Date());
         BigDecimal totalPrice = orderTo.getSeckillPrice().multiply(BigDecimal.valueOf(orderTo.getNum()));
+        orderEntity.setTotalAmount(totalPrice);
         orderEntity.setPayAmount(totalPrice);
+        orderEntity.setFreightAmount(new BigDecimal("0.00"));
+        orderEntity.setPromotionAmount(new BigDecimal("0.00"));
+        orderEntity.setCouponAmount(new BigDecimal("0.00"));
+        orderEntity.setIntegrationAmount(new BigDecimal("0.00"));
+        orderEntity.setDiscountAmount(new BigDecimal("0.00"));
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        orderEntity.setPayType(1); //1-在线支付
+        orderEntity.setSourceType(0); //0-PC订单
+        orderEntity.setBillType(0);
+        orderEntity.setConfirmStatus(0);
+        orderEntity.setDeleteStatus(0);
+        orderEntity.setUseIntegration(0);
+        orderEntity.setIntegration(0);
+        orderEntity.setGrowth(0);
 
         //保存订单
         this.save(orderEntity);
 
-        //保存订单项信息
+        //2、保存订单项信息
         OrderItemEntity orderItem = new OrderItemEntity();
+        orderItem.setOrderId(orderEntity.getId());
         orderItem.setOrderSn(orderTo.getOrderSn());
         orderItem.setRealAmount(totalPrice);
-
         orderItem.setSkuQuantity(orderTo.getNum());
+        orderItem.setSkuId(orderTo.getSkuId());
+        orderItem.setSkuPrice(orderTo.getSeckillPrice());
+        orderItem.setPromotionAmount(new BigDecimal("0.00"));
+        orderItem.setCouponAmount(new BigDecimal("0.00"));
+        orderItem.setIntegrationAmount(new BigDecimal("0.00"));
+        orderItem.setGiftIntegration(0);
+        orderItem.setGiftGrowth(0);
 
-        //保存商品的spu信息
-        R spuInfo = productFeignService.getSpuInfoBySkuId(orderTo.getSkuId());
-        SpuInfoVo spuInfoData = spuInfo.getData("data", new TypeReference<SpuInfoVo>() {
-        });
-        if (spuInfoData != null) {
-            orderItem.setSpuId(spuInfoData.getId());
-            orderItem.setSpuName(spuInfoData.getSpuName());
-            orderItem.setSpuBrand(spuInfoData.getBrandName());
-            orderItem.setCategoryId(spuInfoData.getCatalogId());
+        //2.1 远程查询sku详细信息
+        try {
+            R skuInfoRes = productFeignService.getSkuInfo(orderTo.getSkuId());
+            if (skuInfoRes != null && skuInfoRes.getCode() == 0) {
+                Object skuInfoObj = skuInfoRes.get("skuInfo");
+                if (skuInfoObj != null) {
+                    Map<String, Object> skuMap = (Map<String, Object>) skuInfoObj;
+                    orderItem.setSkuName((String) skuMap.get("skuName"));
+                    orderItem.setSkuPic((String) skuMap.get("skuDefaultImg"));
+                    Object attrs = skuMap.get("skuAttrsVals");
+                    if (attrs != null) {
+                        orderItem.setSkuAttrsVals(attrs.toString());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("远程查询SKU信息失败: skuId={}", orderTo.getSkuId(), e);
+        }
+
+        //2.2 远程查询spu信息
+        try {
+            R spuInfo = productFeignService.getSpuInfoBySkuId(orderTo.getSkuId());
+            if (spuInfo != null && spuInfo.getCode() == 0) {
+                SpuInfoVo spuInfoData = spuInfo.getData("data", new TypeReference<SpuInfoVo>() {});
+                if (spuInfoData != null) {
+                    orderItem.setSpuId(spuInfoData.getId());
+                    orderItem.setSpuName(spuInfoData.getSpuName());
+                    orderItem.setSpuBrand(spuInfoData.getBrandName());
+                    orderItem.setCategoryId(spuInfoData.getCatalogId());
+                    Object spuPic = spuInfoData.getSpuDescription();
+                    if (spuPic != null) {
+                        orderItem.setSpuPic(spuPic.toString());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("远程查询SPU信息失败: skuId={}", orderTo.getSkuId(), e);
         }
 
         //保存订单项数据
         orderItemService.save(orderItem);
+        log.info("秒杀订单创建完成: orderSn={}", orderTo.getOrderSn());
     }
 
 }
