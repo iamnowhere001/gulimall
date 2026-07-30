@@ -15,8 +15,6 @@ import com.xunqi.gulimall.order.service.OrderSettingService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 @RestController
 @RequestMapping("order/ordersetting")
 public class OrderSettingController {
@@ -32,7 +30,6 @@ public class OrderSettingController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.CommentReplayService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * 评价回复控制器（pms_comment_replay）。
+ * 提供评价回复（用户追评 / 商家回复）的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/commentreplay")
 public class CommentReplayController {
@@ -33,7 +35,6 @@ public class CommentReplayController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

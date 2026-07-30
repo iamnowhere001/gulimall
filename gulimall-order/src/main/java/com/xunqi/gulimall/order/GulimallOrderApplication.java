@@ -10,6 +10,12 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
+ * 谷粒商城订单服务（order）启动类。
+ * 负责订单创建、支付、库存锁定/释放的分布式协调（基于 RabbitMQ 最终一致，而非 Seata 强一致事务）。
+ * 详见下方技术笔记（RabbitMQ 自动配置与 Seata 整合步骤）。
+ */
+
+/**
  * 使用RabbitMQ
  * 1、引入amqp场景;RabbitAutoConfiguration就会自动生效
  * 2、给容器中自动配置了

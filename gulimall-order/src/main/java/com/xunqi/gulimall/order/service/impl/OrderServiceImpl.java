@@ -55,7 +55,18 @@ import java.util.stream.Collectors;
 import static com.xunqi.common.constant.CartConstant.CART_PREFIX;
 import static com.xunqi.gulimall.order.constant.OrderConstant.USER_ORDER_TOKEN_PREFIX;
 
-
+/**
+ * 订单服务核心实现（订单全生命周期编排）。
+ *
+ * 关键流程：
+ *  1. confirmOrder()：订单确认页——并发远程查询收货地址、购物车勾选项、库存，并设置防重令牌（Redis）；
+ *  2. submitOrder()：提交下单——用 Lua 脚本原子校验并删除令牌（防重复提交），
+ *     创建订单（createOrder），校验客户端价格，saveOrder 落库，再调仓储服务锁定库存；
+ *     锁定成功后发 MQ（order.create.order）进入延迟队列，并删除购物车已勾选项；
+ *  3. 支付：getOrderPay() 构造支付宝 PayVo；支付回调 handlePayResult()/asyncNotify() 更新订单为已支付；
+ *  4. 释放：closeOrder()（延迟队列触发）关单并把释放事件发给库存解锁；createSeckillOrder() 处理秒杀单落库。
+ * 全程以 RabbitMQ 最终一致 + 库存服务 CAS 锁定保证“下单成功但后续失败/订单取消”时库存自动释放。
+ */
 @Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
@@ -175,7 +186,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         String token = UUID.randomUUID().toString().replace("-", "");
         redisTemplate.opsForValue().set(USER_ORDER_TOKEN_PREFIX+memberResponseVo.getId(),token,30, TimeUnit.MINUTES);
         confirmVo.setOrderToken(token);
-
 
         CompletableFuture.allOf(addressFuture,cartInfoFuture).get();
 
@@ -325,7 +335,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
     }
 
-
     /**
      * 获取当前订单的支付信息
      * @param orderSn
@@ -402,7 +411,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderItemService.saveBatch(orderItems);
     }
 
-
     private OrderCreateTo createOrder() {
 
         OrderCreateTo createTo = new OrderCreateTo();
@@ -476,7 +484,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setDeleteStatus(0);
 
     }
-
 
     /**
      * 构建订单数据
@@ -601,7 +608,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return orderItemEntity;
     }
 
-
     /**
      * 处理支付宝的支付结果
      * @param asyncVo
@@ -638,7 +644,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         return "success";
     }
-
 
     /**
      * 修改订单状态
@@ -700,7 +705,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 "  <return_msg><![CDATA[OK]]></return_msg>\n" +
                 "</xml>";
     }
-
 
     /**
      * 创建秒杀单

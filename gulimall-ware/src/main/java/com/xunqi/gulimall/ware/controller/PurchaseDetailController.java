@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
 /**
  * 采购详情
  */
@@ -30,7 +28,6 @@ public class PurchaseDetailController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

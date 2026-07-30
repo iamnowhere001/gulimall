@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.SkuImagesService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * SKU 图片控制器（pms_sku_images）。
+ * 提供 SKU 图片的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/skuimages")
 public class SkuImagesController {
@@ -33,7 +35,6 @@ public class SkuImagesController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

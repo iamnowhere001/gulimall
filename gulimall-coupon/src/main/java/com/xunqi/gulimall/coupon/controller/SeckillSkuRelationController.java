@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
 /**
  * 秒杀活动商品关联
  */
@@ -30,7 +29,6 @@ public class SeckillSkuRelationController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

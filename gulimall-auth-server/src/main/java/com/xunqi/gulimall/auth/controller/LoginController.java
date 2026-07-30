@@ -85,7 +85,6 @@ public class LoginController {
         return R.ok();
     }
 
-
     /**
      * 用户注册
      * 校验表单数据与短信验证码，校验通过后调用会员服务完成注册
@@ -136,7 +135,6 @@ public class LoginController {
         return "redirect:http://auth.gulimall.com/reg.html";
     }
 
-
     /**
      * 登录页面
      * 已登录用户访问登录页时直接跳转首页
@@ -156,7 +154,6 @@ public class LoginController {
             return "redirect:" + redirect;
         }
     }
-
 
     /**
      * 账号密码登录
@@ -190,7 +187,6 @@ public class LoginController {
             return "redirect:" + redirectUrl;
         }
     }
-
 
     /**
      * 退出登录

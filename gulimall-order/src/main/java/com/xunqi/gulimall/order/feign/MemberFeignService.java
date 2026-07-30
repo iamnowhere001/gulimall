@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+/**
+ * 会员服务 Feign 客户端。
+ * 订单在结算确认页远程查询当前用户的全部收货地址（gulimall-member）。
+ */
 @FeignClient("gulimall-member")
 public interface MemberFeignService {
 

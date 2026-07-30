@@ -28,10 +28,12 @@ public class SeckillScheduled {
     @Autowired
     private RedissonClient redissonClient;
 
-    //秒杀商品上架功能的锁
+    //秒杀商品上架功能的分布式锁 key，保证集群环境下同一时刻只有一个节点执行上架
     private final String upload_lock = "seckill:upload:lock";
 
-    //TODO 保证幂等性问题
+    //TODO 保证幂等性问题（上架前已做 hasKey 判断，重复执行不会覆盖已有数据）
+    //cron = "0 0 1/1 * * ?" 表示每小时的第 0 分 0 秒执行一次（即每个整点触发一次上架扫描）
+    //如需调整为每天凌晨 3 点执行，可改为 "0 0 3 * * ?"
     @Scheduled(cron = "0 0 1/1 * * ? ")
     public void uploadSeckillSkuLatest3Days() {
         //1、重复上架无需处理

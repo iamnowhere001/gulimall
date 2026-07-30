@@ -10,4 +10,3 @@ public interface SpuCommentService extends IService<SpuCommentEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

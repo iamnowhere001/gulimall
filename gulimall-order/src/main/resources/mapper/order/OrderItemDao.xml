@@ -27,5 +27,4 @@
         <result property="giftGrowth" column="gift_growth"/>
     </resultMap>
 
-
 </mapper>

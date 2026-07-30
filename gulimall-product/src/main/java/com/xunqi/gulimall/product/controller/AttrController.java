@@ -14,8 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-
+/**
+ * 商品属性（规格参数 / 销售属性）控制器。
+ * 提供属性分页、详情、新增（saveAttr）、修改、删除，
+ * 以及按分类与类型查询属性（base/list）、查询 SPU 规格（base/listforspu）、修改 SPU 属性等接口。
+ */
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
@@ -37,7 +40,6 @@ public class AttrController {
 
         return R.ok().put("data",entities);
     }
-
 
     /**
      * 查询规格参数信息
@@ -68,7 +70,6 @@ public class AttrController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
@@ -112,7 +113,6 @@ public class AttrController {
         return R.ok();
     }
 
-
     /**
      * 删除
      */
@@ -122,6 +122,5 @@ public class AttrController {
 
         return R.ok();
     }
-
 
 }

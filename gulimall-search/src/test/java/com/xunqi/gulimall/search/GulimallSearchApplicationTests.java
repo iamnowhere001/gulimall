@@ -36,7 +36,6 @@ import java.io.IOException;
 @SpringBootTest
 public class GulimallSearchApplicationTests {
 
-
     @Resource
     private RestHighLevelClient client;
 
@@ -55,7 +54,6 @@ public class GulimallSearchApplicationTests {
         private String city;
         private String state;
     }
-
 
     /**
      * 复杂检索:在bank中搜索address中包含mill的所有人的年龄分布以及平均年龄，平均薪资
@@ -100,7 +98,6 @@ public class GulimallSearchApplicationTests {
 
         Avg balanceAvg1 = aggregations.get("balanceAvg");
     }
-
 
     /**
      * @throws IOException

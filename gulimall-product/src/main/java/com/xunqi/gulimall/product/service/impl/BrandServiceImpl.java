@@ -16,7 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Map;
 
-
+/**
+ * 品牌服务实现。
+ * 提供品牌分页（支持关键字）、新增、修改；修改时通过 CategoryBrandRelationService 同步更新
+ * 分类-品牌关联表中的冗余品牌名，保证数据一致性。
+ */
 @Service("brandService")
 public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> implements BrandService {
 

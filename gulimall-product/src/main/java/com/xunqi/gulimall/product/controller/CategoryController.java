@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
-
-
+/**
+ * 商品三级分类控制器。
+ * 提供分类树形列表（list/tree）、详情、保存、拖拽排序（update/sort）、
+ * 级联修改（updateCascade）、批量删除（含子分类级联删除）等接口。
+ */
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
@@ -31,7 +34,6 @@ public class CategoryController {
 
         return R.ok().put("data", entities);
     }
-
 
     /**
      * 信息

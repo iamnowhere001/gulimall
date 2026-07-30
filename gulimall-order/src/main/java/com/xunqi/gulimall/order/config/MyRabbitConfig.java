@@ -8,6 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+/**
+ * RabbitTemplate 定制配置（订单服务）。
+ * 注册 JSON 消息转换器（Jackson2JsonMessageConverter），并定制发布确认（ConfirmCallback）与
+ * 消息抵达队列回调（ReturnCallback）以感知消息投递结果（具体业务回调在 initRabbitTemplate 中设置）。
+ */
 @Configuration
 public class MyRabbitConfig {
 
@@ -52,7 +57,6 @@ public class MyRabbitConfig {
         //设置确认回调
         rabbitTemplate.setConfirmCallback((correlationData,ack,cause) -> {
             });
-
 
         /**
          * 只要消息没有投递给指定的队列，就触发这个失败回调

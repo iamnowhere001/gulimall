@@ -39,7 +39,6 @@ public class OrderConfirmVo {
         return count;
     }
 
-
     /** 订单总额 **/
     //BigDecimal total;
     //计算订单总额
@@ -55,7 +54,6 @@ public class OrderConfirmVo {
         }
         return totalNum;
     }
-
 
     /** 应付价格 **/
     //BigDecimal payPrice;

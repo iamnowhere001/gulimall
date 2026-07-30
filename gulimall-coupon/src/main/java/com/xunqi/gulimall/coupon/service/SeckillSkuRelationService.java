@@ -13,4 +13,3 @@ public interface SeckillSkuRelationService extends IService<SeckillSkuRelationEn
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

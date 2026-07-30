@@ -19,6 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 商品上架（写入 ES）服务实现。
+ * 将上架的 SKU 列表（SkuEsModel）以批量 Bulk 请求写入索引 gulimall_product，
+ * 以 skuId 作为文档 id；返回是否有批量写入失败（hasFailures）。
+ */
 @Slf4j
 @Service("productSaveService")
 public class ProductSaveServiceImpl implements ProductSaveService {
@@ -41,7 +46,6 @@ public class ProductSaveServiceImpl implements ProductSaveService {
             indexRequest.source(jsonString, XContentType.JSON);
             bulkRequest.add(indexRequest);
         }
-
 
         BulkResponse bulk = esRestClient.bulk(bulkRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
 

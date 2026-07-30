@@ -16,7 +16,6 @@ import java.util.List;
 @Controller
 public class HelloController {
 
-
     /**
      * 无需登录就可访问
      *
@@ -27,7 +26,6 @@ public class HelloController {
     public String hello() {
         return "hello";
     }
-
 
     @GetMapping(value = "/employees")
     public String employees(Model model, HttpSession session, @RequestParam(value = "token", required = false) String token) {
@@ -45,7 +43,6 @@ public class HelloController {
 
             return "redirect:" + "http://sso.mroldx.cn:8080/login.html"+"?redirect_url=http://localhost:8081/employees";
         } else {
-
 
             List<String> emps = new ArrayList<>();
 

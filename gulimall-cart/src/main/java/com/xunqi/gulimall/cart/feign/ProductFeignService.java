@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 商品服务 Feign 客户端。
+ * 购物车在添加商品、查询价格时远程调用 gulimall-product 获取 SKU 信息、销售属性与最新价格。
+ */
 @FeignClient("gulimall-product")
 public interface ProductFeignService {
 

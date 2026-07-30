@@ -15,4 +15,3 @@ public interface WareOrderTaskService extends IService<WareOrderTaskEntity> {
 
     WareOrderTaskEntity getOrderTaskByOrderSn(String orderSn);
 }
-

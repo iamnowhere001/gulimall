@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,7 +25,6 @@ public class GulimallOrderApplicationTests {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
 
     @Test
     public void sendMessageTest() {
@@ -58,15 +56,12 @@ public class GulimallOrderApplicationTests {
         log.info("Exchange[{}]创建成功：","hello-java-exchange");
     }
 
-
-
     @Test
     public void testCreateQueue() {
         Queue queue = new Queue("hello-java-queue",true,false,false);
         amqpAdmin.declareQueue(queue);
         log.info("Queue[{}]创建成功：","hello-java-queue");
     }
-
 
     @Test
     public void createBinding() {

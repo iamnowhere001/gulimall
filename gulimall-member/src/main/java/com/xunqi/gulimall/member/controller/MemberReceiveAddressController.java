@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * 会员收货地址
  */
@@ -21,7 +19,6 @@ import java.util.Map;
 public class MemberReceiveAddressController {
     @Autowired
     private MemberReceiveAddressService memberReceiveAddressService;
-
 
     /**
      * 根据会员id查询会员的所有地址
@@ -45,7 +42,6 @@ public class MemberReceiveAddressController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

@@ -12,7 +12,6 @@ import com.xunqi.gulimall.product.dao.CommentReplayDao;
 import com.xunqi.gulimall.product.entity.CommentReplayEntity;
 import com.xunqi.gulimall.product.service.CommentReplayService;
 
-
 @Service("commentReplayService")
 public class CommentReplayServiceImpl extends ServiceImpl<CommentReplayDao, CommentReplayEntity> implements CommentReplayService {
 

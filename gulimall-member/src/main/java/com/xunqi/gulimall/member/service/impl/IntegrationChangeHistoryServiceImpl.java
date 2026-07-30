@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.IntegrationChangeHistoryDao;
 import com.xunqi.gulimall.member.entity.IntegrationChangeHistoryEntity;
 import com.xunqi.gulimall.member.service.IntegrationChangeHistoryService;
 
-
 @Service("integrationChangeHistoryService")
 public class IntegrationChangeHistoryServiceImpl extends ServiceImpl<IntegrationChangeHistoryDao, IntegrationChangeHistoryEntity> implements IntegrationChangeHistoryService {
 

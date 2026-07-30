@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
-
 @RestController
 @RequestMapping("order/order")
 public class OrderController {
@@ -50,7 +48,6 @@ public class OrderController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

@@ -13,4 +13,3 @@ public interface MemberLoginLogService extends IService<MemberLoginLogEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

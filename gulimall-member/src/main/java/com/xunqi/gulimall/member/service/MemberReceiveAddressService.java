@@ -16,4 +16,3 @@ public interface MemberReceiveAddressService extends IService<MemberReceiveAddre
 
     List<MemberReceiveAddressEntity> getAddress(Long memberId);
 }
-

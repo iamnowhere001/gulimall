@@ -16,5 +16,3 @@ public class FareVo {
     private BigDecimal fare;
 
 }
-
-

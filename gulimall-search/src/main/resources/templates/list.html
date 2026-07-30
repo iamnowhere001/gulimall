@@ -252,7 +252,6 @@
         location.href = replaceParamVal(location.href, name, value, forceAdd);
     }
 
-
     function searchByKeyword() {
         searchProducts("keyword", encodeURIComponent($("#keyword_input").val()));
     }
@@ -322,7 +321,6 @@
         }
     };
 
-
     $("#skuPriceSearchBtn").click(function () {
         let from = $(`#skuPriceFrom`).val();
         let to = $(`#skuPriceTo`).val();
@@ -330,7 +328,6 @@
         let query = from + "_" + to;
         location.href = replaceParamVal(location.href, "skuPrice", query,false);
     });
-
 
     $("#showHasStock").change(function () {
         if ($(this).prop("checked")) {
@@ -343,7 +340,6 @@
             location.href = newUrl;
         }
     });
-
 
 </script>
 </body>

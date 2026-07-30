@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 商品上架（写入 ES）控制器。
+ * 接收商品服务发来的 SKU 列表（SkuEsModel），调用 ProductSaveService 批量写入 ES 索引，
+ * 上架失败时返回统一的商品上架异常（PRODUCT_UP_EXCEPTION）。
+ */
 @Slf4j
 @RequestMapping(value = "/search/save")
 @RestController
@@ -21,7 +26,6 @@ public class ElasticSaveController {
 
     @Autowired
     private ProductSaveService productSaveService;
-
 
     /**
      * 上架商品
@@ -45,6 +49,5 @@ public class ElasticSaveController {
         }
 
     }
-
 
 }

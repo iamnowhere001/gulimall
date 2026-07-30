@@ -14,5 +14,4 @@
         <result property="refundContent" column="refund_content"/>
     </resultMap>
 
-
 </mapper>

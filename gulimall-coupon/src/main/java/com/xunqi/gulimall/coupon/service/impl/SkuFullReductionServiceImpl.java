@@ -24,7 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * SKU 优惠（满减 / 折扣 / 会员价）服务实现。
+ *
+ * 商品上架时由 product 服务调用 {@link #saveSkuReduction(SkuReductionTo)}，
+ * 将优惠规则拆分落库到三张表：
+ *  - sms_sku_ladder（满件打折，数量门槛）
+ *  - sms_sku_full_reduction（满额减价，金额门槛）
+ *  - sms_member_price（各会员等级的专属价格）
+ */
 @Service("skuFullReductionService")
 public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao, SkuFullReductionEntity> implements SkuFullReductionService {
 
@@ -33,7 +41,6 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
 
     @Autowired
     private MemberPriceService memberPriceService;
-
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -54,11 +61,16 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         return new PageUtils(page);
     }
 
+    /**
+     * 保存 SKU 的全部优惠规则（满件打折 + 满额减价 + 会员价）。
+     * 入参由商品服务在商品上架时通过 MQ/Feign 传入。
+     * @param skuReductionTo 包含满减/折扣/会员价的优惠传输对象
+     */
     @Override
     public void saveSkuReduction(SkuReductionTo skuReductionTo) {
 
         //1、保存满减打折、会员价
-        //1、1）、sku的优惠、满减等信息：gulimall_sms--->sms_sku_ladder、sms_sku_full_reduction、sms_member_price
+        //1.1 保存 sku 的满件打折信息到 sms_sku_ladder（仅当满件数量 > 0 时落库）
         SkuLadderEntity skuLadderEntity = new SkuLadderEntity();
         BeanUtils.copyProperties(skuReductionTo,skuLadderEntity);
         skuLadderEntity.setAddOther(skuReductionTo.getCountStatus());
@@ -67,15 +79,14 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             skuLadderService.save(skuLadderEntity);
         }
 
-        //2、sms_sku_full_reduction
+        //2、保存 sms_sku_full_reduction（满额减价，仅当满减金额 > 0 时落库）
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
         BeanUtils.copyProperties(skuReductionTo,skuFullReductionEntity);
         if (skuFullReductionEntity.getFullPrice().compareTo(BigDecimal.ZERO) == 1) {
             this.save(skuFullReductionEntity);
         }
 
-
-        //3、sms_member_price
+        //3、保存 sms_member_price（各会员等级价格，过滤掉价格为 0 的项）
         List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
 
         List<MemberPriceEntity> collect = memberPrice.stream().map(mem -> {

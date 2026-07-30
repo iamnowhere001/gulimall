@@ -35,5 +35,4 @@
         <result property="companyAddress" column="company_address"/>
     </resultMap>
 
-
 </mapper>

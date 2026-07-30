@@ -17,8 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-
+/**
+ * 属性分组控制器。
+ * 提供分组分页（按分类）、详情、保存、修改、删除，
+ * 以及分组与属性的关联/取消关联、按分类查询“分组+关联属性”（withattr）、
+ * 查询分组已关联/未关联属性等接口。
+ */
 @RestController
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
@@ -33,7 +37,6 @@ public class AttrGroupController {
 
     @Autowired
     private AttrAttrgroupRelationService attrAttrgroupRelationService;
-
 
     ///product/attrgroup/attr/relation
     @PostMapping(value = "/attr/relation")
@@ -53,7 +56,6 @@ public class AttrGroupController {
         //1、查出当前分类下的所有属性分组
         //2、查出每个属性分组下的所有属性
         List<AttrGroupWithAttrsVo> vos = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
-
 
         return R.ok().put("data",vos);
 
@@ -85,8 +87,6 @@ public class AttrGroupController {
         return R.ok().put("page",page);
     }
 
-
-
     /**
      * 列表
      */
@@ -98,7 +98,6 @@ public class AttrGroupController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
@@ -153,7 +152,5 @@ public class AttrGroupController {
 
         return R.ok();
     }
-
-
 
 }

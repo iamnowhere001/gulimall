@@ -19,7 +19,6 @@ public class RuntimeExceptionHandler {
         return R.error(exception.getMessage());
     }
 
-
     @ExceptionHandler(CartExceptionHandler.class)
     @ResponseBody
     public R userHandler(CartExceptionHandler exception) {

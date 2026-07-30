@@ -13,4 +13,3 @@ public interface HomeSubjectService extends IService<HomeSubjectEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

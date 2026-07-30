@@ -25,7 +25,6 @@ public class Catelog2Vo {
 
     private String name;
 
-
     /**
      * 三级分类vo
      */

@@ -13,8 +13,6 @@ import com.xunqi.gulimall.order.service.OrderOperateHistoryService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 @RestController
 @RequestMapping("order/orderoperatehistory")
 public class OrderOperateHistoryController {
@@ -30,7 +28,6 @@ public class OrderOperateHistoryController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

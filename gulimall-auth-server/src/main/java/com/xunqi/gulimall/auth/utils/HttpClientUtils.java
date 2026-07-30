@@ -14,9 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -40,7 +38,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- *  依赖的jar包有：commons-lang-2.6.jar、httpclient-4.3.2.jar、httpcore-4.3.1.jar、commons-io-2.4.jar
+ * HTTP 客户端工具类（基于 Apache HttpClient）。
+ *
+ * 封装 POST（JSON 体 / 表单）与 GET 请求，同时支持 HTTP 与 HTTPS（HTTPS 走不校验证书的 SSL 客户端），
+ * 内部维护连接池（最大 128 连接）。供微信登录等场景调用第三方开放接口使用。
+ *
+ * 依赖：commons-lang、httpclient、httpcore、commons-io。
  */
 public class HttpClientUtils {
 
@@ -136,7 +139,6 @@ public class HttpClientUtils {
 		return result;
 	}
 
-
 	/**
 	 * 提交form表单
 	 *
@@ -199,9 +201,6 @@ public class HttpClientUtils {
 		}
 	}
 
-
-
-
 	/**
 	 * 发送一个 GET 请求
 	 *
@@ -253,7 +252,6 @@ public class HttpClientUtils {
 		return result;
 	}
 
-
 	/**
 	 * 从 response 里获取 charset
 	 *
@@ -271,8 +269,6 @@ public class HttpClientUtils {
 		}
 		return null;
 	}
-
-
 
 	/**
 	 * 创建 SSL连接

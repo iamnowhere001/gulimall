@@ -15,8 +15,6 @@ import com.xunqi.gulimall.member.service.MemberLevelService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 /**
  * 会员等级
  */
@@ -35,7 +33,6 @@ public class MemberLevelController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

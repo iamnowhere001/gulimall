@@ -13,4 +13,3 @@ public interface GrowthChangeHistoryService extends IService<GrowthChangeHistory
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

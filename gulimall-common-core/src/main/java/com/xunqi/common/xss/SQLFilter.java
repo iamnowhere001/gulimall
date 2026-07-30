@@ -4,7 +4,10 @@ import com.xunqi.common.utils.RRException;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * SQL过滤
+ * SQL 注入过滤器。
+ * 在将前端传入的排序字段（sidx）拼接进 SQL 前调用，
+ * 去除危险字符（' " ; \）并拦截 SQL 关键字（select/insert/update/delete 等），
+ * 防止 SQL 注入攻击。发现非法字符时抛出 {@link RRException}。
  */
 public class SQLFilter {
 

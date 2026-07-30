@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Service("memberService")
 public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> implements MemberService {
 
@@ -228,6 +227,5 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
         return memberEntity;
     }
-
 
 }

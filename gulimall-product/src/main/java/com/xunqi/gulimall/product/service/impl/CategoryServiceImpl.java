@@ -31,7 +31,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-
+/**
+ * 商品三级分类服务实现。
+ *
+ * 负责分类树构建、级联删除、分类路径查询，以及分类数据的缓存与一致性（Spring-Cache + Redisson 读写锁）。
+ * 核心方法 getCatalogJson() 组装“一级→二级→三级”分类树（供首页导航），并通过缓存与分布式锁解决穿透/击穿/雪崩问题。
+ */
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
@@ -93,7 +98,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
-
     //递归查找所有菜单的子菜单
     private List<CategoryEntity> getChildrens(CategoryEntity root, List<CategoryEntity> all) {
 
@@ -127,7 +131,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return (Long[]) parentPath.toArray(new Long[parentPath.size()]);
     }
 
-
     /**
      * 级联更新所有关联的数据
      *
@@ -160,7 +163,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //同时修改缓存中的数据
         //删除缓存,等待下一次主动查询进行更新
     }
-
 
     /**
      * 每一个需要缓存的数据我们都来指定要放到那个名字的缓存。【缓存的分区(按照业务类型分)】
@@ -203,7 +205,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
         return categoryEntities;
     }
-
 
     @Cacheable(value = "category",key = "#root.methodName")
     @Override
@@ -277,7 +278,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return result;
     }
 
-
     /**
      * 缓存里的数据如何和数据库的数据保持一致？？
      * 缓存数据一致性
@@ -308,7 +308,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return dataFromDb;
 
     }
-
 
     /**
      * 从数据库查询并封装数据::分布式锁
@@ -410,7 +409,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             //得到锁以后，我们应该再去缓存中确定一次，如果没有才需要继续查询
             return getDataFromDb();
         }
-
 
     }
 

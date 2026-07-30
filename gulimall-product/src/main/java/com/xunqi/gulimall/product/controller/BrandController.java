@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
+/**
+ * 品牌控制器。
+ * 提供品牌分页列表、详情、新增（分组校验 AddGroup）、修改（UpdateGroup）、
+ * 修改状态（UpdateStatusGroup）、删除等接口。
+ */
 @RestController
 @RequestMapping("product/brand")
 public class BrandController {
@@ -31,7 +35,6 @@ public class BrandController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
@@ -51,7 +54,6 @@ public class BrandController {
     ){
 
         brandService.save(brand);
-
 
         return R.ok();
     }

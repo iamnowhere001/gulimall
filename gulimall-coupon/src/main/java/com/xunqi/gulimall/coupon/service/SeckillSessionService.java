@@ -16,4 +16,3 @@ public interface SeckillSessionService extends IService<SeckillSessionEntity> {
 
     List<SeckillSessionEntity> getLates3DaySession();
 }
-

@@ -15,8 +15,6 @@ import com.xunqi.gulimall.member.service.MemberCollectSubjectService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 /**
  * 会员收藏的专题活动
  */
@@ -35,7 +33,6 @@ public class MemberCollectSubjectController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

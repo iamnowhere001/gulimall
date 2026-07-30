@@ -14,5 +14,4 @@
         <result property="sort" column="sort"/>
     </resultMap>
 
-
 </mapper>

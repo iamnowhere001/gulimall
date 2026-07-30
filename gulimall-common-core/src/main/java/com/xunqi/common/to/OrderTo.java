@@ -5,6 +5,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 订单传输对象（TO）。
+ * 由订单服务下发，用于跨服务传递订单核心信息（如创建订单后通知库存锁定、会员积分等服务）。
+ * 字段为订单结构的精简映射，涵盖金额、状态、支付方式、收货信息、支付/发货/确认时间等。
+ */
 @Data
 public class OrderTo {
 

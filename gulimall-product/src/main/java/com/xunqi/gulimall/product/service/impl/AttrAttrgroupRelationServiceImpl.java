@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * 属性与分组关联服务实现。
+ * 维护“属性—属性分组”的关联关系，提供分页与批量保存（saveBatch）关联记录的 CRUD 能力。
+ */
 @Service("attrAttrgroupRelationService")
 public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
 
@@ -44,7 +47,6 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
         }).collect(Collectors.toList());
 
         this.saveBatch(collect);
-
 
     }
 

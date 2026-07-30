@@ -12,7 +12,6 @@ import com.xunqi.gulimall.order.dao.PaymentInfoDao;
 import com.xunqi.gulimall.order.entity.PaymentInfoEntity;
 import com.xunqi.gulimall.order.service.PaymentInfoService;
 
-
 @Service("paymentInfoService")
 public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoDao, PaymentInfoEntity> implements PaymentInfoService {
 

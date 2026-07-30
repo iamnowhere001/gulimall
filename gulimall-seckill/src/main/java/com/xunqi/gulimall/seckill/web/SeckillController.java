@@ -15,6 +15,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+/**
+ * 秒杀服务 Web 层控制器
+ * 对外提供秒杀相关的 HTTP 接口：
+ *  - 查询当前可参与的秒杀商品
+ *  - 根据 skuId 查询商品是否参与秒杀
+ *  - 执行秒杀下单（/kill，需登录）
+ *  - 手动/测试触发上架与秒杀（调试接口）
+ */
 @Controller
 public class SeckillController {
 
@@ -88,7 +96,6 @@ public class SeckillController {
         return R.ok().setData(vos);
     }
 
-
     /**
      * 根据skuId查询商品是否参加秒杀活动
      * @param skuId
@@ -102,7 +109,6 @@ public class SeckillController {
 
         return R.ok().setData(to);
     }
-
 
     /**
      * 商品进行秒杀(秒杀开始)

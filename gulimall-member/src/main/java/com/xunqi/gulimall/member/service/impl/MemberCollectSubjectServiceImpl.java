@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.MemberCollectSubjectDao;
 import com.xunqi.gulimall.member.entity.MemberCollectSubjectEntity;
 import com.xunqi.gulimall.member.service.MemberCollectSubjectService;
 
-
 @Service("memberCollectSubjectService")
 public class MemberCollectSubjectServiceImpl extends ServiceImpl<MemberCollectSubjectDao, MemberCollectSubjectEntity> implements MemberCollectSubjectService {
 

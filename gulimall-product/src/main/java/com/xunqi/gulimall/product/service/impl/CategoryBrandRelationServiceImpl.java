@@ -22,7 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * 分类与品牌关联服务实现。
+ * 保存关联关系时冗余存储品牌名/分类名以避免连表；提供品牌名、分类名的级联更新，
+ * 以及按分类查询关联品牌列表（getBrandsByCatId，供首页分类页展示品牌）。
+ */
 @Service("categoryBrandRelationService")
 public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandRelationDao, CategoryBrandRelationEntity> implements CategoryBrandRelationService {
 

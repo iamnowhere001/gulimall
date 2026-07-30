@@ -5,6 +5,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+/**
+ * 商品服务 Feign 客户端。
+ * 订单创建时远程查询 SKU 对应 SPU 信息（标题/图片）与 SKU 基础信息（gulimall-product）。
+ */
 @FeignClient("gulimall-product")
 public interface ProductFeignService {
 

@@ -9,6 +9,11 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * 支付宝支付模板。
+ * 从配置（alipay.*）注入应用 ID、密钥、回调地址等，提供 pay(PayVo) 生成支付宝电脑网站支付页面，
+ * 供订单支付页跳转收银台使用。
+ */
 @ConfigurationProperties(prefix = "alipay")
 @Component
 @Data

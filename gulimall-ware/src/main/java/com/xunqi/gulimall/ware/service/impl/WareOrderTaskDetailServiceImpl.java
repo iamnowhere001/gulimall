@@ -12,7 +12,6 @@ import com.xunqi.gulimall.ware.dao.WareOrderTaskDetailDao;
 import com.xunqi.gulimall.ware.entity.WareOrderTaskDetailEntity;
 import com.xunqi.gulimall.ware.service.WareOrderTaskDetailService;
 
-
 @Service("wareOrderTaskDetailService")
 public class WareOrderTaskDetailServiceImpl extends ServiceImpl<WareOrderTaskDetailDao, WareOrderTaskDetailEntity> implements WareOrderTaskDetailService {
 

@@ -2,6 +2,10 @@ package com.xunqi.gulimall.search.vo;
 
 import lombok.Data;
 
+/**
+ * 属性响应 VO（检索面包屑用）。
+ * 由商品服务按 attrId 返回，供检索页面在面包屑中展示属性名称。
+ */
 @Data
 public class AttrResponseVo {
 

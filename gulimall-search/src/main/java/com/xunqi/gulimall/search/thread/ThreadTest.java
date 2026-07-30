@@ -2,6 +2,11 @@ package com.xunqi.gulimall.search.thread;
 
 import java.util.concurrent.*;
 
+/**
+ * 线程与线程池学习/示例类（非业务代码）。
+ * 演示 Thread、Runnable、Callable、线程池（ThreadPoolExecutor）与 CompletableFuture 的基本用法，
+ * 用于理解异步编排（gulimall 中多处使用 CompletableFuture 并发聚合查询）。
+ */
 public class ThreadTest {
 
     public static ExecutorService executor = Executors.newFixedThreadPool(10);
@@ -35,7 +40,6 @@ public class ThreadTest {
         ExecutorService service = Executors.newScheduledThreadPool(2);
     }
 
-
     public static class Thread01 extends Thread {
         @Override
         public void run() {
@@ -45,7 +49,6 @@ public class ThreadTest {
         }
     }
 
-
     public static class Runable01 implements Runnable {
         @Override
         public void run() {
@@ -54,7 +57,6 @@ public class ThreadTest {
             System.out.println("运行结果：" + i);
         }
     }
-
 
     public static class Callable01 implements Callable<Integer> {
         @Override

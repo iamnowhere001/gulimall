@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
 /**
  * 首页轮播广告
  */
@@ -30,7 +29,6 @@ public class HomeAdvController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

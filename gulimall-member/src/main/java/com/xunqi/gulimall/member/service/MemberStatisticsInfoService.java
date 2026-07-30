@@ -13,4 +13,3 @@ public interface MemberStatisticsInfoService extends IService<MemberStatisticsIn
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

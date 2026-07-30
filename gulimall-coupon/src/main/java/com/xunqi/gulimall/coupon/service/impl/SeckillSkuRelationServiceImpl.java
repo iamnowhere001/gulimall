@@ -13,7 +13,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
-
+/**
+ * 秒杀商品关联服务实现。
+ * 维护秒杀场次与 SKU 的关联关系（sms_seckill_sku_relation），
+ * 即某个秒杀场次包含哪些参与秒杀的商品及其秒杀价、随机码等。
+ */
 @Service("seckillSkuRelationService")
 public class SeckillSkuRelationServiceImpl extends ServiceImpl<SeckillSkuRelationDao, SeckillSkuRelationEntity> implements SeckillSkuRelationService {
 

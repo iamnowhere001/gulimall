@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 检索页控制器（前端页面 /list.html）。
+ * 接收页面检索参数（SearchParam），调用 MallSearchService 去 ES 检索并聚合，
+ * 将结果放入 Model 供 Thymeleaf 模板渲染商品列表、筛选条件与面包屑导航。
+ */
 @Controller
 public class SearchController {
 

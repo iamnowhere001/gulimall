@@ -32,7 +32,6 @@ public class OAuth2Controller {
     @Autowired
     private MemberFeignService memberFeignService;
 
-
     /**
      * 微博授权登录回调
      * 流程：用户授权后微博回调本接口携带 code -> 用 code 换取 access_token -> 调用会员服务登录或注册

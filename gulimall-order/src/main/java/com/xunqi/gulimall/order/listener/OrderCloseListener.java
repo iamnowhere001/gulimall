@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+/**
+ * 关单监听器（消费 order.release.order.queue）。
+ * 订单创建后进入延迟队列，超时未支付由死信触发此监听，调用 orderService.closeOrder() 关单；
+ * 若关闭时订单仍为“待付款”则置为“已取消”并发 order.release.other 事件，进而释放库存。
+ * 采用手动 ACK：成功 basicAck，异常 basicReject(requeue=true) 重试。
+ */
 @RabbitListener(queues = "order.release.order.queue")
 @Service
 public class OrderCloseListener {

@@ -18,5 +18,4 @@
         <result property="callbackTime" column="callback_time"/>
     </resultMap>
 
-
 </mapper>

@@ -13,4 +13,3 @@ public interface MemberCollectSubjectService extends IService<MemberCollectSubje
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

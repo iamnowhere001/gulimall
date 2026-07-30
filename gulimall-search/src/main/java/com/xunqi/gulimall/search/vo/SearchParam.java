@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * 检索请求参数对象。
+ * 封装前端检索页提交的查询条件：关键字、品牌、分类、排序、库存、价格区间、属性筛选、页码。
+ */
 @Data
 public class SearchParam {
 
@@ -51,6 +55,5 @@ public class SearchParam {
      * 原生的所有查询条件
      */
     private String _queryString;
-
 
 }

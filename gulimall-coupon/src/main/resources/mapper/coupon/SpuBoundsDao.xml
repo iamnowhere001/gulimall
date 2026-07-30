@@ -12,5 +12,4 @@
         <result property="work" column="work"/>
     </resultMap>
 
-
 </mapper>

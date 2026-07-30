@@ -5,6 +5,10 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 购物车视图对象（整个购物车）。
+ * 聚合购物项列表，并提供商品总数量、种类数、总价（已勾选项求和再减减免金额）等聚合计算。
+ */
 public class CartVo {
 
     /**
@@ -59,7 +63,6 @@ public class CartVo {
         }
         return count;
     }
-
 
     public BigDecimal getTotalAmount() {
         BigDecimal amount = new BigDecimal("0");

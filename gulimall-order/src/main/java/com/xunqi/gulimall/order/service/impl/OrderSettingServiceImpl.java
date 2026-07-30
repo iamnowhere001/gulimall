@@ -12,7 +12,6 @@ import com.xunqi.gulimall.order.dao.OrderSettingDao;
 import com.xunqi.gulimall.order.entity.OrderSettingEntity;
 import com.xunqi.gulimall.order.service.OrderSettingService;
 
-
 @Service("orderSettingService")
 public class OrderSettingServiceImpl extends ServiceImpl<OrderSettingDao, OrderSettingEntity> implements OrderSettingService {
 

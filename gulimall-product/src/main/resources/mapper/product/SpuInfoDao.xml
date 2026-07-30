@@ -20,5 +20,4 @@
         UPDATE pms_spu_info SET publish_status = #{code} ,update_time = NOW() WHERE id = #{spuId}
     </update>
 
-
 </mapper>

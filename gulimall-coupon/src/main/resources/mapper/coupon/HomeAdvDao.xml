@@ -19,5 +19,4 @@
         <result property="authId" column="auth_id"/>
     </resultMap>
 
-
 </mapper>

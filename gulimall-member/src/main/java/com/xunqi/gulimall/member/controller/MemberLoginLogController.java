@@ -15,8 +15,6 @@ import com.xunqi.gulimall.member.service.MemberLoginLogService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 /**
  * 会员登录记录
  */
@@ -35,7 +33,6 @@ public class MemberLoginLogController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

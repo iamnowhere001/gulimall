@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.MemberLevelDao;
 import com.xunqi.gulimall.member.entity.MemberLevelEntity;
 import com.xunqi.gulimall.member.service.MemberLevelService;
 
-
 @Service("memberLevelService")
 public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLevelEntity> implements MemberLevelService {
 

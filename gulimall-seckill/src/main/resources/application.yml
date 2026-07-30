@@ -22,7 +22,6 @@ spring:
     host: localhost
     port: 6379
 
-
 #开启feign对sentinel的支持
 feign:
   sentinel:
@@ -37,7 +36,6 @@ feign:
 
   session:
     store-type: redis
-
 
 #暴露所有端点
 management:

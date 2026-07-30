@@ -40,7 +40,6 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      */
     boolean orderLockStock(WareSkuLockVo vo);
 
-
     /**
      * 解锁库存
      * @param to
@@ -53,4 +52,3 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      */
     void unlockStock(OrderTo orderTo);
 }
-

@@ -11,5 +11,4 @@ public class SubmitOrderResponseVo {
     /** 错误状态码 **/
     private Integer code;
 
-
 }

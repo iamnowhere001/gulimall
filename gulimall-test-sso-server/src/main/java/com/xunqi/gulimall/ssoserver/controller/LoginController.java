@@ -26,13 +26,11 @@ public class LoginController {
 
     }
 
-
     @GetMapping("/login.html")
     public String loginPage(@RequestParam("redirect_url") String url, Model model, @CookieValue(value = "sso_token", required = false) String sso_token) {
         if (!StringUtils.isEmpty(sso_token)) {
             return "redirect:" + url + "?token=" + sso_token;
         }
-
 
         model.addAttribute("url", url);
 

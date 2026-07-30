@@ -12,5 +12,4 @@
         <result property="subjectUrll" column="subject_urll"/>
     </resultMap>
 
-
 </mapper>

@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * 秒杀活动场次
  */
@@ -20,7 +19,6 @@ import java.util.Map;
 public class SeckillSessionController {
     @Autowired
     private SeckillSessionService seckillSessionService;
-
 
     /**
      * 查询最近三天需要参加秒杀商品的信息
@@ -44,7 +42,6 @@ public class SeckillSessionController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

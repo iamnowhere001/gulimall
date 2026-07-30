@@ -14,5 +14,4 @@
         <result property="quickShow" column="quick_show"/>
     </resultMap>
 
-
 </mapper>

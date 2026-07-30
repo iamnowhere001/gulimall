@@ -13,5 +13,4 @@
         <result property="sourceTyoe" column="source_tyoe"/>
     </resultMap>
 
-
 </mapper>

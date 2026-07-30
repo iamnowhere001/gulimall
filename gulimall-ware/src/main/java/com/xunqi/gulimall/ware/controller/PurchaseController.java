@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * 采购信息
  */
@@ -82,7 +80,6 @@ public class PurchaseController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

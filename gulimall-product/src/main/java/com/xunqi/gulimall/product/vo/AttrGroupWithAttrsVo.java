@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class AttrGroupWithAttrsVo {
 
-
     /**
      * 分组id
      */

@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
+/**
+ * 属性与分组关联控制器（pms_attr_attrgroup_relation）。
+ * 提供属性分组关联关系的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/attrattrgrouprelation")
 public class AttrAttrgroupRelationController {
@@ -28,7 +30,6 @@ public class AttrAttrgroupRelationController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

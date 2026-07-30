@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * SPU 规格参数值服务实现。
+ * 管理 SPU 的规格参数值（pms_product_attr_value），提供批量保存、按 SPU 查询规格、以及修改商品规格（先删后插）的能力。
+ */
 @Service("productAttrValueService")
 public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao, ProductAttrValueEntity> implements ProductAttrValueService {
 
@@ -41,7 +45,6 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
         return attrValueEntityList;
     }
-
 
     /**
      * 修改商品规格

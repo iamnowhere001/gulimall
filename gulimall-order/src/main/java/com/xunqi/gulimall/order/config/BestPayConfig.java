@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * 微信支付（best-pay-sdk）配置。
+ * 读取 WxAccountConfig 注入微信支付参数，构建 BestPayService 与 WxPayConfig（appId/商户号/密钥/回调地址），
+ * 供 PayWebController 发起微信 Native 扫码支付。
+ */
 @Component
 public class BestPayConfig {
 

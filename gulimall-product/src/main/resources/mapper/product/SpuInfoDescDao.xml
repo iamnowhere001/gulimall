@@ -9,5 +9,4 @@
         <result property="decript" column="decript"/>
     </resultMap>
 
-
 </mapper>

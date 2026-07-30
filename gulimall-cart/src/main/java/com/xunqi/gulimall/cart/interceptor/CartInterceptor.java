@@ -16,9 +16,19 @@ import static com.xunqi.common.constant.AuthServerConstant.LOGIN_USER;
 import static com.xunqi.common.constant.CartConstant.TEMP_USER_COOKIE_NAME;
 import static com.xunqi.common.constant.CartConstant.TEMP_USER_COOKIE_TIMEOUT;
 
+/**
+ * 购物车拦截器。
+ *
+ * 在请求进入业务前解析用户身份：
+ *  - 登录用户：从 Session 中取 userId；
+ *  - 未登录：解析 Cookie 中的 user-key，没有则分配一个临时用户标识；
+ * 将解析结果放入 ThreadLocal（toThreadLocal）供 Controller/Service 使用。
+ * 请求返回后，若本次为临时用户，则写入 user-key 的 Cookie（域 gulimall.com，30 天有效）；
+ * 请求完成后清理 ThreadLocal，避免内存泄漏。
+ */
 public class CartInterceptor implements HandlerInterceptor {
 
-
+    /** 当前请求的购物车用户信息在线程内传递 */
     public static ThreadLocal<UserInfoTo> toThreadLocal = new ThreadLocal<>();
 
     /***
@@ -66,7 +76,6 @@ public class CartInterceptor implements HandlerInterceptor {
         toThreadLocal.set(userInfoTo);
         return true;
     }
-
 
     /**
      * 业务执行之后，分配临时用户来浏览器保存

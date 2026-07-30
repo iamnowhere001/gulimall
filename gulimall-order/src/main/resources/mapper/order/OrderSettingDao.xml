@@ -14,5 +14,4 @@
         <result property="memberLevel" column="member_level"/>
     </resultMap>
 
-
 </mapper>

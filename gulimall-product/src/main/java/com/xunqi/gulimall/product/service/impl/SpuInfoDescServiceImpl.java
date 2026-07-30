@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-
+/**
+ * SPU 描述/详情图服务实现。
+ * 管理 SPU 的长图描述信息（pms_spu_info_desc），提供分页与保存能力，供商品详情页展示图文介绍。
+ */
 @Service("spuInfoDescService")
 public class SpuInfoDescServiceImpl extends ServiceImpl<SpuInfoDescDao, SpuInfoDescEntity> implements SpuInfoDescService {
 

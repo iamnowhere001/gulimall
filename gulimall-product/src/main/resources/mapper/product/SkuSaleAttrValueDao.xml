@@ -49,5 +49,4 @@
             sku_id = #{skuId}
     </select>
 
-
 </mapper>

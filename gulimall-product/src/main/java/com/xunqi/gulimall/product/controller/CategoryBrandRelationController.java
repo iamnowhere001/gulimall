@@ -15,7 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * 分类与品牌关联控制器（pms_category_brand_relation）。
+ * 提供关联关系的 CRUD，以及按品牌查其关联分类（catelog/list）、
+ * 按分类查关联品牌列表（brands/list，供前台分类页展示品牌）等接口。
+ */
 @RestController
 @RequestMapping("product/categorybrandrelation")
 public class CategoryBrandRelationController {
@@ -56,7 +60,6 @@ public class CategoryBrandRelationController {
         return R.ok().put("data",collect);
     }
 
-
     /**
      * 列表
      */
@@ -67,7 +70,6 @@ public class CategoryBrandRelationController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

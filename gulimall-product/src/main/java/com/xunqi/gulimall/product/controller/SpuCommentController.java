@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.SpuCommentService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * SPU 商品评价控制器（pms_spu_comment）。
+ * 提供商品评价的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/spucomment")
 public class SpuCommentController {
@@ -33,7 +35,6 @@ public class SpuCommentController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

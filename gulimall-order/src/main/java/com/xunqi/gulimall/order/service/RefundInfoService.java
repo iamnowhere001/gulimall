@@ -10,4 +10,3 @@ public interface RefundInfoService extends IService<RefundInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

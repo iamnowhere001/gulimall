@@ -13,5 +13,4 @@
         <result property="loginType" column="login_type"/>
     </resultMap>
 
-
 </mapper>

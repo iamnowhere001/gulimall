@@ -12,7 +12,6 @@ import com.xunqi.gulimall.order.dao.RefundInfoDao;
 import com.xunqi.gulimall.order.entity.RefundInfoEntity;
 import com.xunqi.gulimall.order.service.RefundInfoService;
 
-
 @Service("refundInfoService")
 public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoDao, RefundInfoEntity> implements RefundInfoService {
 

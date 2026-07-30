@@ -13,4 +13,3 @@ public interface CouponHistoryService extends IService<CouponHistoryEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

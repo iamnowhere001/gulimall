@@ -3,8 +3,13 @@ package com.xunqi.gulimall.cart.vo;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 购物车中的单个购物项（对应一个 SKU）。
+ * 记录 SKU 基本信息、单价、数量、是否选中以及销售属性；总价由 price × count 计算得出。
+ */
 public class CartItemVo {
 
+    /** SKU 编号 */
     private Long skuId;
 
     private Boolean check = true;
@@ -92,6 +97,5 @@ public class CartItemVo {
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
-
 
 }

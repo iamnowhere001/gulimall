@@ -1,5 +1,12 @@
 package com.xunqi.common.constant;
 
+/**
+ * 仓储服务常量与枚举。
+ * 包含：
+ *  - PurchaseStatusEnum：采购单状态（新建 / 已分配 / 已领取 / 已完成 / 有异常）
+ *  - PurchaseDetailStatusEnum：采购需求（明细）状态（新建 / 已分配 / 采购中 / 已完成 / 失败）
+ * 用于库存采购业务流程中的状态流转。
+ */
 public class WareConstant {
 
     public enum PurchaseStatusEnum {
@@ -30,7 +37,6 @@ public class WareConstant {
 
     }
 
-
     public enum PurchaseDetailStatusEnum {
         CREATED(0,"新建"),
         ASSIGNED(1,"已分配"),
@@ -58,6 +64,5 @@ public class WareConstant {
         }
 
     }
-
 
 }

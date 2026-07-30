@@ -16,6 +16,4 @@ public class WareSkuLockVo {
     /** 需要锁住的所有库存信息 **/
     private List<OrderItemVo> locks;
 
-
-
 }

@@ -19,4 +19,3 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 }
-

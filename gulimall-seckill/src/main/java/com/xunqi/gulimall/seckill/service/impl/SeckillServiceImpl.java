@@ -30,6 +30,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * 秒杀核心服务实现类。
+ *
+ * 整体设计：将秒杀的“读”与“写”都前置到 Redis，减轻数据库压力。
+ * 上架时把秒杀活动与商品信息存入 Redis，并提供给前端展示；秒杀时直接基于 Redis 做
+ * 校验、扣减库存（Redisson 信号量）与防超卖（用户占位 SETNX），下单成功后发送 MQ 异步落库。
+ *
+ * Redis 中使用的三类数据结构：
+ *  1) 场次索引：  key = seckill:sessions:{startTime}_{endTime}，value 为 List，
+ *                元素是 "{场次id}-{skuId}"，用于根据“当前时间”快速定位正在进行的场次及该场次的商品。
+ *  2) 商品详情：  key = seckill:skus（Hash），field = "{场次id}-{skuId}"，
+ *                value 为 SeckillSkuRedisTo 的 JSON，保存单个商品完整的秒杀信息（含随机码、价格、时间等）。
+ *  3) 库存信号量：key = seckill:stock:{随机码}，使用 Redisson 信号量，permits = 秒杀总量，
+ *                用于分布式限流与原子扣减库存。
+ */
 @Slf4j
 @Service
 public class SeckillServiceImpl implements SeckillService {
@@ -49,10 +64,13 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    /** 秒杀场次在 Redis 中的 key 前缀：seckill:sessions:{startTime}_{endTime} */
     private final String SESSION__CACHE_PREFIX = "seckill:sessions:";
 
+    /** 秒杀商品详情在 Redis 中的 Hash key 前缀：seckill:skus */
     private final String SECKILL_CHARE_PREFIX = "seckill:skus";
 
+    /** 秒杀库存信号量在 Redis 中的 key 前缀：seckill:stock:{随机码} */
     private final String SKU_STOCK_SEMAPHORE = "seckill:stock:";    //+商品随机码
 
     @Override
@@ -178,7 +196,6 @@ public class SeckillServiceImpl implements SeckillService {
         });
     }
 
-
     /**
      * 获取到当前可以参加秒杀商品的信息
      * @return
@@ -276,7 +293,6 @@ public class SeckillServiceImpl implements SeckillService {
         return null;
     }
 
-
     /**
      * 当前商品进行秒杀（秒杀开始）
      * @param killId
@@ -288,16 +304,17 @@ public class SeckillServiceImpl implements SeckillService {
     public String kill(String killId, String key, Integer num) throws InterruptedException {
 
         long s1 = System.currentTimeMillis();
-        //获取当前用户的信息
+        //获取当前登录用户的信息（由 LoginUserInterceptor 在请求前放入 ThreadLocal）
         MemberResponseVo user = LoginUserInterceptor.loginUser.get();
 
-        //1、获取当前秒杀商品的详细信息从Redis中获取
+        //1、从 Redis 中获取当前秒杀商品的详细信息
         BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SECKILL_CHARE_PREFIX);
         String skuInfoValue = hashOps.get(killId);
         if (StringUtils.isEmpty(skuInfoValue)) {
+            // 商品不存在或未上架，直接返回失败
             return null;
         }
-        //(合法性效验)
+        //(合法性效验) 反序列化为商品秒杀信息对象
         SeckillSkuRedisTo redisTo = JSON.parseObject(skuInfoValue, SeckillSkuRedisTo.class);
         Long startTime = redisTo.getStartTime();
         Long endTime = redisTo.getEndTime();
@@ -305,14 +322,14 @@ public class SeckillServiceImpl implements SeckillService {
         //判断当前这个秒杀请求是否在活动时间区间内(效验时间的合法性)
         if (currentTime >= startTime && currentTime <= endTime) {
 
-            //2、效验随机码和商品id
+            //2、效验随机码和商品 id（随机码防止他人通过枚举接口恶意刷单）
             String randomCode = redisTo.getRandomCode();
             String skuId = redisTo.getPromotionSessionId() + "-" +redisTo.getSkuId();
             if (randomCode.equals(key) && killId.equals(skuId)) {
-                //3、验证购物数量是否合理和库存量是否充足
+                //3、验证购买数量是否合理、是否在限购范围内，以及库存是否充足
                 Integer seckillLimit = redisTo.getSeckillLimit();
 
-                //获取信号量
+                //获取信号量当前剩余库存值
                 String seckillCount = redisTemplate.opsForValue().get(SKU_STOCK_SEMAPHORE + randomCode);
                 if (StringUtils.isEmpty(seckillCount)) {
                     return null;
@@ -320,20 +337,20 @@ public class SeckillServiceImpl implements SeckillService {
                 Integer count = Integer.valueOf(seckillCount);
                 //判断信号量是否大于0,并且买的数量不能超过库存，也不能超过限购数量
                 if (count >= num && num <= seckillLimit) {
-                    //4、验证这个人是否已经买过了（幂等性处理）,如果秒杀成功，就去占位。userId-sessionId-skuId
-                    //SETNX 原子性处理
+                    //4、验证这个人是否已经买过了（幂等性处理）：以 userId-sessionId-skuId 做占位
+                    //使用 SETNX 原子性写入，已存在则说明该用户已秒杀过，直接失败
                     String redisKey = user.getId() + "-" + skuId;
-                    //设置自动过期(活动结束时间-当前时间)
+                    //设置自动过期时间 = 活动结束时间 - 当前时间，活动结束后占位自动失效
                     Long ttl = endTime - currentTime;
                     Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(redisKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
                     if (aBoolean) {
-                        //占位成功说明从来没有买过,分布式锁(获取信号量-1)
+                        //占位成功说明该用户从未买过，尝试获取分布式信号量（库存 -num）
                         RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
                         //TODO 秒杀成功，快速下单
                         boolean semaphoreCount = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
-                        //保证Redis中还有商品库存
+                        //保证 Redis 中还有商品库存
                         if (semaphoreCount) {
-                            //创建订单号和订单信息发送给MQ
+                            //创建订单号和订单信息发送给 MQ，由订单服务异步创建订单、扣减数据库库存
                             // 秒杀成功 快速下单 发送消息到 MQ 整个操作时间在 10ms 左右
                             String timeId = System.currentTimeMillis() + "" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
                             SeckillOrderTo orderTo = new SeckillOrderTo();
@@ -343,6 +360,7 @@ public class SeckillServiceImpl implements SeckillService {
                             orderTo.setPromotionSessionId(redisTo.getPromotionSessionId());
                             orderTo.setSkuId(redisTo.getSkuId());
                             orderTo.setSeckillPrice(redisTo.getSeckillPrice());
+                            // 路由到 order-event-exchange，routingKey=order.seckill.order
                             rabbitTemplate.convertAndSend("order-event-exchange","order.seckill.order",orderTo);
                             long s2 = System.currentTimeMillis();
                             log.info("耗时..." + (s2 - s1));

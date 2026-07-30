@@ -137,8 +137,6 @@ export default {
     selectionChangeHandle(val) {
       this.dataListSelections = val;
     },
-    // 新增 / 修改
-    addOrUpdateHandle(id) {}
   },
   mounted() {
     this.dataSub = this.PubSub.subscribe("dataForm", (msg, val) => {

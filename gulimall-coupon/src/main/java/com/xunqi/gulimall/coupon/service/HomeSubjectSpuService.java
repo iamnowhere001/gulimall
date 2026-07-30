@@ -13,4 +13,3 @@ public interface HomeSubjectSpuService extends IService<HomeSubjectSpuEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

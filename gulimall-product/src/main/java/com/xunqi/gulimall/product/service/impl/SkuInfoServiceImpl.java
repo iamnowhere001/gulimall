@@ -33,8 +33,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
 @Slf4j
+/**
+ * SKU 信息服务实现。
+ *
+ * 负责 SKU 的查询、条件分页（关键字/分类/品牌/价格区间）与商品详情 {@code item(skuId)} 组装。
+ * item() 使用 CompletableFuture + 自定义线程池并发获取：基本信息、图片、销售属性组合、SPU 规格参数、
+ * 库存（远程调 ware 服务）、秒杀信息（远程调 seckill 服务），最后汇总为 SkuItemVo 返回。
+ */
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
 
@@ -136,7 +142,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         return skuInfoEntities;
     }
 
-
     @Override
     public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
 
@@ -151,7 +156,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             return info;
         }, executor);
 
-
         CompletableFuture<Void> saleAttrFuture = infoFuture.thenAcceptAsync((res) -> {
             //3、获取spu的销售属性组合
             if (res != null) {
@@ -160,7 +164,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             }
         }, executor);
 
-
         CompletableFuture<Void> descFuture = infoFuture.thenAcceptAsync((res) -> {
             //4、获取spu的介绍    pms_spu_info_desc
             if (res != null) {
@@ -168,7 +171,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
                 skuItemVo.setDesc(spuInfoDescEntity);
             }
         }, executor);
-
 
         CompletableFuture<Void> baseAttrFuture = infoFuture.thenAcceptAsync((res) -> {
             //5、获取spu的规格参数信息
@@ -221,7 +223,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
                 }
             }
         }, executor);
-
 
         //等到所有任务都完成
         CompletableFuture.allOf(infoFuture, saleAttrFuture, descFuture, baseAttrFuture, imageFuture, stockFuture, seckillFuture).get();

@@ -15,8 +15,6 @@ import com.xunqi.gulimall.member.service.MemberCollectSpuService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 /**
  * 会员收藏的商品
  */
@@ -35,7 +33,6 @@ public class MemberCollectSpuController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

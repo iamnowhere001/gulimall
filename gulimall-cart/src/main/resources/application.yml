@@ -1,7 +1,6 @@
 server:
   port: 40000
 
-
 spring:
   application:
     name: gulimall-cart
@@ -32,7 +31,6 @@ feign:
   sentinel:
     enabled: false
 
-
   session:
     store-type: redis
 
@@ -49,5 +47,3 @@ management:
     web:
       exposure:
         include: '*'
-
-

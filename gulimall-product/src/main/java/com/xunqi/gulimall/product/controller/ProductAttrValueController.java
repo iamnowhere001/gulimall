@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.ProductAttrValueService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * SPU 规格参数值控制器（pms_product_attr_value）。
+ * 提供 SPU 规格属性值的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/productattrvalue")
 public class ProductAttrValueController {
@@ -33,7 +35,6 @@ public class ProductAttrValueController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

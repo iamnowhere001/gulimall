@@ -13,4 +13,3 @@ public interface SkuLadderService extends IService<SkuLadderEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

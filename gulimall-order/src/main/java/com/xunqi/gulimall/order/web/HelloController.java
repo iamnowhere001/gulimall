@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * 测试/演示控制器（非生产业务）。
+ * - /test/createOrder：发送 order.create.order 消息到 MQ，用于联调延迟队列与关单流程；
+ * - /{page}.html：通用页面转发，便于在模板未就绪时直接返回静态页。
+ */
 @Controller
 public class HelloController {
 

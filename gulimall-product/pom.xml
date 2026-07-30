@@ -139,7 +139,6 @@
             <artifactId>seata-all</artifactId>
         </dependency>
 
-
     </dependencies>
 
     <build>

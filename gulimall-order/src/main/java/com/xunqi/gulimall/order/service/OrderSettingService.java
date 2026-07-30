@@ -10,4 +10,3 @@ public interface OrderSettingService extends IService<OrderSettingEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

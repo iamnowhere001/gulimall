@@ -9,6 +9,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Feign 请求拦截器配置（订单服务）。
+ * 注册名为 requestInterceptor 的 Bean，在 Feign 发起远程调用前把当前请求的 Cookie（含 Session）同步到新请求头，
+ * 解决“订单服务→会员/购物车等服务的远程调用丢失登录态（Session）”的问题。
+ */
 @Configuration
 public class GuliFeignConfig {
 

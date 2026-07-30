@@ -1,7 +1,9 @@
 package com.xunqi.common.utils;
 
 /**
- * 常量
+ * 通用常量与枚举定义（renren 后台通用）。
+ * 包含分页参数名（page / limit / sidx / order / asc）、超级管理员标识，
+ * 以及菜单类型（MenuType）、定时任务状态（ScheduleStatus）、云服务商（CloudService）等枚举。
  */
 public class Constant {
 	/** 超级管理员ID */

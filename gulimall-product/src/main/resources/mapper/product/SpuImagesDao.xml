@@ -13,5 +13,4 @@
         <result property="defaultImg" column="default_img"/>
     </resultMap>
 
-
 </mapper>

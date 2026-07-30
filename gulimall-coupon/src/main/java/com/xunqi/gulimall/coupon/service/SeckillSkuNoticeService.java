@@ -13,4 +13,3 @@ public interface SeckillSkuNoticeService extends IService<SeckillSkuNoticeEntity
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

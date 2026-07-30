@@ -38,7 +38,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * 库存 SKU 服务实现（仓储核心）。
+ *
+ * 核心职责（保证下单与库存的最终一致）：
+ *  - addStock()：采购到货/手动入库，增加某 SKU 在某仓库的库存（无记录则新增，有则累加）；
+ *  - getSkuHasStock()：批量判断 SKU 是否有库存（供商品详情/购物车展示可售状态）；
+ *  - orderLockStock()：下单锁定库存——保存库存工作单（WareOrderTask）与明细，按就近仓库用库存锁定 SQL（CAS，返回 1/0）
+ *    锁定；全部锁定成功后向 stock-event-exchange(routingKey=stock.locked) 发送消息进入延迟队列；
+ *  - unlockStock()：监听延迟队列（锁单自动解锁）或订单关闭事件（订单取消解锁），
+ *    结合订单状态决定是否真正回退库存，避免“下单成功但后续失败 / 订单取消”造成库存被永久占用。
+ */
 @RabbitListener(queues = "stock.release.stock.queue")
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
@@ -83,7 +93,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
         return new PageUtils(page);
     }
-
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -149,7 +158,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         wareOrderTaskEntity.setOrderSn(vo.getOrderSn());
         wareOrderTaskEntity.setCreateTime(new Date());
         wareOrderTaskService.save(wareOrderTaskEntity);
-
 
         //1、按照下单的收货地址，找到一个就近仓库，锁定库存
         //2、找到每个商品在哪个仓库都有库存
@@ -312,7 +320,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         wareOrderTaskDetailService.updateById(taskDetailEntity);
 
     }
-
 
     @Data
     class SkuWareHasStock {

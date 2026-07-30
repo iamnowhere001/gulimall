@@ -15,6 +15,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * 订单页（Thymeleaf）控制器，承载用户下单主流程的页面跳转。
+ *
+ *  - /toTrade：进入结算确认页，调用 confirmOrder() 并发查询收货地址、购物车勾选项与库存；
+ *  - /submitOrder：提交下单，调用 submitOrder()（含防重令牌、价格校验、锁库存），
+ *    成功后跳转支付页（pay），失败/库存不足则携带提示重定向回确认页。
+ */
 @Controller
 public class OrderWebController {
 
@@ -39,7 +46,6 @@ public class OrderWebController {
 
         return "confirm";
     }
-
 
     /**
      * 下单功能

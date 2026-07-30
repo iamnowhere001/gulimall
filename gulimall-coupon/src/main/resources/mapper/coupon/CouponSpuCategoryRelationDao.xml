@@ -11,5 +11,4 @@
         <result property="categoryName" column="category_name"/>
     </resultMap>
 
-
 </mapper>

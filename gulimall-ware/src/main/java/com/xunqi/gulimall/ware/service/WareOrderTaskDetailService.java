@@ -13,4 +13,3 @@ public interface WareOrderTaskDetailService extends IService<WareOrderTaskDetail
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

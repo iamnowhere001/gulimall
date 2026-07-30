@@ -15,8 +15,6 @@ import com.xunqi.gulimall.order.service.OrderReturnApplyService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 @RestController
 @RequestMapping("order/orderreturnapply")
 public class OrderReturnApplyController {
@@ -32,7 +30,6 @@ public class OrderReturnApplyController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

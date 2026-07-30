@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * 秒杀下单监听器（消费 order.seckill.order.queue）。
+ * 接收秒杀服务发来的 SeckillOrderTo，调用 orderService.createSeckillOrder() 直接落库创建秒杀订单，
+ * 无需走购物车确认/令牌流程。成功后 basicAck，异常 basicReject(requeue=true) 重试。
+ */
 @Slf4j
 @Component
 @RabbitListener(queues = "order.seckill.order.queue")

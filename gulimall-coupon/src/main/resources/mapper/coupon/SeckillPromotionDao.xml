@@ -14,5 +14,4 @@
         <result property="userId" column="user_id"/>
     </resultMap>
 
-
 </mapper>

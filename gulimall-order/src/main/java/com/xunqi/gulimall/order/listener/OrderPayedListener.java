@@ -15,6 +15,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 支付宝异步通知（回调）接口。
+ * 支付宝在支付后异步 POST 到 /payed/notify，先做签名验签（AlipaySignature），
+ * 验签通过则调用 orderService.handlePayResult() 更新订单状态为已支付，并返回 success 告知支付宝停止重试。
+ */
 @RestController
 public class OrderPayedListener {
 

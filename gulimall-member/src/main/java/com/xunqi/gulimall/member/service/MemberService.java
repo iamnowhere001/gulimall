@@ -58,4 +58,3 @@ public interface MemberService extends IService<MemberEntity> {
      */
     MemberEntity login(String accessTokenInfo);
 }
-

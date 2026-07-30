@@ -1,7 +1,10 @@
 package com.xunqi.common.constant;
 
 /**
- * 商品常量属性
+ * 商品服务常量与枚举。
+ * 包含：
+ *  - AttrEnum：属性类型（基本属性 / 销售属性）
+ *  - ProductStatusEnum：SPU 上下架状态（新建 / 上架 / 下架）
  */
 public class ProductConstant {
 
@@ -28,7 +31,6 @@ public class ProductConstant {
 
     }
 
-
     public enum ProductStatusEnum {
         NEW_SPU(0,"新建"),
         SPU_UP(1,"商品上架"),
@@ -53,6 +55,5 @@ public class ProductConstant {
         }
 
     }
-
 
 }

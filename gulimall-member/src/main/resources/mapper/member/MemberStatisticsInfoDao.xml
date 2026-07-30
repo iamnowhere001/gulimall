@@ -22,5 +22,4 @@
         <result property="inviteFriendCount" column="invite_friend_count"/>
     </resultMap>
 
-
 </mapper>

@@ -13,4 +13,3 @@ public interface SkuImagesService extends IService<SkuImagesEntity> {
 
     List<SkuImagesEntity> getImagesBySkuId(Long skuId);
 }
-

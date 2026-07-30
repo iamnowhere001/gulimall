@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,6 @@ public class IndexController {
         return "index";
     }
 
-
     //index/json/catalog.json
     @ResponseBody
     @GetMapping(value = "/index/catalog.json")
@@ -53,7 +51,6 @@ public class IndexController {
         return catalogJson;
 
     }
-
 
     @GetMapping(value = "/hello")
     public String hello() {
@@ -75,7 +72,6 @@ public class IndexController {
 
         return "hello";
     }
-
 
     /**
      * 保证一定能读到最新数据，修改期间，写锁是一个排它锁（互斥锁、独享锁），读锁是一个共享锁
@@ -128,7 +124,6 @@ public class IndexController {
         return s;
     }
 
-
     /**
      * 车库停车
      * 3车位
@@ -156,7 +151,6 @@ public class IndexController {
         park.release();     //释放一个车位
         return "ok";
     }
-
 
     /**
      * 放假、锁门

@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * SKU 销售属性值服务实现。
+ * 提供销售属性的分页、按 SPU 查询销售属性组合（供详情页规格选择）、以及按 skuId 查询销售属性字符串列表等能力。
+ */
 @Service("skuSaleAttrValueService")
 public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao, SkuSaleAttrValueEntity> implements SkuSaleAttrValueService {
 

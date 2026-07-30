@@ -1,5 +1,10 @@
 package com.xunqi.common.utils;
 
+/**
+ * HTTP 请求工具类（基于 Apache HttpClient）。
+ * 封装 doGet / doPost / doPut / doDelete 等常用方法，
+ * 供短信、OSS 等第三方能力调用时使用，屏蔽底层 HttpClient 的复杂构造。
+ */
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

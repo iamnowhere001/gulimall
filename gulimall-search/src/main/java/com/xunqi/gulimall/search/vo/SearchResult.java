@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * 检索结果对象。
+ * 封装 ES 检索后返回给页面的全部信息：商品列表、分页、品牌/属性/分类聚合、面包屑导航。
+ */
 @Data
 public class SearchResult {
 
@@ -12,7 +16,6 @@ public class SearchResult {
      * 查询到的所有商品信息
      */
     private List<SkuEsModel> product;
-
 
     /**
      * 当前页码
@@ -46,9 +49,7 @@ public class SearchResult {
      */
     private List<CatalogVo> catalogs;
 
-
     //===========================以上是返回给页面的所有信息============================//
-
 
     /* 面包屑导航数据 */
     private List<NavVo> navs;
@@ -60,7 +61,6 @@ public class SearchResult {
         private String link;
     }
 
-
     @Data
     public static class BrandVo {
 
@@ -71,7 +71,6 @@ public class SearchResult {
         private String brandImg;
     }
 
-
     @Data
     public static class AttrVo {
 
@@ -81,7 +80,6 @@ public class SearchResult {
 
         private List<String> attrValue;
     }
-
 
     @Data
     public static class CatalogVo {

@@ -16,5 +16,4 @@
         <result property="productCount" column="product_count"/>
     </resultMap>
 
-
 </mapper>

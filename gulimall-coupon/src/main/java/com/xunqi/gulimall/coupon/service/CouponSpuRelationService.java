@@ -13,4 +13,3 @@ public interface CouponSpuRelationService extends IService<CouponSpuRelationEnti
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

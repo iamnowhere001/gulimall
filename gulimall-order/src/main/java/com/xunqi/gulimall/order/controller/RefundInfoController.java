@@ -13,8 +13,6 @@ import com.xunqi.gulimall.order.service.RefundInfoService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 @RestController
 @RequestMapping("order/refundinfo")
 public class RefundInfoController {
@@ -30,7 +28,6 @@ public class RefundInfoController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

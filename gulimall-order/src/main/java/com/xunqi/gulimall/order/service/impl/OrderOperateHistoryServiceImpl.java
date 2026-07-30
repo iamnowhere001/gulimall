@@ -12,7 +12,6 @@ import com.xunqi.gulimall.order.dao.OrderOperateHistoryDao;
 import com.xunqi.gulimall.order.entity.OrderOperateHistoryEntity;
 import com.xunqi.gulimall.order.service.OrderOperateHistoryService;
 
-
 @Service("orderOperateHistoryService")
 public class OrderOperateHistoryServiceImpl extends ServiceImpl<OrderOperateHistoryDao, OrderOperateHistoryEntity> implements OrderOperateHistoryService {
 

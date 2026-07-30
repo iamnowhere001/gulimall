@@ -13,7 +13,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
-
+/**
+ * 会员价格服务实现。
+ * 管理 SKU 在各会员等级下的专属价格（sms_member_price），
+ * 供商品上架保存会员价、以及购物车/下单时按会员等级取对应价格。
+ */
 @Service("memberPriceService")
 public class MemberPriceServiceImpl extends ServiceImpl<MemberPriceDao, MemberPriceEntity> implements MemberPriceService {
 

@@ -13,8 +13,6 @@ import com.xunqi.gulimall.order.service.OrderItemService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 @RestController
 @RequestMapping("order/orderitem")
 public class OrderItemController {
@@ -30,7 +28,6 @@ public class OrderItemController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

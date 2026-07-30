@@ -9,7 +9,17 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 
-
+/**
+ * 订单服务 RabbitMQ 交换机/队列/绑定 声明。
+ *
+ * 设计“创建订单 → 延迟 → 释放订单/释放库存”的延迟队列方案保证最终一致：
+ *  - order.delay.queue（普通队列，TTL=1 分钟，死信交换机 order-event-exchange，routingKey=order.release.order）：
+ *    下单成功后发送 order.create.order 到此队列，超时未支付则通过死信进入释放流程；
+ *  - order.release.order.queue：真正执行关单（OrderCloseListener）；
+ *  - stock.release.stock.queue：订单释放事件（order.release.other.#）同时触发库存解锁（跨服务解耦）；
+ *  - order.seckill.order.queue：接收秒杀服务发来的秒杀下单消息。
+ * 容器中的 Queue/Exchange/Binding 在 RabbitMQ 不存在时自动创建。
+ */
 @Configuration
 public class MyRabbitMQConfig {
 
@@ -67,7 +77,6 @@ public class MyRabbitMQConfig {
 
     }
 
-
     @Bean
     public Binding orderCreateBinding() {
         /*
@@ -108,7 +117,6 @@ public class MyRabbitMQConfig {
                 null);
     }
 
-
     /**
      * 商品秒杀队列
      * @return
@@ -132,6 +140,5 @@ public class MyRabbitMQConfig {
 
         return binding;
     }
-
 
 }

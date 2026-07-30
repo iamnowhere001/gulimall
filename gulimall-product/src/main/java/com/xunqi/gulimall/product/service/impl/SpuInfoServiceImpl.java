@@ -32,7 +32,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+/**
+ * SPU 商品信息服务实现。
+ *
+ * 核心职责：
+ *  - {@code savesupInfo(SpuSaveVo)}：新增商品（分布式事务 @GlobalTransactional），
+ *    依次保存 SPU 基本信息、描述、图片集、规格参数，并把积分/优惠规则通过 Feign 调用
+ *    coupon 服务落库到 sms 库，最后保存各 SKU 及其图片、销售属性、满减信息。
+ *  - {@code up(spuId)}：商品上架——查询 SKU、可检索规格属性、远程查库存，
+ *    组装 {@link SkuEsModel} 并通过 searchFeignService 写入 ES，成功后更新 SPU 上架状态。
+ *  - {@code queryPageByCondtion}：后台 SPU 列表的多条件分页查询（关键字/状态/品牌/分类）。
+ */
 @Service("spuInfoService")
 public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> implements SpuInfoService {
 
@@ -82,7 +92,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
-
     /**
      *  //TODO：高级部分完善后续
      * @param vo 新增商品
@@ -125,7 +134,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return valueEntity;
         }).collect(Collectors.toList());
         productAttrValueService.saveProductAttr(collect);
-
 
         //5、保存spu的积分信息：gulimall_sms--->sms_spu_bounds
         Bounds bounds = vo.getBounds();

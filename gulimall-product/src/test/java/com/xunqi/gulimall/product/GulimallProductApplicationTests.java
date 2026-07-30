@@ -104,7 +104,6 @@ public class GulimallProductApplicationTests {
         // 上传成功
     }
 
-
     @Test
     public void contextLoads() {
         // Integer.MAX_VALUE

@@ -23,5 +23,4 @@
         <result property="commentType" column="comment_type"/>
     </resultMap>
 
-
 </mapper>

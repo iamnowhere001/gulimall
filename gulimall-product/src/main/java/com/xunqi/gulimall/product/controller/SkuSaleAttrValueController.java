@@ -11,8 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-
+/**
+ * SKU 销售属性值控制器（pms_sku_sale_attr_value）。
+ * 提供 SKU 销售属性值的 CRUD，以及按 skuId 查询该 SKU 的销售属性字符串列表（供详情页规格组合展示）接口。
+ */
 @RestController
 @RequestMapping("product/skusaleattrvalue")
 public class SkuSaleAttrValueController {
@@ -35,7 +37,6 @@ public class SkuSaleAttrValueController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

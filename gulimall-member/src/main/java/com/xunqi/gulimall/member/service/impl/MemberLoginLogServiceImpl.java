@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.MemberLoginLogDao;
 import com.xunqi.gulimall.member.entity.MemberLoginLogEntity;
 import com.xunqi.gulimall.member.service.MemberLoginLogService;
 
-
 @Service("memberLoginLogService")
 public class MemberLoginLogServiceImpl extends ServiceImpl<MemberLoginLogDao, MemberLoginLogEntity> implements MemberLoginLogService {
 

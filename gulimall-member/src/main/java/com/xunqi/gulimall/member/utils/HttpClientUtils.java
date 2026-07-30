@@ -138,7 +138,6 @@ public class HttpClientUtils {
 		return result;
 	}
 
-
 	/**
 	 * 提交form表单
 	 *
@@ -201,9 +200,6 @@ public class HttpClientUtils {
 		}
 	}
 
-
-
-
 	/**
 	 * 发送一个 GET 请求
 	 *
@@ -255,7 +251,6 @@ public class HttpClientUtils {
 		return result;
 	}
 
-
 	/**
 	 * 从 response 里获取 charset
 	 *
@@ -273,8 +268,6 @@ public class HttpClientUtils {
 		}
 		return null;
 	}
-
-
 
 	/**
 	 * 创建 SSL连接

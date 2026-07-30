@@ -16,7 +16,6 @@ import java.util.Map;
 
 import static com.xunqi.common.exception.BizCodeEnum.NO_STOCK_EXCEPTION;
 
-
 /**
  * 商品库存
  */
@@ -71,7 +70,6 @@ public class WareSkuController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
+/**
+ * SPU 商品信息控制器（后台管理）。
+ * 提供 SPU 分页列表、详情、新增（保存完整商品，含 SKU/属性/优惠）、修改、删除，
+ * 以及商品上架（up）、按 skuId 查询所属 SPU 等业务接口。
+ */
 @RestController
 @RequestMapping("product/spuinfo")
 public class SpuInfoController {
@@ -52,7 +55,6 @@ public class SpuInfoController {
         
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

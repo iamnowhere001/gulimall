@@ -13,4 +13,3 @@ public interface MemberCollectSpuService extends IService<MemberCollectSpuEntity
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

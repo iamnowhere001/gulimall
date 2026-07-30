@@ -50,7 +50,6 @@ public class GulimallThirdPartyApplicationTests {
         ossClient.shutdown();
     }
 
-
     @Test
     public void sendSms() {
         String host = "https://fesms.market.alicloudapi.com";
@@ -74,4 +73,3 @@ public class GulimallThirdPartyApplicationTests {
     }
 
 }
-

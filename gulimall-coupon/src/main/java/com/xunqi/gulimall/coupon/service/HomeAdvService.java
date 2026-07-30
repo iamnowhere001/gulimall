@@ -13,4 +13,3 @@ public interface HomeAdvService extends IService<HomeAdvEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

@@ -20,5 +20,4 @@ public class SpuSaveVo {
   private List<BaseAttrs> baseAttrs;
   private List<Skus> skus;
 
-
 }

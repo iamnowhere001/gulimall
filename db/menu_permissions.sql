@@ -174,16 +174,11 @@ INSERT INTO `sys_menu` (`parent_id`, `name`, `url`, `perms`, `type`, `icon`, `or
 -- 支付流水查询 (menu_id=59)
 INSERT INTO `sys_menu` (`parent_id`, `name`, `url`, `perms`, `type`, `icon`, `order_num`) VALUES 
 (59, '查看', NULL, 'order:payment:list,order:payment:info', 2, NULL, 1),
-(59, '新增', NULL, 'order:paymentinfo:save', 2, NULL, 2),
-(59, '修改', NULL, 'order:paymentinfo:update', 2, NULL, 3),
-(59, '删除', NULL, 'order:paymentinfo:delete', 2, NULL, 4);
 
 -- 退款流水查询 (menu_id=60)
 INSERT INTO `sys_menu` (`parent_id`, `name`, `url`, `perms`, `type`, `icon`, `order_num`) VALUES 
 (60, '查看', NULL, 'order:refund:list,order:refund:info', 2, NULL, 1),
-(60, '新增', NULL, 'order:refundinfo:save', 2, NULL, 2),
-(60, '修改', NULL, 'order:refundinfo:update', 2, NULL, 3),
-(60, '删除', NULL, 'order:refundinfo:delete', 2, NULL, 4);
+
 
 -- 用户系统按钮权限
 -- 会员列表 (menu_id=61)

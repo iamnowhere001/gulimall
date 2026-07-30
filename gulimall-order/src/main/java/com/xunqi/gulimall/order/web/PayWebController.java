@@ -19,6 +19,11 @@ import javax.annotation.Resource;
 
 import static com.lly835.bestpay.enums.BestPayTypeEnum.WXPAY_NATIVE;
 
+/**
+ * 支付页控制器。
+ * 提供支付宝下单（/aliPayOrder，返回收银台 HTML）、微信 Native 扫码支付（/weixinPayOrder，返回二维码页）、
+ * 以及按订单号查询订单状态（/queryByOrderId）的接口。
+ */
 @Slf4j
 @Controller
 public class PayWebController {
@@ -52,7 +57,6 @@ public class PayWebController {
         return pay;
     }
 
-
     /**
      * 微信支付
      * @param orderSn
@@ -85,7 +89,6 @@ public class PayWebController {
         return "createForWxNative";
     }
 
-
     //根据订单号查询订单状态的API
     @ResponseBody
     @GetMapping(value = "/queryByOrderId")
@@ -93,7 +96,5 @@ public class PayWebController {
         log.info("查询支付记录...");
         return orderService.getOrderByOrderSn(orderId);
     }
-
-
 
 }

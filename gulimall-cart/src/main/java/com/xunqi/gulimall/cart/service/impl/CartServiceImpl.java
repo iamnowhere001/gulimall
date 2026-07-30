@@ -181,7 +181,6 @@ public class CartServiceImpl implements CartService {
         return operations;
     }
 
-
     /**
      * 获取购物车里面的数据
      * @param cartKey
@@ -202,7 +201,6 @@ public class CartServiceImpl implements CartService {
         return new ArrayList<>();
 
     }
-
 
     @Override
     public void clearCartInfo(String cartKey) {
@@ -246,7 +244,6 @@ public class CartServiceImpl implements CartService {
             cartOps.put(skuId.toString(), redisValue);
         }
     }
-
 
     /**
      * 删除购物项

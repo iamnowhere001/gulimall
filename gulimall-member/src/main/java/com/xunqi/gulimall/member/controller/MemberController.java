@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
 /**
  * 会员服务控制器
  * 提供会员注册、登录（账号密码/社交/微信）、会员信息 CRUD 等接口
@@ -27,7 +25,6 @@ import java.util.Map;
 public class MemberController {
     @Autowired
     private MemberService memberService;
-
 
     /**
      * 用户注册
@@ -47,7 +44,6 @@ public class MemberController {
         return R.ok();
     }
 
-
     /**
      * 账号密码登录
      */
@@ -62,7 +58,6 @@ public class MemberController {
             return R.error(BizCodeEnum.LOGINACCT_PASSWORD_EXCEPTION.getCode(),BizCodeEnum.LOGINACCT_PASSWORD_EXCEPTION.getMessage());
         }
     }
-
 
     /**
      * 社交账号登录（微博等）
@@ -102,7 +97,6 @@ public class MemberController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 根据 ID 查询会员信息

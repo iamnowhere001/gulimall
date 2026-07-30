@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
-
 /**
  * 秒杀活动
  */
@@ -31,7 +30,6 @@ public class SeckillPromotionController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

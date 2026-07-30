@@ -12,9 +12,15 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 
 /**
- * RabbitMQ配置
+ * RabbitMQ 配置（库存服务）。
+ *
+ * 使用 JSON 消息转换器，并声明库存事件相关的交换机、队列与绑定：
+ *  - stock-event-exchange（Topic 交换机）：库存事件主题交换机；
+ *  - stock.release.stock.queue（普通队列）：真正执行库存解锁的队列；
+ *  - stock.delay.queue（延迟队列，TTL=2 分钟，死信回到 stock-event-exchange/routingKey=stock.release）：
+ *    下单锁定库存后先进入延迟队列，超时未被消费（即订单未支付/未确认）即触发解锁，
+ *    从而实现“锁定 → 延迟 → 释放”的最终一致库存方案。
  */
-
 @Configuration
 public class MyRabbitMQConfig {
 
@@ -49,7 +55,6 @@ public class MyRabbitMQConfig {
         return queue;
     }
 
-
     /**
      * 延迟队列
      * @return
@@ -66,7 +71,6 @@ public class MyRabbitMQConfig {
         Queue queue = new Queue("stock.delay.queue", true, false, false,arguments);
         return queue;
     }
-
 
     /**
      * 交换机与普通队列绑定
@@ -85,7 +89,6 @@ public class MyRabbitMQConfig {
         return binding;
     }
 
-
     /**
      * 交换机与延迟队列绑定
      * @return
@@ -98,6 +101,5 @@ public class MyRabbitMQConfig {
                 "stock.locked",
                 null);
     }
-
 
 }

@@ -13,4 +13,3 @@ public interface SpuImagesService extends IService<SpuImagesEntity> {
 
     void saveImages(Long id, List<String> images);
 }
-

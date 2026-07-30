@@ -31,7 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * 商品属性服务实现。
+ * 管理规格参数（基本属性）与销售属性：保存属性时若为基本属性则同时维护与属性分组的关联；
+ * 提供按分类/类型分页、详情（含分组与分类路径）、修改、分组关联/取消关联、查询未关联属性、筛选可检索属性等能力。
+ */
 @Service("attrService")
 public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements AttrService {
 
@@ -262,7 +266,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             return item.getAttrGroupId();
         }).collect(Collectors.toList());
 
-
         //2.2）、这些分组关联的属性
         List<AttrAttrgroupRelationEntity> groupId = relationDao.selectList
                 (new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", collect));
@@ -289,7 +292,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), queryWrapper);
 
         PageUtils pageUtils = new PageUtils(page);
-
 
         return pageUtils;
     }

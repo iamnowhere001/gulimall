@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
 /**
  * 仓库信息
  */
@@ -43,7 +41,6 @@ public class WareInfoController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

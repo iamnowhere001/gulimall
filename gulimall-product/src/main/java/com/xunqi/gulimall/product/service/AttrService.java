@@ -42,4 +42,3 @@ public interface AttrService extends IService<AttrEntity> {
      */
     List<Long> selectSearchAttrs(List<Long> attrIds);
 }
-

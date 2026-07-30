@@ -11,7 +11,6 @@ spring:
         sign: 175622
         appcode: b0563c23aff8428c97a54d4f7f9e28e5
 
-
   application:
     name: gulimall-third-party
 

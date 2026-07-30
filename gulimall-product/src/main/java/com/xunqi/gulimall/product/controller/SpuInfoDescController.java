@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.SpuInfoDescService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * SPU 描述/详情图控制器（pms_spu_info_desc）。
+ * 提供 SPU 描述信息（长图介绍）的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/spuinfodesc")
 public class SpuInfoDescController {
@@ -33,7 +35,6 @@ public class SpuInfoDescController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

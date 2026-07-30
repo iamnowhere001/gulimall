@@ -7,9 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * MyBatis配置
+ * MyBatis-Plus 配置（仓储服务）。
+ * 注册分页插件（PaginationInterceptor，开启 overflow 回到首页、单页上限 1000），
+ * 开启声明式事务，并扫描 dao 包下的 Mapper 接口。
  */
-
 @Configuration
 @EnableTransactionManagement        //开启事务
 @MapperScan("com.xunqi.gulimall.ware.dao")
@@ -25,6 +26,5 @@ public class MyBatisConfig {
         paginationInterceptor.setLimit(1000);
         return paginationInterceptor;
     }
-
 
 }

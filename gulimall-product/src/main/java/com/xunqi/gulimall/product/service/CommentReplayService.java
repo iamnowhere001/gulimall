@@ -10,4 +10,3 @@ public interface CommentReplayService extends IService<CommentReplayEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.GrowthChangeHistoryDao;
 import com.xunqi.gulimall.member.entity.GrowthChangeHistoryEntity;
 import com.xunqi.gulimall.member.service.GrowthChangeHistoryService;
 
-
 @Service("growthChangeHistoryService")
 public class GrowthChangeHistoryServiceImpl extends ServiceImpl<GrowthChangeHistoryDao, GrowthChangeHistoryEntity> implements GrowthChangeHistoryService {
 

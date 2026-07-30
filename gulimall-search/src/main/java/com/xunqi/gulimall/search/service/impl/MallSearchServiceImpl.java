@@ -45,6 +45,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 商品检索服务实现。
+ *
+ * 核心流程 search()：
+ *  1. buildSearchRequest() 根据 SearchParam 动态构造 ES 的 DSL：
+ *     模糊匹配（skuTitle）+ 过滤（分类/品牌/属性 nested/库存/价格区间）+ 排序 + 分页 + 关键字高亮
+ *     + 聚合分析（品牌、分类、属性 nested 三层聚合）；
+ *  2. 调用 ES 执行检索；
+ *  3. buildSearchResult() 解析 hits 与聚合结果，封装商品列表、品牌/属性/分类选项、分页与面包屑导航。
+ * 异常时返回空的 SearchResult 以避免页面 NPE。
+ */
 @Slf4j
 @Service
 public class MallSearchServiceImpl implements MallSearchService {
@@ -199,7 +210,6 @@ public class MallSearchServiceImpl implements MallSearchService {
         }
         result.setPageNavs(pageNavs);
 
-
         //6、构建面包屑导航
         if (param.getAttrs() != null && param.getAttrs().size() > 0) {
             List<SearchResult.NavVo> collect = param.getAttrs().stream().map(attr -> {
@@ -234,10 +244,8 @@ public class MallSearchServiceImpl implements MallSearchService {
             result.setNavs(collect);
         }
 
-
         return result;
     }
-
 
     /**
      * 准备检索请求
@@ -277,7 +285,6 @@ public class MallSearchServiceImpl implements MallSearchService {
                 //attrs=1_5寸:8寸&2_16G:8G
                 BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-
                 //attrs=1_5寸:8寸
                 String[] s = item.split("_");
                 String attrId=s[0];
@@ -295,7 +302,6 @@ public class MallSearchServiceImpl implements MallSearchService {
         if(null != param.getHasStock()){
             boolQueryBuilder.filter(QueryBuilders.termQuery("hasStock",param.getHasStock() == 1));
         }
-
 
         //1.2.5 skuPrice
         if(!StringUtils.isEmpty(param.getSkuPrice())){
@@ -319,7 +325,6 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         //封装所有的查询条件
         searchSourceBuilder.query(boolQueryBuilder);
-
 
         /**
          * 排序，分页，高亮
@@ -351,15 +356,12 @@ public class MallSearchServiceImpl implements MallSearchService {
             searchSourceBuilder.highlighter(highlightBuilder);
         }
 
-
-
         /**
          * 聚合分析
          */
         //1. 按照品牌进行聚合
         TermsAggregationBuilder brand_agg = AggregationBuilders.terms("brand_agg");
         brand_agg.field("brandId").size(50);
-
 
         //1.1 品牌的子聚合-品牌名聚合
         brand_agg.subAggregation(AggregationBuilders.terms("brand_name_agg")

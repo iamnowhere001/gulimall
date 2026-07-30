@@ -11,5 +11,4 @@
         <result property="spuName" column="spu_name"/>
     </resultMap>
 
-
 </mapper>

@@ -13,5 +13,4 @@
         <result property="addOther" column="add_other"/>
     </resultMap>
 
-
 </mapper>

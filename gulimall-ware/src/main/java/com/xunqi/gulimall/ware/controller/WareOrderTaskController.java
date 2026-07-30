@@ -15,8 +15,6 @@ import com.xunqi.gulimall.ware.service.WareOrderTaskService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
 /**
  * 库存工作单
  */
@@ -35,7 +33,6 @@ public class WareOrderTaskController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

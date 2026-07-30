@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.MemberCollectSpuDao;
 import com.xunqi.gulimall.member.entity.MemberCollectSpuEntity;
 import com.xunqi.gulimall.member.service.MemberCollectSpuService;
 
-
 @Service("memberCollectSpuService")
 public class MemberCollectSpuServiceImpl extends ServiceImpl<MemberCollectSpuDao, MemberCollectSpuEntity> implements MemberCollectSpuService {
 

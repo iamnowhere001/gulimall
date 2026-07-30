@@ -12,7 +12,6 @@ import com.xunqi.gulimall.order.dao.OrderReturnApplyDao;
 import com.xunqi.gulimall.order.entity.OrderReturnApplyEntity;
 import com.xunqi.gulimall.order.service.OrderReturnApplyService;
 
-
 @Service("orderReturnApplyService")
 public class OrderReturnApplyServiceImpl extends ServiceImpl<OrderReturnApplyDao, OrderReturnApplyEntity> implements OrderReturnApplyService {
 

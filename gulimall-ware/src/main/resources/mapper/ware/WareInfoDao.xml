@@ -11,5 +11,4 @@
         <result property="areacode" column="areacode"/>
     </resultMap>
 
-
 </mapper>

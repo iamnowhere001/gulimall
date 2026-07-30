@@ -11,8 +11,11 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
-
-
+/**
+ * SKU 商品信息控制器（后台管理）。
+ * 提供 SKU 分页列表（支持多条件）、详情、保存、修改、删除，
+ * 以及按 skuId 查询当前价格（供订单/购物车实时取价）等接口。
+ */
 @RestController
 @RequestMapping("product/skuinfo")
 public class SkuInfoController {
@@ -47,7 +50,6 @@ public class SkuInfoController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

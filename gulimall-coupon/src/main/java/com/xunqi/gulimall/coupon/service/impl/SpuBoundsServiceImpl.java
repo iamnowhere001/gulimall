@@ -13,7 +13,10 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
-
+/**
+ * SPU 积分（购物积分/成长积分）服务实现。
+ * 管理 SPU 的积分奖励规则（sms_spu_bounds），商品上架时由 product 服务调用保存。
+ */
 @Service("spuBoundsService")
 public class SpuBoundsServiceImpl extends ServiceImpl<SpuBoundsDao, SpuBoundsEntity> implements SpuBoundsService {
 

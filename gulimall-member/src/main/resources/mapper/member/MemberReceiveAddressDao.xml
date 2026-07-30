@@ -18,5 +18,4 @@
         <result property="defaultStatus" column="default_status"/>
     </resultMap>
 
-
 </mapper>

@@ -12,7 +12,6 @@ import com.xunqi.gulimall.member.dao.MemberStatisticsInfoDao;
 import com.xunqi.gulimall.member.entity.MemberStatisticsInfoEntity;
 import com.xunqi.gulimall.member.service.MemberStatisticsInfoService;
 
-
 @Service("memberStatisticsInfoService")
 public class MemberStatisticsInfoServiceImpl extends ServiceImpl<MemberStatisticsInfoDao, MemberStatisticsInfoEntity> implements MemberStatisticsInfoService {
 

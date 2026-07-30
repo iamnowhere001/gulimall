@@ -13,4 +13,3 @@ public interface IntegrationChangeHistoryService extends IService<IntegrationCha
 
     PageUtils queryPage(Map<String, Object> params);
 }
-

@@ -10,5 +10,4 @@
         <result property="replyId" column="reply_id"/>
     </resultMap>
 
-
 </mapper>

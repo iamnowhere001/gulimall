@@ -54,7 +54,6 @@ public class CartController {
         return "cartList";
     }
 
-
     /**
      * 添加商品到购物车
      * attributes.addFlashAttribute():将数据放在session中，可以在页面中取出，但是只能取一次
@@ -72,7 +71,6 @@ public class CartController {
         return "redirect:http://cart.gulimall.com/addToCartSuccessPage.html";
     }
 
-
     /**
      * 跳转到添加购物车成功页面
      * @param skuId
@@ -87,7 +85,6 @@ public class CartController {
         model.addAttribute("cartItem",cartItemVo);
         return "success";
     }
-
 
     /**
      * 商品是否选中
@@ -105,7 +102,6 @@ public class CartController {
 
     }
 
-
     /**
      * 改变商品数量
      * @param skuId
@@ -120,7 +116,6 @@ public class CartController {
 
         return "redirect:http://cart.gulimall.com/cart.html";
     }
-
 
     /**
      * 删除商品信息

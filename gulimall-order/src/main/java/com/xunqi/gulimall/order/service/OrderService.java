@@ -66,11 +66,9 @@ public interface OrderService extends IService<OrderEntity> {
      */
     String asyncNotify(String notifyData);
 
-
     /**
      * 创建秒杀单
      * @param orderTo
      */
     void createSeckillOrder(SeckillOrderTo orderTo);
 }
-

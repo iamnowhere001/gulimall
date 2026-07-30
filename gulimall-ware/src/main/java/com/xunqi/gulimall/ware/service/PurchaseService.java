@@ -41,4 +41,3 @@ public interface PurchaseService extends IService<PurchaseEntity> {
      */
     void done(PurchaseDoneVo doneVo);
 }
-

@@ -1,7 +1,9 @@
 package com.xunqi.common.utils;
 
 /**
- * 自定义异常
+ * 自定义运行时异常（Renren 框架通用）。
+ * 在携带错误信息 msg 的基础上额外携带业务错误码 code，
+ * 便于全局异常处理器捕获后统一转换为 {@link R} 返回给前端。
  */
 public class RRException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -46,6 +48,5 @@ public class RRException extends RuntimeException {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	
 	
 }

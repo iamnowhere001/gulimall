@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * SKU 图片服务实现。
+ * 管理 SKU 的图片（pms_sku_images），提供分页与按 skuId 查询图片列表（供详情页主图/图集展示）能力。
+ */
 @Service("skuImagesService")
 public class SkuImagesServiceImpl extends ServiceImpl<SkuImagesDao, SkuImagesEntity> implements SkuImagesService {
 

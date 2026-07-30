@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * SKU 基本信息 VO。
+ * 由商品服务远程返回，购物车用于组装购物项的名称、图片、价格、销售属性等展示信息。
+ */
 @Data
 public class SkuInfoVo {
 

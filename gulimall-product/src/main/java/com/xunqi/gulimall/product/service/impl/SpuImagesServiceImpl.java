@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * SPU 图片集服务实现。
+ * 管理 SPU 的图片集（pms_spu_images），提供分页与批量保存（saveImages）能力，供上架时持久化商品图片。
+ */
 @Service("spuImagesService")
 public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEntity> implements SpuImagesService {
 

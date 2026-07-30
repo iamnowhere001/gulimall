@@ -15,8 +15,10 @@ import com.xunqi.gulimall.product.service.SpuImagesService;
 import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 
-
-
+/**
+ * SPU 图片集控制器（pms_spu_images）。
+ * 提供 SPU 图片集的分页、详情、保存、修改、删除等基础 CRUD 接口。
+ */
 @RestController
 @RequestMapping("product/spuimages")
 public class SpuImagesController {
@@ -33,7 +35,6 @@ public class SpuImagesController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

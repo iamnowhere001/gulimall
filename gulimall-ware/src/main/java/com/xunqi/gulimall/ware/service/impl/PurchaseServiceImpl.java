@@ -22,7 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * 采购单服务实现。
+ *
+ * 负责采购业务流程：查询采购单、查询未领取采购单（queryPageUnreceive）、
+ * 合并采购需求（mergePurchase，未选单则自动建单）、领取采购单（received）、完成采购（done）。
+ * 完成采购时，对成功项调用 wareSkuService.addStock 入库；
+ * 状态流转由 WareConstant 中的采购单/采购明细状态枚举（新建→已分配→采购中→已完成/异常）驱动。
+ */
 @Service("purchaseService")
 public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity> implements PurchaseService {
 
