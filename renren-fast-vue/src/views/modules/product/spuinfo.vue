@@ -21,8 +21,8 @@
           <el-tag v-if="scope.row.publishStatus == 2">已下架</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间"></el-table-column>
-      <el-table-column prop="updateTime" header-align="center" align="center" label="修改时间"></el-table-column>
+      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间" :formatter="dateFormat"></el-table-column>
+      <el-table-column prop="updateTime" header-align="center" align="center" label="修改时间" :formatter="dateFormat"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button

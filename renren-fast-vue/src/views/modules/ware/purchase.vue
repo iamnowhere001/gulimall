@@ -52,8 +52,8 @@
       </el-table-column>
       <el-table-column prop="wareId" header-align="center" align="center" label="仓库id"></el-table-column>
       <el-table-column prop="amount" header-align="center" align="center" label="总金额"></el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="创建日期"></el-table-column>
-      <el-table-column prop="updateTime" header-align="center" align="center" label="更新日期"></el-table-column>
+      <el-table-column prop="createTime" header-align="center" align="center" label="创建日期" :formatter="dateFormat"></el-table-column>
+      <el-table-column prop="updateTime" header-align="center" align="center" label="更新日期" :formatter="dateFormat"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button

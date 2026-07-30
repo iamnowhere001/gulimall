@@ -44,13 +44,13 @@
         prop="startTime"
         header-align="center"
         align="center"
-        label="开始时间">
+        label="开始时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="endTime"
         header-align="center"
         align="center"
-        label="结束时间">
+        label="结束时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="status"

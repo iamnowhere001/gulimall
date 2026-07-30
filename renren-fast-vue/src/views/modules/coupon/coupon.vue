@@ -42,8 +42,8 @@
       <el-table-column prop="amount" header-align="center" align="center" label="金额"></el-table-column>
       <el-table-column prop="perLimit" header-align="center" align="center" label="每人限领张数"></el-table-column>
       <el-table-column prop="minPoint" header-align="center" align="center" label="使用门槛"></el-table-column>
-      <el-table-column prop="startTime" header-align="center" align="center" label="开始时间"></el-table-column>
-      <el-table-column prop="endTime" header-align="center" align="center" label="结束时间"></el-table-column>
+      <el-table-column prop="startTime" header-align="center" align="center" label="开始时间" :formatter="dateFormat"></el-table-column>
+      <el-table-column prop="endTime" header-align="center" align="center" label="结束时间" :formatter="dateFormat"></el-table-column>
       <el-table-column prop="useType" header-align="center" align="center" label="使用类型">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.useType==0">全场通用</el-tag>
@@ -56,8 +56,8 @@
       <el-table-column prop="useCount" header-align="center" align="center" label="已使用数量"></el-table-column>
       <el-table-column prop="receiveCount" header-align="center" align="center" label="领取数量"></el-table-column>
       <el-table-column label="可以领取的日期">
-        <el-table-column prop="enableStartTime" header-align="center" align="center" label="开始日期"></el-table-column>
-        <el-table-column prop="enableEndTime" header-align="center" align="center" label="结束日期"></el-table-column>
+        <el-table-column prop="enableStartTime" header-align="center" align="center" label="开始日期" :formatter="dateFormat"></el-table-column>
+        <el-table-column prop="enableEndTime" header-align="center" align="center" label="结束日期" :formatter="dateFormat"></el-table-column>
       </el-table-column>
       <el-table-column prop="code" header-align="center" align="center" label="优惠码"></el-table-column>
       <el-table-column prop="memberLevel" header-align="center" align="center" label="领取所需等级">

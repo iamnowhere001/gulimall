@@ -101,9 +101,16 @@ router.beforeEach((to, from, next) => {
       }
     }).catch((e) => {
       console.error(`请求菜单列表和权限失败：${e}`)
-      // 清除登录信息，使用 next() 重定向而非 router.push()，避免导航冲突
-      clearLoginInfo()
-      next({ name: 'login' })
+      // 仅当确实是未登录(401 / token 失效)才跳登录页；
+      // 其它错误(后端 5xx、网络抖动、超时等)不要踢出系统，继续放行，
+      // 由页面统一错误提示处理，避免一个接口失败就把用户退回到登录页
+      const needLogin = !!(e && (e.needLogin || e.code === 401 || (e.response && e.response.status === 401)))
+      if (needLogin) {
+        clearLoginInfo()
+        next({ name: 'login' })
+      } else {
+        next()
+      }
     })
   }
 })

@@ -13,21 +13,6 @@ const http = axios.create({
 })
 
 /**
- * 安全跳转登录页：仅在非导航守卫场景下执行跳转
- * 通过检查 router.history.pending 判断是否有导航正在进行
- */
-function redirectToLoginIfSafe () {
-  const router = Vue.prototype.$router
-  if (!router) return
-  // 如果当前已有导航在进行（即处于 beforeEach 守卫中），不跳转
-  // 守卫的 catch 块会通过 next({ name: 'login' }) 处理跳转
-  if (router.history && router.history.pending) return
-  // 已在登录页则不重复跳转
-  if (router.currentRoute && router.currentRoute.name === 'login') return
-  router.push({ name: 'login' }).catch(() => {})
-}
-
-/**
  * 请求拦截
  */
 http.interceptors.request.use(config => {
@@ -45,39 +30,28 @@ http.interceptors.request.use(config => {
  */
 http.interceptors.response.use(response => {
   const data = response.data
-  // 业务逻辑错误：后端返回了数据但 code !== 0
-  if (data && data.code !== 0) {
+  // 约定：标准响应体含 code 字段，code === 0 表示成功；
+  // 若后端直接返回业务数据（裸数组 / 裸对象，无 code 字段，如 /sys/menu/list 返回数组），
+  // 视为成功原样放行，避免被误判为“业务处理异常”。
+  const isStandardResponse = data && typeof data === 'object' && !Array.isArray(data) && ('code' in data)
+  if (isStandardResponse && data.code !== 0) {
     const businessError = createBusinessError(data)
     const stdError = classifyError(businessError)
+    // 统一提示错误信息；但【不】在此强制清除登录信息或跳转登录页，
+    // 避免页面请求偶发异常（含 401）时把用户踢出系统。是否重新登录由用户自行决定。
     triggerFeedback(stdError)
-
-    // 401 token 失效 -> 清除登录信息
-    if (stdError.needLogin) {
-      const { clearLoginInfo } = require('@/utils')
-      clearLoginInfo()
-      // 仅在非导航守卫场景下跳转登录页；
-      // 守卫场景由 next({ name: 'login' }) 处理，避免 Navigation cancelled
-      redirectToLoginIfSafe()
-    }
 
     // 阻断后续 then 链，进入 catch
     return Promise.reject(businessError)
   }
   return response
-}, error => {
-  // HTTP / 网络层错误
-  const stdError = classifyError(error)
-  triggerFeedback(stdError)
-
-  // 401 -> 清除登录信息
-  if (stdError.needLogin) {
-    const { clearLoginInfo } = require('@/utils')
-    clearLoginInfo()
-    redirectToLoginIfSafe()
-  }
-
-  return Promise.reject(error)
-})
+},   error => {
+    // HTTP / 网络层错误：仅做统一提示，【不】强制清除登录信息或跳转登录页，
+    // 避免页面请求偶发 401 / 网络异常时把用户踢出系统
+    const stdError = classifyError(error)
+    triggerFeedback(stdError)
+    return Promise.reject(error)
+  })
 
 /**
  * 请求地址处理

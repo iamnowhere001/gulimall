@@ -46,7 +46,7 @@
         header-align="center"
         align="center"
         width="180"
-        label="创建时间">
+        label="创建时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         fixed="right"

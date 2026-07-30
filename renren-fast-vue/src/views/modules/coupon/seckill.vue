@@ -38,13 +38,13 @@
         prop="startTime"
         header-align="center"
         align="center"
-        label="开始日期">
+        label="开始日期" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="endTime"
         header-align="center"
         align="center"
-        label="结束日期">
+        label="结束日期" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="status"
@@ -56,7 +56,7 @@
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="创建时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="userId"

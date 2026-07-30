@@ -26,7 +26,7 @@
           <el-tag type="success" v-else>主动领取</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间"></el-table-column>
+      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间" :formatter="dateFormat"></el-table-column>
       <el-table-column
         prop="useType"
         header-align="center"
@@ -39,7 +39,7 @@
           <el-tag type="warning" v-if="scope.row.useType==2">已过期</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="useTime" header-align="center" align="center" label="使用时间"></el-table-column>
+      <el-table-column prop="useTime" header-align="center" align="center" label="使用时间" :formatter="dateFormat"></el-table-column>
       <el-table-column prop="orderId" header-align="center" align="center" label="订单id"></el-table-column>
       <el-table-column prop="orderSn" header-align="center" align="center" label="订单号"></el-table-column>
     </el-table>

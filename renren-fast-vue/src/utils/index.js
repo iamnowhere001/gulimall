@@ -57,3 +57,35 @@ export function clearLoginInfo () {
   const router = routerModule.default || routerModule
   router.options.isAddDynamicMenuRoutes = false
 }
+
+/**
+ * 日期格式化
+ * 将 2026-07-29T01:00:05.000+0000 / 2026-07-29 01:00:05 统一展示为 2026-07-29 01:00
+ * 说明：直接按字符串截取年月日时分，避免 UTC(+0000) 被转换为本地时区导致时间偏移
+ * @param {*} value 时间值（ISO 字符串、时间戳、Date 对象）
+ */
+export function dateFormat (value) {
+  if (value === null || value === undefined || value === '') {
+    return ''
+  }
+  // ISO 字符串：2026-07-29T01:00:05.000+0000 或 2026-07-29 01:00:05
+  if (typeof value === 'string') {
+    // 纯日期 yyyy-MM-dd（如生日），原样返回，避免被当作 UTC 偏移
+    const d = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (d) {
+      return `${d[1]}-${d[2]}-${d[3]}`
+    }
+    const m = value.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/)
+    if (m) {
+      return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}`
+    }
+  }
+  // 时间戳（数字或纯数字字符串）
+  const num = typeof value === 'number' ? value : (/^\d+$/.test(value) ? Number(value) : NaN)
+  const date = new Date(isNaN(num) ? value : num)
+  if (!isNaN(date.getTime())) {
+    const pad = n => (n < 10 ? '0' + n : '' + n)
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  }
+  return value
+}

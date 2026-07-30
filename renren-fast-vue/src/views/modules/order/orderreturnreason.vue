@@ -50,7 +50,7 @@
         prop="createTime"
         header-align="center"
         align="center"
-        label="create_time">
+        label="create_time" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         fixed="right"

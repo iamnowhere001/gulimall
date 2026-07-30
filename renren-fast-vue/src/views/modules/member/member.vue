@@ -26,7 +26,7 @@
       <el-table-column prop="email" header-align="center" align="center" label="邮箱"></el-table-column>
       <el-table-column prop="header" header-align="center" align="center" label="头像"></el-table-column>
       <el-table-column prop="gender" header-align="center" align="center" label="性别"></el-table-column>
-      <el-table-column prop="birth" header-align="center" align="center" label="生日"></el-table-column>
+      <el-table-column prop="birth" header-align="center" align="center" label="生日" :formatter="dateFormat"></el-table-column>
       <el-table-column prop="city" header-align="center" align="center" label="所在城市"></el-table-column>
       <el-table-column prop="job" header-align="center" align="center" label="职业"></el-table-column>
       <el-table-column prop="sign" header-align="center" align="center" label="个性签名"></el-table-column>
@@ -44,7 +44,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="注册时间"></el-table-column>
+      <el-table-column prop="createTime" header-align="center" align="center" label="注册时间" :formatter="dateFormat"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small">送券</el-button>

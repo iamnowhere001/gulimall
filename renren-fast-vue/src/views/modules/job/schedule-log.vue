@@ -65,7 +65,7 @@
         header-align="center"
         align="center"
         width="180"
-        label="执行时间">
+        label="执行时间" :formatter="dateFormat">
       </el-table-column>
     </el-table>
     <el-pagination

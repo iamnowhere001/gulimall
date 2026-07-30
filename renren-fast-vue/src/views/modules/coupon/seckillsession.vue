@@ -29,15 +29,15 @@
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
       <el-table-column prop="id" header-align="center" align="center" label="id"></el-table-column>
       <el-table-column prop="name" header-align="center" align="center" label="场次名称"></el-table-column>
-      <el-table-column prop="startTime" header-align="center" align="center" label="每日开始时间"></el-table-column>
-      <el-table-column prop="endTime" header-align="center" align="center" label="每日结束时间"></el-table-column>
+      <el-table-column prop="startTime" header-align="center" align="center" label="每日开始时间" :formatter="dateFormat"></el-table-column>
+      <el-table-column prop="endTime" header-align="center" align="center" label="每日结束时间" :formatter="dateFormat"></el-table-column>
       <el-table-column prop="status" header-align="center" align="center" label="启用状态">
         <template slot-scope="scope">
           <i class="el-icon-success" v-if="scope.row.status==1"></i>
           <i class="el-icon-error" v-else></i>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间"></el-table-column>
+      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间" :formatter="dateFormat"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="relationProduct(scope.row.id)">关联商品</el-button>

@@ -8,7 +8,7 @@ import '@/icons' // api: http://www.iconfont.cn/
 import '@/element-ui-theme'
 import '@/assets/scss/index.scss'
 import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
-import { isAuth } from '@/utils'
+import { isAuth, dateFormat } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
 import PubSub from 'pubsub-js'
 
@@ -19,6 +19,14 @@ import NetworkStatus from '@/components/NetworkStatus'
 Vue.use(VueCookie)
 Vue.use(ErrorHandlerPlugin)
 Vue.config.productionTip = false
+
+// 全局日期格式化
+// 模板可用 {{ value | dateFormat }}（过滤器签名为单参数）
+Vue.filter('dateFormat', dateFormat)
+// el-table-column 的 :formatter 签名为 (row, column, cellValue, index)，需适配后取 cellValue 格式化
+Vue.prototype.dateFormat = function (row, column, cellValue) {
+  return dateFormat(cellValue)
+}
 
 // 非生产环境, 适配mockjs模拟数据                 // api: https://github.com/nuysoft/Mock
 // 注释掉 mock 拦截，直接连接后端服务器

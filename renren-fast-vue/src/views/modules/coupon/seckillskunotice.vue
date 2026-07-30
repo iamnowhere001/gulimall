@@ -50,13 +50,13 @@
         prop="subcribeTime"
         header-align="center"
         align="center"
-        label="订阅时间">
+        label="订阅时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="sendTime"
         header-align="center"
         align="center"
-        label="发送时间">
+        label="发送时间" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="noticeType"

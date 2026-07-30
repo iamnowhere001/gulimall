@@ -71,7 +71,7 @@
           header-align="center"
           align="center"
           label="生日特权"
-        >
+         :formatter="dateFormat">
           <template slot-scope="scope">
             <i class="el-icon-success" v-if="scope.row.priviledgeBirthday==1"></i>
             <i class="el-icon-error" v-else></i>

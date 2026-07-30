@@ -6,8 +6,6 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('order:ordersetting:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('order:ordersetting:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -32,31 +30,31 @@
         prop="flashOrderOvertime"
         header-align="center"
         align="center"
-        label="秒杀订单超时关闭时间(分)">
+        label="秒杀订单超时关闭时间(分)" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="normalOrderOvertime"
         header-align="center"
         align="center"
-        label="正常订单超时时间(分)">
+        label="正常订单超时时间(分)" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="confirmOvertime"
         header-align="center"
         align="center"
-        label="发货后自动确认收货时间（天）">
+        label="发货后自动确认收货时间（天）" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="finishOvertime"
         header-align="center"
         align="center"
-        label="自动完成交易时间，不能申请退货（天）">
+        label="自动完成交易时间，不能申请退货（天）" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="commentOvertime"
         header-align="center"
         align="center"
-        label="订单完成后自动好评时间（天）">
+        label="订单完成后自动好评时间（天）" :formatter="dateFormat">
       </el-table-column>
       <el-table-column
         prop="memberLevel"
@@ -72,7 +70,6 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -158,36 +155,7 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
-      // 删除
-      deleteHandle (id) {
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
-        })
-        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/order/ordersetting/delete'),
-            method: 'post',
-            data: this.$http.adornData(ids, false)
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        })
-      }
+
     }
   }
 </script>
