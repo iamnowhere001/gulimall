@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.xunqi.common.web.config.GulimallSessionConfig,\
+com.xunqi.common.web.config.GulimallSentinelAutoConfiguration,\
+com.xunqi.common.web.config.ThreadPoolAutoConfiguration

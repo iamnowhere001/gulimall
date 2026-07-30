@@ -54,6 +54,7 @@ public class LoginUserInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        // 清理 ThreadLocal，防止线程池复用导致内存泄漏和数据串号
+        loginUser.remove();
     }
 }
