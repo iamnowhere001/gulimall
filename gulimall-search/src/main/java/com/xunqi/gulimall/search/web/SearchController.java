@@ -7,13 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 检索页控制器（前端页面 /list.html）。
- * 接收页面检索参数（SearchParam），调用 MallSearchService 去 ES 检索并聚合，
- * 将结果放入 Model 供 Thymeleaf 模板渲染商品列表、筛选条件与面包屑导航。
+ * 检索页控制器。
+ *  - /list.html：Thymeleaf 页面（原前台）
+ *  - /search/list：供前台门户(gulimall-portal)使用的检索 JSON 接口
+ *    网关 /api/search/list -> /search/list
  */
 @Controller
 public class SearchController {
@@ -21,11 +23,6 @@ public class SearchController {
     @Autowired
     private MallSearchService mallSearchService;
 
-    /**
-     * 自动将页面提交过来的所有请求参数封装成我们指定的对象
-     * @param param
-     * @return
-     */
     @GetMapping(value = "/list.html")
     public String listPage(SearchParam param, Model model, HttpServletRequest request) {
 
@@ -37,6 +34,16 @@ public class SearchController {
         model.addAttribute("result",result);
 
         return "list";
+    }
+
+    /**
+     * 检索 JSON 接口（前台门户调用）
+     */
+    @GetMapping(value = "/search/list")
+    @ResponseBody
+    public SearchResult list(SearchParam param, HttpServletRequest request) {
+        param.set_queryString(request.getQueryString());
+        return mallSearchService.search(param);
     }
 
 }

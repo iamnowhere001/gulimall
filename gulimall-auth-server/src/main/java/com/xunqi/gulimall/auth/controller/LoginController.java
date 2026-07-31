@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -55,7 +56,7 @@ public class LoginController {
      * @return 发送结果
      */
     @ResponseBody
-    @GetMapping(value = "/sms/sendCode")
+    @GetMapping(value = {"/sms/sendCode", "/auth/sms/sendCode"})
     public R sendCode(@RequestParam("phone") String phone) {
 
         // 1、接口防刷：校验同一手机号是否在 60s 内已发送过验证码
@@ -200,6 +201,50 @@ public class LoginController {
         request.getSession().removeAttribute(LOGIN_USER);
         request.getSession().invalidate();
         return "redirect:http://gulimall.com";
+    }
+
+    /* ============== 以下为前台门户(gulimall-portal) JSON 接口 ============== */
+
+    /**
+     * JSON 登录：成功返回会员信息，失败返回错误码与信息
+     * 网关 /api/auth/login -> /auth/login
+     */
+    @ResponseBody
+    @PostMapping(value = "/auth/login")
+    public R authLogin(@RequestBody UserLoginVo vo, HttpSession session) {
+
+        R login = memberFeignService.login(vo);
+
+        if (login.getCode() == 0) {
+            MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
+            session.setAttribute(LOGIN_USER, data);
+            return R.ok().setData(data);
+        } else {
+            return R.error(login.getCode(), login.getData("msg", new TypeReference<String>() {}));
+        }
+    }
+
+    /**
+     * JSON 注册
+     * 网关 /api/auth/register -> /auth/register
+     */
+    @ResponseBody
+    @PostMapping(value = "/auth/register")
+    public R authRegister(@RequestBody UserRegisterVo vos) {
+
+        // 校验短信验证码
+        String code = vos.getCode();
+        String redisCode = stringRedisTemplate.opsForValue().get(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vos.getPhone());
+
+        if (!StringUtils.isEmpty(redisCode) && code.equals(redisCode.split("_")[0])) {
+            R register = memberFeignService.register(vos);
+            if (register.getCode() == 0) {
+                stringRedisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vos.getPhone());
+                return R.ok();
+            }
+            return register;
+        }
+        return R.error(BizCodeEnum.SMS_CODE_EXCEPTION.getCode(), "验证码错误");
     }
 
 }

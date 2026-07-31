@@ -58,6 +58,35 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>/?.*),/$\{segment}
 
+        # ↓↓↓ 以下为前台门户(gulimall-portal)对接的 JSON 接口路由，必须放在 admin_route 之前 ↓↓↓
+        - id: search_api_route
+          uri: lb://gulimall-search
+          predicates:
+            - Path=/api/search/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*),/$\{segment}
+
+        - id: cart_api_route
+          uri: lb://gulimall-cart
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*),/$\{segment}
+
+        - id: auth_api_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*),/$\{segment}
+
+        - id: seckill_api_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Path=/api/seckill/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*),/$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:

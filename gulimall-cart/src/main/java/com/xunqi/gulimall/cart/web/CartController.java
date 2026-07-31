@@ -1,14 +1,12 @@
 package com.xunqi.gulimall.cart.web;
 
+import com.xunqi.common.utils.R;
 import com.xunqi.gulimall.cart.service.CartService;
 import com.xunqi.gulimall.cart.vo.CartItemVo;
 import com.xunqi.gulimall.cart.vo.CartVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,114 +19,107 @@ public class CartController {
     private CartService cartService;
 
     /**
-     * 获取当前用户的购物车商品项
-     * @return
+     * 获取当前用户的购物车商品项（供订单等服务远程调用）
      */
     @GetMapping(value = "/currentUserCartItems")
     @ResponseBody
     public List<CartItemVo> getCurrentCartItems() {
-
-        List<CartItemVo> cartItemVoList = cartService.getUserCartItems();
-
-        return cartItemVoList;
+        return cartService.getUserCartItems();
     }
 
     /**
-     * 去购物车页面的请求
-     * 浏览器有一个cookie:user-key 标识用户的身份，一个月过期
-     * 如果第一次使用jd的购物车功能，都会给一个临时的用户身份:
-     * 浏览器以后保存，每次访问都会带上这个cookie；
-     *
-     * 登录：session有
-     * 没登录：按照cookie里面带来user-key来做
-     * 第一次，如果没有临时用户，自动创建一个临时用户
-     *
-     * @return
+     * 去购物车页面的请求（Thymeleaf）
      */
     @GetMapping(value = "/cart.html")
     public String cartListPage(Model model) throws ExecutionException, InterruptedException {
-        //快速得到用户信息：id,user-key
-
         CartVo cartVo = cartService.getCart();
         model.addAttribute("cart",cartVo);
         return "cartList";
     }
 
     /**
-     * 添加商品到购物车
-     * attributes.addFlashAttribute():将数据放在session中，可以在页面中取出，但是只能取一次
-     * attributes.addAttribute():将数据放在url后面
-     * @return
+     * 添加商品到购物车（Thymeleaf 重定向）
      */
     @GetMapping(value = "/addCartItem")
     public String addCartItem(@RequestParam("skuId") Long skuId,
                               @RequestParam("num") Integer num,
-                              RedirectAttributes attributes) throws ExecutionException, InterruptedException {
-
+                              org.springframework.web.servlet.mvc.support.RedirectAttributes attributes) throws ExecutionException, InterruptedException {
         cartService.addToCart(skuId,num);
-
         attributes.addAttribute("skuId",skuId);
         return "redirect:http://cart.gulimall.com/addToCartSuccessPage.html";
     }
 
     /**
      * 跳转到添加购物车成功页面
-     * @param skuId
-     * @param model
-     * @return
      */
     @GetMapping(value = "/addToCartSuccessPage.html")
-    public String addToCartSuccessPage(@RequestParam("skuId") Long skuId,
-                                       Model model) {
-        //重定向到成功页面。再次查询购物车数据即可
+    public String addToCartSuccessPage(@RequestParam("skuId") Long skuId, Model model) {
         CartItemVo cartItemVo = cartService.getCartItem(skuId);
         model.addAttribute("cartItem",cartItemVo);
         return "success";
     }
 
-    /**
-     * 商品是否选中
-     * @param skuId
-     * @param checked
-     * @return
-     */
     @GetMapping(value = "/checkItem")
     public String checkItem(@RequestParam(value = "skuId") Long skuId,
                             @RequestParam(value = "checked") Integer checked) {
-
         cartService.checkItem(skuId,checked);
-
         return "redirect:http://cart.gulimall.com/cart.html";
-
     }
 
-    /**
-     * 改变商品数量
-     * @param skuId
-     * @param num
-     * @return
-     */
     @GetMapping(value = "/countItem")
     public String countItem(@RequestParam(value = "skuId") Long skuId,
                             @RequestParam(value = "num") Integer num) {
-
         cartService.changeItemCount(skuId,num);
-
         return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+    @GetMapping(value = "/deleteItem")
+    public String deleteItem(@RequestParam("skuId") Long skuId) {
+        cartService.deleteIdCartInfo(skuId);
+        return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+    /* ============== 以下为前台门户(gulimall-portal) JSON 接口 ============== */
+
+    /**
+     * 获取完整购物车
+     * 网关 /api/cart/items -> /cart/items
+     */
+    @GetMapping(value = "/cart/items")
+    @ResponseBody
+    public CartVo cartItems() throws ExecutionException, InterruptedException {
+        return cartService.getCart();
     }
 
     /**
-     * 删除商品信息
-     * @param skuId
-     * @return
+     * 加入购物车
+     * 网关 /api/cart/add?skuId=&num= -> /cart/add
      */
-    @GetMapping(value = "/deleteItem")
-    public String deleteItem(@RequestParam("skuId") Long skuId) {
-
-        cartService.deleteIdCartInfo(skuId);
-
-        return "redirect:http://cart.gulimall.com/cart.html";
-
+    @PostMapping(value = "/cart/add")
+    @ResponseBody
+    public R addItem(@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num) throws ExecutionException, InterruptedException {
+        cartService.addToCart(skuId, num);
+        return R.ok();
     }
 
+    /**
+     * 修改购物项数量
+     */
+    @PostMapping(value = "/cart/update")
+    @ResponseBody
+    public R updateCount(@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num) {
+        cartService.changeItemCount(skuId, num);
+        return R.ok();
+    }
+
+    /**
+     * 删除购物项
+     * 网关 /api/cart/remove/{skuId} -> /cart/remove/{skuId}
+     */
+    @DeleteMapping(value = "/cart/remove/{skuId}")
+    @ResponseBody
+    public R removeItem(@PathVariable("skuId") Long skuId) {
+        cartService.deleteIdCartInfo(skuId);
+        return R.ok();
+    }
 }

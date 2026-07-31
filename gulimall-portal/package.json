@@ -1,0 +1,22 @@
+{
+  "name": "gulimall-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "谷粒商城前台门户（Vue 3 + Vite），独立前端工程，通过网关 /api 调用微服务",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.11"
+  }
+}

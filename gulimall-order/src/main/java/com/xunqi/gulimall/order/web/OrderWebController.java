@@ -1,6 +1,7 @@
 package com.xunqi.gulimall.order.web;
 
 import com.xunqi.common.exception.NoStockException;
+import com.xunqi.common.utils.R;
 import com.xunqi.gulimall.order.service.OrderService;
 import com.xunqi.gulimall.order.vo.OrderConfirmVo;
 import com.xunqi.gulimall.order.vo.OrderSubmitVo;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,6 +81,37 @@ public class OrderWebController {
                 attributes.addFlashAttribute("msg",message);
             }
             return "redirect:http://order.gulimall.com/toTrade";
+        }
+    }
+
+    /* ============== 以下为前台门户(gulimall-portal) JSON 接口 ============== */
+
+    /**
+     * 订单确认页数据（JSON）
+     * 网关 /api/order/confirm -> /order/confirm
+     */
+    @ResponseBody
+    @GetMapping(value = "/order/confirm")
+    public R confirm() throws ExecutionException, InterruptedException {
+        OrderConfirmVo confirmVo = orderService.confirmOrder();
+        return R.ok().put("data", confirmVo);
+    }
+
+    /**
+     * 提交订单（JSON）
+     * 网关 /api/order/submit -> /order/submit
+     */
+    @ResponseBody
+    @PostMapping(value = "/order/submit")
+    public R submit(@RequestBody OrderSubmitVo vo) {
+        try {
+            SubmitOrderResponseVo responseVo = orderService.submitOrder(vo);
+            if (responseVo.getCode() == 0) {
+                return R.ok().put("data", responseVo);
+            }
+            return R.error(responseVo.getCode(), "下单失败，请稍后重试");
+        } catch (Exception e) {
+            return R.error(500, "下单异常：" + e.getMessage());
         }
     }
 

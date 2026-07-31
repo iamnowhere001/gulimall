@@ -1,0 +1,78 @@
+<template>
+  <div class="login">
+    <div class="login__box">
+      <h2>账号登录</h2>
+      <input v-model="form.loginacct" placeholder="手机号/用户名" />
+      <input v-model="form.password" type="password" placeholder="密码" @keyup.enter="onLogin" />
+      <p v-if="msg" class="login__msg">{{ msg }}</p>
+      <button class="btn-primary" @click="onLogin">登录</button>
+      <p class="login__tip">
+        登录接口待后端新增 <code>/api/auth/login</code> JSON 接口（替代原 Thymeleaf login.html）。
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { login as loginApi } from '@/api/auth'
+import { useUserStore } from '@/stores/user'
+
+const router = useRouter()
+const user = useUserStore()
+const form = ref({ loginacct: '', password: '' })
+const msg = ref('')
+
+async function onLogin() {
+  msg.value = ''
+  try {
+    const info = await loginApi(form.value)
+    user.setUser(info)
+    router.push('/')
+  } catch (e) {
+    msg.value = e.message || '登录失败'
+  }
+}
+</script>
+
+<style scoped>
+.login {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+.login__box {
+  width: 360px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+.login__box input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  outline: none;
+}
+.login__msg {
+  color: #e1251b;
+  font-size: 13px;
+}
+.btn-primary {
+  width: 100%;
+  background: #e1251b;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.login__tip {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #999;
+}
+</style>
