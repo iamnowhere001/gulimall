@@ -30,6 +30,14 @@
             <artifactId>spring-session-data-redis</artifactId>
         </dependency>
 
+        <!-- Spring Data Redis：提供 RedisConnectionFactory（Lettuce 实现），
+             common-web 引入了 spring-session-data-redis，必须同时提供连接工厂，
+             否则未单独引入 data-redis 的模块（如 gateway、third-party）启动报错 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- Sentinel -->
         <dependency>
             <groupId>com.alibaba.csp</groupId>

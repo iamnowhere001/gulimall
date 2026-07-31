@@ -4,44 +4,29 @@ server:
 spring:
   application:
     name: gulimall-cart
-
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
-
     sentinel:
-      transport:
-        #配置sentinel dashboard地址
-        dashboard: localhost:8080
-
-  redis:
-    port: 6379
-    host: localhost
-
-  # 禁用 Sleuth 异步包装，防止 ThreadPoolExecutor 被包装为 TraceableExecutorService
-  sleuth:
-    async:
       enabled: false
-    sampler:
-      probability: 0
+  redis:
+    host: localhost
+    port: 6379
+  session:
+    store-type: redis
 
-#开启feign对sentinel的支持
 feign:
   sentinel:
     enabled: false
 
-  session:
-    store-type: redis
-
-#配置线程池
+# 购物车业务线程池
 gulimall:
   thread:
     coreSize: 20
     maxSize: 200
     keepAliveTime: 10
 
-#暴露所有端点
 management:
   endpoints:
     web:

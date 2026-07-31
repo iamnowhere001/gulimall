@@ -18,24 +18,16 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Nacos 仅作服务注册与发现（网关 lb:// 路由与 OpenFeign 调用依赖） -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-
+        <!-- Sentinel 流控（默认全局关闭，见各服务 application.yml 的 sentinel.enabled=false） -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zipkin</artifactId>
         </dependency>
     </dependencies>
 </project>

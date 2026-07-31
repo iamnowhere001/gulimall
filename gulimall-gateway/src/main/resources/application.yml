@@ -1,13 +1,19 @@
+server:
+  port: 88
+
 spring:
+  application:
+    name: gulimall-gateway
+  main:
+    # common-web 的 GulimallSessionConfig 与 Spring Boot SessionAutoConfiguration 存在同名 bean
+    # cookieSerializer，网关引入 common-web 后需要允许覆盖以完成装配
+    allow-bean-definition-overriding: true
   cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
     sentinel:
       enabled: false
-      transport:
-        #配置sentinel dashboard地址
-        dashboard: localhost:8080
-      filter:
-        enabled: false
-
     gateway:
       routes:
         - id: product_route
@@ -93,7 +99,3 @@ spring:
           uri: lb://gulimall-seckill
           predicates:
             - Host=seckill.gulimall.com,seckill.gulimall.com:88
-
-  ## 前端项目，/api
-## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
-## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree

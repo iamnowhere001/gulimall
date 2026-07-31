@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
@@ -28,5 +29,15 @@ public class GulimallSessionConfig {
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         return new GenericJackson2JsonRedisSerializer();
+    }
+
+    /**
+     * 禁用 Spring Session 启动时自动执行 CONFIG SET notify-keyspace-events。
+     * 该命令在 Redis 连接繁忙或无权限时容易超时（Lettuce 默认 60s），阻塞应用启动。
+     * 如需键空间通知，请在 Redis 中手动执行：CONFIG SET notify-keyspace-events "Egx"
+     */
+    @Bean
+    public ConfigureRedisAction configureRedisAction() {
+        return ConfigureRedisAction.NO_OP;
     }
 }

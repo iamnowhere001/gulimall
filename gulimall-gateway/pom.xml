@@ -22,11 +22,8 @@
             <artifactId>gulimall-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.xunqi.gulimall</groupId>
-            <artifactId>gulimall-common-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- gateway 是 Reactive（WebFlux）网关，不引入 common-web（含 spring-boot-starter-web/Servlet），
+             否则 Spring Boot 会按 Servlet 栈装配，导致 ServerCodecConfigurer 等 WebFlux Bean 缺失 -->
         <dependency>
             <groupId>com.xunqi.gulimall</groupId>
             <artifactId>gulimall-common-cloud</artifactId>

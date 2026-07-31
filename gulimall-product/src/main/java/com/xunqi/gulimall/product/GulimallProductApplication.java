@@ -1,5 +1,6 @@
 package com.xunqi.gulimall.product;
 
+import com.alibaba.cloud.seata.GlobalTransactionAutoConfiguration;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -61,7 +62,8 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableFeignClients(basePackages = "com.xunqi.gulimall.product.feign")
 @EnableDiscoveryClient
 @MapperScan("com.xunqi.gulimall.product.dao")
-@SpringBootApplication
+// 排除 seata 自动装配：项目未部署 seata-server，缺 file.conf/registry.conf 会导致启动失败
+@SpringBootApplication(exclude = {GlobalTransactionAutoConfiguration.class})
 public class GulimallProductApplication {
 
     public static void main(String[] args) {

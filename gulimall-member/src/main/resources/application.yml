@@ -2,6 +2,8 @@ server:
   port: 8000
 
 spring:
+  application:
+    name: gulimall-member
   datasource:
     username: root
     password: root
@@ -11,41 +13,28 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
-
     sentinel:
       enabled: false
-      transport:
-        #配置sentinel dashboard地址
-        dashboard: localhost:8080
-      filter:
-        enabled: false
-
   redis:
-    port: 6379
     host: localhost
+    port: 6379
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
+  session:
+    store-type: redis
 
-#开启feign对sentinel的支持
 feign:
   sentinel:
     enabled: false
 
-  application:
-    name: gulimall-member
-
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-
-  session:
-    store-type: redis
-
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
-
   global-config:
     db-config:
       id-type: auto
 
-#暴露所有端点
 management:
   endpoints:
     web:

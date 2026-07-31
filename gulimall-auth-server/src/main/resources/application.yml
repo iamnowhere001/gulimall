@@ -1,6 +1,5 @@
 server:
   port: 8150
-
   servlet:
     session:
       timeout: 30m
@@ -12,28 +11,22 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
-
+    # Sentinel 默认关闭（无 dashboard 时不启用）
     sentinel:
-      transport:
-        #配置sentinel dashboard地址
-        dashboard: localhost:8080
-
+      enabled: false
   redis:
     host: localhost
     port: 6379
-
   thymeleaf:
     cache: false
-
+  # 登录会话存 Redis
   session:
     store-type: redis
 
-# 关闭feign对sentinel的支持（避免ContextUtil初始化失败）
 feign:
   sentinel:
     enabled: false
 
-#暴露所有端点
 management:
   endpoints:
     web:

@@ -7,6 +7,9 @@
 #   2. 后端微服务（11 个 gulimall-* 模块）+ 后台管理 renren-fast
 #   3. 前端后台管理（renren-fast-vue，npm run dev）
 #
+# 前台商城通过 Nginx（80）→ Gateway（88）→ 各微服务访问，
+# 需在 /etc/hosts 中配置 *.gulimall.com → 127.0.0.1（脚本不会自动修改 hosts）。
+#
 # 用法：
 #   ./gulimall-start.sh start      启动全部（默认）
 #   ./gulimall-start.sh stop       停止全部
@@ -19,8 +22,13 @@
 #   SKIP_BUILD=1      跳过 maven 打包，直接运行已有 jar（加快二次启动）
 #   SKIP_FRONTEND=1   不启动 renren-fast-vue 前端
 #
-# 注意：本项目基于 Spring Boot 2.2.5 + Lombok，必须使用 JDK 8 编译运行。
-#       请确认 JAVA_HOME 指向 JDK 8，例如：export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+# 配置说明：各微服务配置已收敛到各自的 src/main/resources/application.yml（单一文件），
+# Nacos 现在仅作为「服务注册与发现」使用（网关 lb:// 路由与 OpenFeign 依赖），
+# 不再依赖 Nacos 配置中心 / 各 namespace 远程配置，启动前无需导入任何远程配置。
+#
+# 注意：本项目基于 Spring Boot 2.2.5 + Lombok + Redisson 3.12，必须使用 JDK 8 编译运行。
+#       脚本会自动通过 /usr/libexec/java_home -v 1.8 定位 JDK 8（macOS）。
+#       若系统默认 java 为 JDK 9+，直接 java -jar 启动会导致反射/模块化错误。
 #
 
 set -euo pipefail
@@ -90,6 +98,37 @@ wait_for_port() {
   warn "$svc 端口 $port 在等待期内未就绪（服务可能仍在启动，请稍后查看日志）"
 }
 
+# ===================== 前台域名解析检查 =====================
+# 前台商城页面与接口均硬编码 *.gulimall.com，域名解析不到 127.0.0.1 时
+# 即使所有服务启动正常，页面也会无法访问。macOS 无 getent，使用 dscacheutil 兼容。
+resolve_host() {
+  local d="$1" ip=""
+  if command -v getent >/dev/null 2>&1; then
+    ip="$(getent hosts "$d" 2>/dev/null | awk '{print $1}' | head -n1)"
+  fi
+  if [[ -z "$ip" ]] && command -v dscacheutil >/dev/null 2>&1; then
+    ip="$(dscacheutil -q host -a name "$d" 2>/dev/null | awk -F': ' '/^ip_address:/{print $2; exit}')"
+  fi
+  echo "$ip"
+}
+
+check_hosts() {
+  local missing=()
+  local domains=(gulimall.com search.gulimall.com item.gulimall.com auth.gulimall.com
+                 cart.gulimall.com order.gulimall.com member.gulimall.com seckill.gulimall.com)
+  for d in "${domains[@]}"; do
+    ip="$(resolve_host "$d")"
+    [[ "$ip" != "127.0.0.1" ]] && missing+=("$d")
+  done
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    warn "以下前台域名未解析到 127.0.0.1，页面将无法正常访问："
+    for d in "${missing[@]}"; do echo -e "    ${YELLOW}$d${NC}"; done
+    echo -e "  请先执行：${GREEN}sudo ./setup-hosts.sh${NC}"
+  else
+    log "前台商城域名解析正常（*.gulimall.com -> 127.0.0.1）"
+  fi
+}
+
 # ===================== 中间件 =====================
 start_middleware() {
   if [[ "${SKIP_DOCKER:-0}" == "1" ]]; then
@@ -147,7 +186,7 @@ start_service() {
     return 1
   fi
   log "启动 $module ..."
-  nohup java -jar "$jar" > "$LOG_DIR/$module.log" 2>&1 &
+  nohup "$JAVA_HOME/bin/java" -jar "$jar" > "$LOG_DIR/$module.log" 2>&1 &
   save_pid "$!" "$module"
 }
 
@@ -165,7 +204,7 @@ start_backend() {
       warn "renren-fast 已在运行，跳过"
     else
       log "启动 后台管理 renren-fast ..."
-      nohup java -jar "$RENREN_FAST_JAR" > "$LOG_DIR/renren-fast.log" 2>&1 &
+      nohup "$JAVA_HOME/bin/java" -jar "$RENREN_FAST_JAR" > "$LOG_DIR/renren-fast.log" 2>&1 &
       save_pid "$!" renren-fast
     fi
   else
@@ -238,11 +277,34 @@ status_all() {
 # ===================== 主流程 =====================
 case "${1:-start}" in
   start)
+    check_hosts
     start_backend
     start_frontend
     echo
     log "全部启动完成 ✅"
-    info "后台管理前端: http://localhost:8001    接口网关: http://localhost:88"
+    echo
+    info "==================== 访问地址 ===================="
+    echo -e "  ${GREEN}【前台商城】${NC}（hosts 需配置 *.gulimall.com → 127.0.0.1）"
+    echo -e "    首页        http://gulimall.com"
+    echo -e "    商品检索    http://search.gulimall.com/list.html"
+    echo -e "    商品详情    http://item.gulimall.com/{skuId}.html"
+    echo -e "    登录        http://auth.gulimall.com/login.html"
+    echo -e "    注册        http://auth.gulimall.com/reg.html"
+    echo -e "    购物车      http://cart.gulimall.com/cartList.html"
+    echo -e "    确认订单    http://order.gulimall.com/confirm.html"
+    echo -e "    会员订单    http://member.gulimall.com/memberOrder.html"
+    echo -e "    秒杀        http://seckill.gulimall.com"
+    echo
+    echo -e "  ${GREEN}【后台管理】${NC}"
+    echo -e "    管理前端    http://localhost:8001"
+    echo -e "    接口网关    http://localhost:88"
+    echo
+    echo -e "  ${GREEN}【中间件控制台】${NC}"
+    echo -e "    Nacos       http://localhost:8848/nacos"
+    echo -e "    RabbitMQ    http://localhost:15672  (guest/guest)"
+    echo -e "    Kibana      http://localhost:5601"
+    echo -e "    Elasticsearch http://localhost:9200"
+    echo -e "================================================="
     ;;
   backend)
     start_backend
