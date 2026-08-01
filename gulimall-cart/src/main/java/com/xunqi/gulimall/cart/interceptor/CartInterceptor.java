@@ -2,28 +2,25 @@ package com.xunqi.gulimall.cart.interceptor;
 
 import com.xunqi.common.vo.MemberResponseVo;
 import com.xunqi.gulimall.cart.to.UserInfoTo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 import static com.xunqi.common.constant.AuthServerConstant.LOGIN_USER;
-import static com.xunqi.common.constant.CartConstant.TEMP_USER_COOKIE_NAME;
-import static com.xunqi.common.constant.CartConstant.TEMP_USER_COOKIE_TIMEOUT;
+import static com.xunqi.common.constant.CartConstant.TEMP_USER_SESSION_KEY;
 
 /**
  * 购物车拦截器。
  *
  * 在请求进入业务前解析用户身份：
  *  - 登录用户：从 Session 中取 userId；
- *  - 未登录：解析 Cookie 中的 user-key，没有则分配一个临时用户标识；
+ *  - 未登录：从 Session 中取临时用户标识（前后端分离场景，Session 通过 X-Auth-Token 头共享），
+ *    没有则分配一个临时用户标识并存入 Session；
  * 将解析结果放入 ThreadLocal（toThreadLocal）供 Controller/Service 使用。
- * 请求返回后，若本次为临时用户，则写入 user-key 的 Cookie（域 gulimall.com，30 天有效）；
  * 请求完成后清理 ThreadLocal，避免内存泄漏。
  */
 public class CartInterceptor implements HandlerInterceptor {
@@ -31,14 +28,6 @@ public class CartInterceptor implements HandlerInterceptor {
     /** 当前请求的购物车用户信息在线程内传递 */
     public static ThreadLocal<UserInfoTo> toThreadLocal = new ThreadLocal<>();
 
-    /***
-     * 目标方法执行之前
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
-     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -53,55 +42,27 @@ public class CartInterceptor implements HandlerInterceptor {
             userInfoTo.setUserId(memberResponseVo.getId());
         }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie : cookies) {
-                //user-key
-                String name = cookie.getName();
-                if (name.equals(TEMP_USER_COOKIE_NAME)) {
-                    userInfoTo.setUserKey(cookie.getValue());
-                    //标记为已是临时用户
-                    userInfoTo.setTempUser(true);
-                }
-            }
+        //前后端分离：从 Session 中读取临时用户标识
+        String tempUserKey = (String) session.getAttribute(TEMP_USER_SESSION_KEY);
+        if (tempUserKey != null) {
+            userInfoTo.setUserKey(tempUserKey);
+            userInfoTo.setTempUser(true);
         }
 
-        //如果没有临时用户一定分配一个临时用户
-        if (StringUtils.isEmpty(userInfoTo.getUserKey())) {
+        //如果没有临时用户一定分配一个临时用户，并存入 Session
+        if (tempUserKey == null) {
             String uuid = UUID.randomUUID().toString();
             userInfoTo.setUserKey(uuid);
+            session.setAttribute(TEMP_USER_SESSION_KEY, uuid);
         }
 
-        //目标方法执行之前
         toThreadLocal.set(userInfoTo);
         return true;
     }
 
-    /**
-     * 业务执行之后，分配临时用户来浏览器保存
-     * @param request
-     * @param response
-     * @param handler
-     * @param modelAndView
-     * @throws Exception
-     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-        //获取当前用户的值
-        UserInfoTo userInfoTo = toThreadLocal.get();
-
-        //如果没有临时用户一定保存一个临时用户
-        if (!userInfoTo.getTempUser()) {
-            //创建一个cookie
-            Cookie cookie = new Cookie(TEMP_USER_COOKIE_NAME, userInfoTo.getUserKey());
-            //扩大作用域
-            cookie.setDomain("gulimall.com");
-            //设置过期时间
-            cookie.setMaxAge(TEMP_USER_COOKIE_TIMEOUT);
-            response.addCookie(cookie);
-        }
-
+        // 前后端分离场景下无需写 Cookie，临时用户标识已存入 Session
     }
 
     @Override

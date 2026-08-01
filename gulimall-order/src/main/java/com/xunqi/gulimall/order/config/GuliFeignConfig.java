@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Feign 请求拦截器配置（订单服务）。
- * 注册名为 requestInterceptor 的 Bean，在 Feign 发起远程调用前把当前请求的 Cookie（含 Session）同步到新请求头，
- * 解决“订单服务→会员/购物车等服务的远程调用丢失登录态（Session）”的问题。
+ * 注册名为 requestInterceptor 的 Bean，在 Feign 发起远程调用前把当前请求的
+ * X-Auth-Token 头（前后端分离场景的 Session ID）同步到新请求头，
+ * 解决"订单服务→会员/购物车等服务的远程调用丢失登录态（Session）"的问题。
  */
 @Configuration
 public class GuliFeignConfig {
@@ -31,10 +32,16 @@ public class GuliFeignConfig {
                     HttpServletRequest request = requestAttributes.getRequest();
 
                     if (request != null) {
-                        //2、同步请求头的数据（主要是cookie）
-                        //把老请求的cookie值放到新请求上来，进行一个同步
+                        //2、同步 X-Auth-Token 头（前后端分离场景的 Session ID 传递方式）
+                        String authToken = request.getHeader("X-Auth-Token");
+                        if (authToken != null && !authToken.isEmpty()) {
+                            template.header("X-Auth-Token", authToken);
+                        }
+                        //兼容旧的 Cookie 方式（Thymeleaf 页面流程仍可能使用）
                         String cookie = request.getHeader("Cookie");
-                        template.header("Cookie", cookie);
+                        if (cookie != null && !cookie.isEmpty()) {
+                            template.header("Cookie", cookie);
+                        }
                     }
                 }
             }

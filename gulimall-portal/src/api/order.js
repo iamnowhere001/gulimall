@@ -10,7 +10,12 @@ export function submitOrder(data) {
   return request.post('/order/submit', data)
 }
 
-// 我的订单列表（待后端补充 /order/list）
-export function getMyOrders(params) {
-  return request.get('/order/list', { params })
+// 我的订单列表（后端 /order/myOrders，返回 PageUtils）
+export function getMyOrders(params = {}) {
+  return request.get('/order/myOrders', {
+    params: {
+      page: params.page || 1,
+      limit: params.limit || 10
+    }
+  })
 }

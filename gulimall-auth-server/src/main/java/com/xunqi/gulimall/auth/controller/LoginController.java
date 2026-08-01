@@ -206,7 +206,8 @@ public class LoginController {
     /* ============== 以下为前台门户(gulimall-portal) JSON 接口 ============== */
 
     /**
-     * JSON 登录：成功返回会员信息，失败返回错误码与信息
+     * JSON 登录：成功返回 token（Session ID）与会员信息，失败返回错误码与信息
+     * 前端将 token 存入 localStorage，后续请求通过 X-Auth-Token 头携带
      * 网关 /api/auth/login -> /auth/login
      */
     @ResponseBody
@@ -218,7 +219,8 @@ public class LoginController {
         if (login.getCode() == 0) {
             MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
             session.setAttribute(LOGIN_USER, data);
-            return R.ok().setData(data);
+            // 返回 Session ID 作为 token，前端存入 localStorage 后通过 X-Auth-Token 头携带
+            return R.ok().put("token", session.getId()).setData(data);
         } else {
             return R.error(login.getCode(), login.getData("msg", new TypeReference<String>() {}));
         }

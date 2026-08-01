@@ -5,25 +5,26 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
  * Spring Session Redis 配置。
  * <p>
- * 统一配置 Session Cookie 序列化与 Redis 序列化，
+ * 前后端分离架构下使用 Header 方式传递 Session ID（请求头 X-Auth-Token），
+ * 彻底摆脱 Cookie 域名限制，便于 localhost 开发与跨域部署。
  * 各业务模块通过引入 common-web 自动装配，无需重复定义。
  */
 @Configuration
 public class GulimallSessionConfig {
 
+    /**
+     * 使用 X-Auth-Token 请求/响应头传递 Session ID，替代 Cookie。
+     * 前端登录后将 token 存入 localStorage，每次请求携带 X-Auth-Token 头。
+     */
     @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-        // 放大作用域至父域，实现子域间 Session 共享
-        cookieSerializer.setDomainName("gulimall.com");
-        cookieSerializer.setCookieName("GULISESSION");
-        return cookieSerializer;
+    public HttpSessionIdResolver httpSessionIdResolver() {
+        return HeaderHttpSessionIdResolver.xAuthToken();
     }
 
     @Bean

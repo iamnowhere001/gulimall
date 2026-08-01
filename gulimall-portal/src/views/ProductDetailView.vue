@@ -17,7 +17,7 @@
 
       <div class="detail__info">
         <h1>{{ sku.skuTitle }}</h1>
-        <p class="detail__sub">{{ sku.skuSubTitle }}</p>
+        <p class="detail__sub">{{ sku.skuSubtitle }}</p>
         <p class="detail__price">￥{{ sku.price }}</p>
         <p class="detail__sales">销量：{{ sku.saleCount }}</p>
 
@@ -63,9 +63,11 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getSkuDetail } from '@/api/product'
 import { addToCart } from '@/api/cart'
+import { useCartStore } from '@/stores/cart'
 
 const route = useRoute()
 const router = useRouter()
+const cart = useCartStore()
 const skuId = route.params.skuId
 
 const detail = ref(null)
@@ -90,10 +92,15 @@ onMounted(async () => {
   }
 })
 
-function addCart() {
-  addToCart(skuId, 1)
-    .then(() => router.push('/cart'))
-    .catch((e) => alert('加入购物车失败：' + (e.message || e)))
+async function addCart() {
+  try {
+    await addToCart(skuId, 1)
+    // 刷新购物车角标
+    await cart.fetchCount()
+    router.push('/cart')
+  } catch (e) {
+    alert('加入购物车失败：' + (e.message || e))
+  }
 }
 function buyNow() {
   router.push('/order')

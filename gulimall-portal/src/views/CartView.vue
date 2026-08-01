@@ -64,8 +64,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCart, updateCartItem, removeCartItem } from '@/api/cart'
+import { useCartStore } from '@/stores/cart'
 
 const router = useRouter()
+const cart = useCartStore()
 const items = ref([])
 const loading = ref(true)
 const error = ref(false)
@@ -78,7 +80,7 @@ const checkedTotal = computed(() =>
 onMounted(async () => {
   try {
     const res = await getCart()
-    // 给每项加一个本地选中态，默认选中
+    // CartVo.items 即购物项列表，给每项加一个本地选中态，默认选中
     items.value = (res?.items || []).map((i) => ({ ...i, checked: i.check !== false }))
   } catch (e) {
     error.value = true
@@ -101,6 +103,8 @@ async function remove(skuId) {
   try {
     await removeCartItem(skuId)
     items.value = items.value.filter((i) => i.skuId !== skuId)
+    // 同步刷新顶部购物车角标
+    cart.fetchCount()
   } catch (e) {
     alert('删除失败：' + (e.message || e))
   }

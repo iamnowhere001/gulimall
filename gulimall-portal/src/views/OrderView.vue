@@ -16,8 +16,8 @@
           :class="{ active: selectedAddrId === addr.id }"
         >
           <input type="radio" :value="addr.id" v-model="selectedAddrId" />
-          <span>{{ addr.name }} {{ addr.phone }}（{{ addr.region }} {{ addr.detailAddress }}）</span>
-          <em v-if="addr.isDefault === 1">默认</em>
+          <span>{{ addr.name }} {{ addr.phone }}（{{ addr.province }}{{ addr.city }}{{ addr.region }} {{ addr.detailAddress }}）</span>
+          <em v-if="addr.defaultStatus === 1">默认</em>
         </label>
         <p v-if="!(confirm.memberAddressVos || []).length" class="order__hint">请先添加收货地址</p>
       </section>
@@ -27,12 +27,12 @@
         <h3>商品清单</h3>
         <ul class="order__items">
           <li v-for="it in confirm.items || []" :key="it.skuId">
-            <img :src="it.skuPic || it.image" :alt="it.skuName" />
+            <img :src="it.image" :alt="it.title" />
             <div class="order__item-info">
-              <p>{{ it.skuName || it.title }}</p>
-              <p class="order__item-attrs" v-if="it.skuAttrs">{{ it.skuAttrs.join(' ') }}</p>
+              <p>{{ it.title }}</p>
+              <p class="order__item-attrs" v-if="it.skuAttrValues">{{ it.skuAttrValues.join(' ') }}</p>
             </div>
-            <span>￥{{ it.skuPrice || it.price }} × {{ it.skuQuantity || it.count }}</span>
+            <span>￥{{ it.price }} × {{ it.count }}</span>
           </li>
         </ul>
       </section>
@@ -72,7 +72,7 @@ onMounted(async () => {
     const res = await getOrderConfirm()
     confirm.value = res
     const addrs = res?.memberAddressVos || []
-    const def = addrs.find((a) => a.isDefault === 1) || addrs[0]
+    const def = addrs.find((a) => a.defaultStatus === 1) || addrs[0]
     selectedAddrId.value = def?.id ?? null
   } catch (e) {
     error.value = true
@@ -94,8 +94,10 @@ async function submit() {
       payType: 1,
       orderToken: confirm.value.orderToken
     })
-    submitMsg.value = '下单成功！订单号：' + (res.orderSn || '')
-    setTimeout(() => router.push('/member'), 1200)
+    // SubmitOrderResponseVo: { order: OrderEntity, code: 0 }
+    const orderSn = res?.order?.orderSn || ''
+    submitMsg.value = '下单成功！订单号：' + orderSn
+    setTimeout(() => router.push('/member'), 1500)
   } catch (e) {
     submitMsg.value = '下单失败：' + (e.message || e)
   } finally {

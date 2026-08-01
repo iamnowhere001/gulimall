@@ -1,6 +1,7 @@
 package com.xunqi.gulimall.order.web;
 
 import com.xunqi.common.exception.NoStockException;
+import com.xunqi.common.utils.PageUtils;
 import com.xunqi.common.utils.R;
 import com.xunqi.gulimall.order.service.OrderService;
 import com.xunqi.gulimall.order.vo.OrderConfirmVo;
@@ -12,9 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -113,6 +118,24 @@ public class OrderWebController {
         } catch (Exception e) {
             return R.error(500, "下单异常：" + e.getMessage());
         }
+    }
+
+    /**
+     * 我的订单列表（JSON，分页）
+     * 网关 /api/order/myOrders -> /order/myOrders
+     *
+     * @param page  当前页码，默认 1
+     * @param limit 每页条数，默认 10
+     */
+    @ResponseBody
+    @GetMapping(value = "/order/myOrders")
+    public R myOrders(@RequestParam(value = "page", defaultValue = "1") String page,
+                      @RequestParam(value = "limit", defaultValue = "10") String limit) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("limit", limit);
+        PageUtils pageUtils = orderService.queryPageWithItem(params);
+        return R.ok().put("data", pageUtils);
     }
 
 }

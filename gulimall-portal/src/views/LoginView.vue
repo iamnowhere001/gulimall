@@ -7,7 +7,7 @@
       <p v-if="msg" class="login__msg">{{ msg }}</p>
       <button class="btn-primary" @click="onLogin">登录</button>
       <p class="login__tip">
-        登录接口待后端新增 <code>/api/auth/login</code> JSON 接口（替代原 Thymeleaf login.html）。
+        登录后 token 自动通过 X-Auth-Token 头管理，无需手动处理。
       </p>
     </div>
   </div>
@@ -15,12 +15,15 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { login as loginApi } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
+import { useCartStore } from '@/stores/cart'
 
 const router = useRouter()
+const route = useRoute()
 const user = useUserStore()
+const cart = useCartStore()
 const form = ref({ loginacct: '', password: '' })
 const msg = ref('')
 
@@ -29,7 +32,15 @@ async function onLogin() {
   try {
     const info = await loginApi(form.value)
     user.setUser(info)
-    router.push('/')
+    // 登录后刷新购物车数量（后端会合并临时购物车到用户购物车）
+    cart.fetchCount()
+    // 如果有 return_url 参数，跳回原页面
+    const redirect = route.query.return_url
+    if (redirect && typeof redirect === 'string') {
+      router.push(redirect)
+    } else {
+      router.push('/')
+    }
   } catch (e) {
     msg.value = e.message || '登录失败'
   }

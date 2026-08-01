@@ -1,5 +1,6 @@
 package com.xunqi.common.web.interceptor;
 
+import com.alibaba.fastjson.JSON;
 import com.xunqi.common.vo.MemberResponseVo;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -7,7 +8,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.xunqi.common.constant.AuthServerConstant.LOGIN_USER;
 
@@ -23,6 +26,7 @@ import static com.xunqi.common.constant.AuthServerConstant.LOGIN_USER;
  * <p>
  * 登录成功后将用户信息写入 ThreadLocal，供同线程内 Service 层获取；
  * 请求结束后在 {@link #afterCompletion} 中清理，防止线程池复用导致内存泄漏。
+ * 未登录时返回 JSON 格式的 401 错误（前后端分离适配）。
  */
 public class LoginUserInterceptor implements HandlerInterceptor {
 
@@ -65,10 +69,15 @@ public class LoginUserInterceptor implements HandlerInterceptor {
             loginUser.set(attribute);
             return true;
         } else {
-            // 未登录，返回登录页面
-            response.setContentType("text/html;charset=UTF-8");
+            // 未登录，返回 JSON 401 错误（前后端分离适配）
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
             PrintWriter out = response.getWriter();
-            out.println("<script>alert('请先进行登录，再进行后续操作！');location.href='http://auth.gulimall.com/login.html'</script>");
+            Map<String, Object> body = new HashMap<>();
+            body.put("code", 401);
+            body.put("msg", "请先登录");
+            out.write(JSON.toJSONString(body));
+            out.flush();
             return false;
         }
     }
